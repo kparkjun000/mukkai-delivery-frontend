@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Search, ShoppingCart, User, LogOut, Menu, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -154,6 +155,122 @@ export function Header() {
           {/* 로고 */}
           <Link to="/" className="flex items-center space-x-3 smooth-hover">
             <div className="text-3xl lg:text-4xl font-bold text-primary tracking-tight">Foodie</div>
+            {/* 도깨비방망이를 든 흉칙한 도깨비 👹 */}
+            <motion.div
+              animate={{
+                rotate: [0, -15, 0, 15, 0],
+                scale: [1, 1.2, 1, 0.8, 1],
+                y: [0, -2, 0, 2, 0],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="relative w-10 h-10 lg:w-12 lg:h-12 ml-2"
+            >
+              {/* 도깨비 얼굴 */}
+              <div className="relative w-full h-full bg-gradient-to-b from-red-700 via-red-800 to-red-900 rounded-full shadow-xl border-2 border-black">
+                {/* 큰 뿔 */}
+                <div className="absolute -top-2 left-1/4 w-1.5 h-3 lg:w-2 lg:h-4 bg-gray-900 rounded-t-full transform -rotate-15"></div>
+                <div className="absolute -top-2 right-1/4 w-1.5 h-3 lg:w-2 lg:h-4 bg-gray-900 rounded-t-full transform rotate-15"></div>
+                
+                {/* 무서운 빨간 눈 */}
+                <motion.div
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [1, 0.7, 1],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute top-2 left-2 w-1.5 h-1.5 lg:w-2 lg:h-2 bg-red-500 rounded-full shadow-lg"
+                />
+                <motion.div
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [1, 0.7, 1],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.2,
+                  }}
+                  className="absolute top-2 right-2 w-1.5 h-1.5 lg:w-2 lg:h-2 bg-red-500 rounded-full shadow-lg"
+                />
+                
+                {/* 흉칙한 이빨 */}
+                <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-2 lg:w-5 lg:h-2 bg-black rounded-full"></div>
+                <div className="absolute bottom-1.5 left-1/3 w-0.5 h-1.5 bg-white"></div>
+                <div className="absolute bottom-1.5 left-1/2 w-0.5 h-1 bg-white"></div>
+                <div className="absolute bottom-1.5 right-1/3 w-0.5 h-1.5 bg-white"></div>
+                
+                {/* 여러 흉터들 */}
+                <div className="absolute top-1 right-1 w-3 h-0.5 bg-red-900 rounded-full transform rotate-45"></div>
+                <div className="absolute top-3 left-1 w-2 h-0.5 bg-red-900 rounded-full transform -rotate-30"></div>
+                <div className="absolute bottom-3 right-2 w-1.5 h-0.5 bg-red-900 rounded-full transform rotate-60"></div>
+                
+                {/* 무서운 눈썹 */}
+                <div className="absolute top-1 left-1.5 w-2 h-0.5 bg-black transform -rotate-12"></div>
+                <div className="absolute top-1 right-1.5 w-2 h-0.5 bg-black transform rotate-12"></div>
+              </div>
+              
+              {/* 도깨비방망이 */}
+              <motion.div
+                animate={{
+                  rotate: [0, 25, 0, -25, 0],
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute -right-3 top-0 w-4 h-8 lg:w-5 lg:h-10"
+              >
+                {/* 방망이 손잡이 */}
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-5 lg:h-7 bg-amber-900 rounded-full shadow-md"></div>
+                {/* 방망이 머리 */}
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-3 h-3 lg:w-4 lg:h-4 bg-gradient-to-b from-amber-600 to-amber-900 rounded-full shadow-xl border border-amber-800"></div>
+                {/* 방망이 못들 */}
+                <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-0.5 h-0.5 bg-gray-800 rounded-full"></div>
+                <div className="absolute top-2 left-1 w-0.5 h-0.5 bg-gray-800 rounded-full"></div>
+                <div className="absolute top-2 right-1 w-0.5 h-0.5 bg-gray-800 rounded-full"></div>
+                
+                {/* 방망이 반짝임 */}
+                <motion.div
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.5, 1, 0.5],
+                  }}
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                    delay: 1,
+                  }}
+                  className="absolute top-0.5 right-0 text-yellow-400 text-xs"
+                >
+                  ✨
+                </motion.div>
+              </motion.div>
+              
+              {/* 무서운 오라 */}
+              <motion.div
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [0.3, 0.6, 0.3],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute inset-0 rounded-full bg-red-600 opacity-20 blur-sm"
+              />
+            </motion.div>
           </Link>
 
           {/* 검색바 (데스크톱) */}
