@@ -154,7 +154,9 @@ export function Header() {
         <div className="flex h-20 items-center justify-between">
           {/* 로고 */}
           <Link to="/" className="flex items-center space-x-3 smooth-hover">
-            <div className="text-3xl lg:text-4xl font-bold text-primary tracking-tight">Foodie</div>
+            <div className="text-3xl lg:text-4xl font-bold text-primary tracking-tight">
+              Foodie
+            </div>
             {/* 도깨비방망이를 든 흉칙한 도깨비 👹 */}
             <motion.div
               animate={{
@@ -174,7 +176,7 @@ export function Header() {
                 {/* 큰 뿔 */}
                 <div className="absolute -top-2 left-1/4 w-1.5 h-3 lg:w-2 lg:h-4 bg-gray-900 rounded-t-full transform -rotate-15"></div>
                 <div className="absolute -top-2 right-1/4 w-1.5 h-3 lg:w-2 lg:h-4 bg-gray-900 rounded-t-full transform rotate-15"></div>
-                
+
                 {/* 무서운 빨간 눈 */}
                 <motion.div
                   animate={{
@@ -201,23 +203,23 @@ export function Header() {
                   }}
                   className="absolute top-2 right-2 w-1.5 h-1.5 lg:w-2 lg:h-2 bg-red-500 rounded-full shadow-lg"
                 />
-                
+
                 {/* 흉칙한 이빨 */}
                 <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-2 lg:w-5 lg:h-2 bg-black rounded-full"></div>
                 <div className="absolute bottom-1.5 left-1/3 w-0.5 h-1.5 bg-white"></div>
                 <div className="absolute bottom-1.5 left-1/2 w-0.5 h-1 bg-white"></div>
                 <div className="absolute bottom-1.5 right-1/3 w-0.5 h-1.5 bg-white"></div>
-                
+
                 {/* 여러 흉터들 */}
                 <div className="absolute top-1 right-1 w-3 h-0.5 bg-red-900 rounded-full transform rotate-45"></div>
                 <div className="absolute top-3 left-1 w-2 h-0.5 bg-red-900 rounded-full transform -rotate-30"></div>
                 <div className="absolute bottom-3 right-2 w-1.5 h-0.5 bg-red-900 rounded-full transform rotate-60"></div>
-                
+
                 {/* 무서운 눈썹 */}
                 <div className="absolute top-1 left-1.5 w-2 h-0.5 bg-black transform -rotate-12"></div>
                 <div className="absolute top-1 right-1.5 w-2 h-0.5 bg-black transform rotate-12"></div>
               </div>
-              
+
               {/* 도깨비방망이 */}
               <motion.div
                 animate={{
@@ -239,7 +241,7 @@ export function Header() {
                 <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-0.5 h-0.5 bg-gray-800 rounded-full"></div>
                 <div className="absolute top-2 left-1 w-0.5 h-0.5 bg-gray-800 rounded-full"></div>
                 <div className="absolute top-2 right-1 w-0.5 h-0.5 bg-gray-800 rounded-full"></div>
-                
+
                 {/* 방망이 반짝임 */}
                 <motion.div
                   animate={{
@@ -256,7 +258,7 @@ export function Header() {
                   ✨
                 </motion.div>
               </motion.div>
-              
+
               {/* 무서운 오라 */}
               <motion.div
                 animate={{
@@ -278,8 +280,8 @@ export function Header() {
             onSubmit={handleSearch}
             className="hidden md:flex flex-1 max-w-xl lg:max-w-2xl mx-12 lg:mx-16"
           >
-            <div 
-              className="relative w-full" 
+            <div
+              className="relative w-full"
               ref={searchRef}
               onMouseEnter={handleSearchHover}
               onMouseLeave={handleSearchLeave}
@@ -295,8 +297,8 @@ export function Header() {
 
               {/* 추천 가게 드롭다운 */}
               {isSearchFocused && (
-                <div 
-                  className="absolute top-full left-0 right-0 mt-1 bg-gray-100 border border-gray-300 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto backdrop-blur-sm"
+                <div
+                  className="absolute top-full left-0 mt-1 bg-gray-100 border border-gray-300 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto backdrop-blur-sm w-auto min-w-[calc(100%+2rem)]"
                   onMouseEnter={handleDropdownHover}
                   onMouseLeave={handleDropdownLeave}
                 >
@@ -385,30 +387,50 @@ export function Header() {
                 <Link
                   to={isStoreAuthenticated ? "/owner/dashboard" : "/profile"}
                 >
-                  <Button variant="ghost" size="default" className="smooth-hover px-4 py-2">
+                  <Button
+                    variant="ghost"
+                    size="default"
+                    className="smooth-hover px-4 py-2"
+                  >
                     <User className="h-5 w-5 mr-2" />
                     {userTypePrefix} {displayName}
                   </Button>
                 </Link>
-                <Button variant="ghost" size="lg" onClick={handleLogout} className="smooth-hover p-3">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  onClick={handleLogout}
+                  className="smooth-hover p-3"
+                >
                   <LogOut className="h-5 w-5" />
                 </Button>
               </div>
             ) : (
               <div className="hidden md:flex items-center space-x-3">
                 <Link to="/auth/login">
-                  <Button variant="ghost" size="default" className="smooth-hover px-4 py-2">
+                  <Button
+                    variant="ghost"
+                    size="default"
+                    className="smooth-hover px-4 py-2"
+                  >
                     로그인
                   </Button>
                 </Link>
                 <Link to="/auth/register">
-                  <Button variant="ghost" size="default" className="smooth-hover px-4 py-2">
+                  <Button
+                    variant="ghost"
+                    size="default"
+                    className="smooth-hover px-4 py-2"
+                  >
                     회원가입
                   </Button>
                 </Link>
                 {!isStoreAuthenticated && (
                   <Link to="/owner/login">
-                    <Button size="default" className="bg-blue-600 hover:bg-blue-700 smooth-hover px-5 py-2">
+                    <Button
+                      size="default"
+                      className="bg-blue-600 hover:bg-blue-700 smooth-hover px-5 py-2"
+                    >
                       사장님
                     </Button>
                   </Link>
@@ -430,7 +452,7 @@ export function Header() {
 
         {/* 모바일 검색바 */}
         <form onSubmit={handleSearch} className="md:hidden pb-4">
-          <div 
+          <div
             className="relative"
             onMouseEnter={handleSearchHover}
             onMouseLeave={handleSearchLeave}
@@ -446,8 +468,8 @@ export function Header() {
 
             {/* 모바일 추천 가게 드롭다운 */}
             {isSearchFocused && (
-              <div 
-                className="absolute top-full left-0 right-0 mt-1 bg-gray-100 border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto backdrop-blur-sm"
+              <div
+                className="absolute top-full left-0 mt-1 bg-gray-100 border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto backdrop-blur-sm w-auto min-w-[calc(100%+2rem)]"
                 onMouseEnter={handleDropdownHover}
                 onMouseLeave={handleDropdownLeave}
               >
