@@ -298,7 +298,7 @@ export function Header() {
               {/* 추천 가게 드롭다운 */}
               {isSearchFocused && (
                 <div
-                  className="absolute top-full left-0 mt-1 bg-gray-100 border border-gray-300 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto backdrop-blur-sm w-auto min-w-[calc(100%+2rem)]"
+                  className="absolute top-full left-0 mt-1 bg-gray-100 border border-gray-300 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto backdrop-blur-sm w-fit"
                   onMouseEnter={handleDropdownHover}
                   onMouseLeave={handleDropdownLeave}
                 >
@@ -469,7 +469,7 @@ export function Header() {
             {/* 모바일 추천 가게 드롭다운 */}
             {isSearchFocused && (
               <div
-                className="absolute top-full left-0 mt-1 bg-gray-100 border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto backdrop-blur-sm w-auto min-w-[calc(100%+2rem)]"
+                className="absolute top-full left-0 mt-1 bg-gray-100 border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto backdrop-blur-sm w-fit"
                 onMouseEnter={handleDropdownHover}
                 onMouseLeave={handleDropdownLeave}
               >
