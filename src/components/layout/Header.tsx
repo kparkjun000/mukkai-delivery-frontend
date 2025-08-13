@@ -136,20 +136,20 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="container-padding">
-        <div className="flex h-16 items-center justify-between">
+      <div className="w-full px-6 sm:px-8 lg:px-12 xl:px-16">
+        <div className="flex h-20 items-center justify-between">
           {/* 로고 */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="text-2xl font-bold text-primary">Foodie</div>
+          <Link to="/" className="flex items-center space-x-3 smooth-hover">
+            <div className="text-3xl lg:text-4xl font-bold text-primary tracking-tight">Foodie</div>
           </Link>
 
           {/* 검색바 (데스크톱) */}
           <form
             onSubmit={handleSearch}
-            className="hidden md:flex flex-1 max-w-md mx-8"
+            className="hidden md:flex flex-1 max-w-xl lg:max-w-2xl mx-12 lg:mx-16"
           >
             <div className="relative w-full" ref={searchRef}>
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <Input
                 type="text"
                 placeholder="가게나 메뉴를 검색하세요"
@@ -157,7 +157,7 @@ export function Header() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={handleSearchFocus}
                 onBlur={handleSearchBlur}
-                className="pl-10 pr-4 smooth-focus"
+                className="pl-12 pr-6 py-3 text-lg smooth-focus"
               />
 
               {/* 추천 가게 드롭다운 */}
@@ -226,17 +226,17 @@ export function Header() {
           </form>
 
           {/* 우측 메뉴 */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3 lg:space-x-4">
             {/* 장바구니 */}
             <Button
               variant="ghost"
-              size="icon"
+              size="lg"
               onClick={openCartDrawer}
-              className="relative smooth-hover"
+              className="relative smooth-hover p-3"
             >
-              <ShoppingCart className="h-5 w-5" />
+              <ShoppingCart className="h-6 w-6" />
               {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-sm rounded-full h-6 w-6 flex items-center justify-center font-semibold">
                   {cartItemCount > 99 ? "99+" : cartItemCount}
                 </span>
               )}
@@ -244,34 +244,34 @@ export function Header() {
 
             {/* 사용자 메뉴 */}
             {isAnyAuthenticated ? (
-              <div className="hidden md:flex items-center space-x-2">
+              <div className="hidden md:flex items-center space-x-3">
                 <Link
                   to={isStoreAuthenticated ? "/owner/dashboard" : "/profile"}
                 >
-                  <Button variant="ghost" size="sm" className="smooth-hover">
-                    <User className="h-4 w-4 mr-2" />
+                  <Button variant="ghost" size="default" className="smooth-hover px-4 py-2">
+                    <User className="h-5 w-5 mr-2" />
                     {userTypePrefix} {displayName}
                   </Button>
                 </Link>
-                <Button variant="ghost" size="icon" onClick={handleLogout} className="smooth-hover">
-                  <LogOut className="h-4 w-4" />
+                <Button variant="ghost" size="lg" onClick={handleLogout} className="smooth-hover p-3">
+                  <LogOut className="h-5 w-5" />
                 </Button>
               </div>
             ) : (
-              <div className="hidden md:flex items-center space-x-2">
+              <div className="hidden md:flex items-center space-x-3">
                 <Link to="/auth/login">
-                  <Button variant="ghost" size="sm" className="smooth-hover">
+                  <Button variant="ghost" size="default" className="smooth-hover px-4 py-2">
                     로그인
                   </Button>
                 </Link>
                 <Link to="/auth/register">
-                  <Button variant="ghost" size="sm" className="smooth-hover">
+                  <Button variant="ghost" size="default" className="smooth-hover px-4 py-2">
                     회원가입
                   </Button>
                 </Link>
                 {!isStoreAuthenticated && (
                   <Link to="/owner/login">
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 smooth-hover">
+                    <Button size="default" className="bg-blue-600 hover:bg-blue-700 smooth-hover px-5 py-2">
                       사장님
                     </Button>
                   </Link>
@@ -282,19 +282,19 @@ export function Header() {
             {/* 모바일 메뉴 버튼 */}
             <Button
               variant="ghost"
-              size="icon"
-              className="md:hidden smooth-hover"
+              size="lg"
+              className="md:hidden smooth-hover p-3"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-6 w-6" />
             </Button>
           </div>
         </div>
 
         {/* 모바일 검색바 */}
-        <form onSubmit={handleSearch} className="md:hidden pb-3">
+        <form onSubmit={handleSearch} className="md:hidden pb-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               type="text"
               placeholder="가게나 메뉴를 검색하세요"
@@ -302,7 +302,7 @@ export function Header() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={handleSearchFocus}
               onBlur={handleSearchBlur}
-              className="pl-10 pr-4 smooth-focus"
+              className="pl-12 pr-6 py-3 text-lg smooth-focus"
             />
 
             {/* 모바일 추천 가게 드롭다운 */}
