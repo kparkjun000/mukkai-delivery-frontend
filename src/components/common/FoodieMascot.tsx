@@ -1,10 +1,32 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export function FoodieMascot() {
   const { scrollY } = useScroll();
   const [scrollDirection, setScrollDirection] = useState(0);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [currentMessage, setCurrentMessage] = useState(0);
+
+  // 도깨비의 다양한 메시지들
+  const messages = [
+    "스카이콩콩 타고 배달가요! 🚀",
+    "도깨비방망이로 맛있는 음식 찾아요! 🍕",
+    "흉칙하지만 착한 도깨비예요! 😈",
+    "스크롤할 때마다 따라갈게요! 📜",
+    "Foodie 앱이 최고예요! 👑",
+    "배고파요... 음식 주세요! 🍽️",
+    "도깨비 마법으로 빠른 배달! ✨",
+    "스카이콩콩이 제일 좋아요! 🦘",
+    "화면 끝까지 안 짤려요! 🎯",
+    "클릭할 때마다 다른 말을 해요! 💬",
+  ];
+
+  // 클릭 시 메시지 변경
+  const handleClick = () => {
+    const randomIndex = Math.floor(Math.random() * messages.length);
+    setCurrentMessage(randomIndex);
+  };
 
   // 스크롤 방향 감지
   useEffect(() => {
@@ -31,7 +53,10 @@ export function FoodieMascot() {
 
   return (
     <motion.div
-      className="fixed bottom-8 right-16 w-20 h-24 z-50 pointer-events-none"
+      className="fixed bottom-8 right-16 w-20 h-24 z-50 cursor-pointer"
+      onClick={handleClick}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
       style={{
         y: mascotY,
         x: mascotX,
@@ -205,6 +230,27 @@ export function FoodieMascot() {
           }}
         />
       ))}
+
+      {/* 말풍선 */}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            className="absolute bottom-full right-0 mb-3 mr-2"
+          >
+            <div className="relative">
+              <div className="bg-white text-gray-800 px-4 py-2 rounded-2xl shadow-lg border border-gray-200 text-sm font-medium whitespace-nowrap max-w-xs">
+                {messages[currentMessage]}
+              </div>
+              {/* 말풍선 꼬리 */}
+              <div className="absolute top-full right-4 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-transparent border-t-white"></div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
