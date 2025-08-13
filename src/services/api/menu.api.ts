@@ -791,16 +791,16 @@ export const menuApi = {
           amount: 5000,
           status: "REGISTERED",
           thumbnail_url:
-            "https://images.unsplash.com/photo-1549312185-4c4e3f0b3ae6?w=400&h=300&fit=crop&auto=format",
+            "https://images.unsplash.com/photo-1555507036-ab794f9dc1a3?w=400&h=300&fit=crop&auto=format",
           like_count: 70,
           likeCount: 70,
           sequence: 4,
           storeId: 14,
           thumbnailUrl:
-            "https://images.unsplash.com/photo-1549312185-4c4e3f0b3ae6?w=400&h=300&fit=crop&auto=format",
+            "https://images.unsplash.com/photo-1555507036-ab794f9dc1a3?w=400&h=300&fit=crop&auto=format",
           price: 5000,
           imageUrl:
-            "https://images.unsplash.com/photo-1549312185-4c4e3f0b3ae6?w=400&h=300&fit=crop&auto=format",
+            "https://images.unsplash.com/photo-1555507036-ab794f9dc1a3?w=400&h=300&fit=crop&auto=format",
         },
       ],
       15: [
@@ -1185,16 +1185,16 @@ export const menuApi = {
           amount: 3500,
           status: "REGISTERED",
           thumbnail_url:
-            "https://images.unsplash.com/photo-1549312185-4c4e3f0b3ae6?w=400&h=300&fit=crop&auto=format",
+            "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=400&h=300&fit=crop&auto=format",
           like_count: 45,
           likeCount: 45,
           sequence: 6,
           // 프론트엔드 호환성
           storeId: 7,
           thumbnailUrl:
-            "https://images.unsplash.com/photo-1549312185-4c4e3f0b3ae6?w=400&h=300&fit=crop&auto=format",
+            "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=400&h=300&fit=crop&auto=format",
           imageUrl:
-            "https://images.unsplash.com/photo-1549312185-4c4e3f0b3ae6?w=400&h=300&fit=crop&auto=format",
+            "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=400&h=300&fit=crop&auto=format",
           price: 3500,
         },
         {
