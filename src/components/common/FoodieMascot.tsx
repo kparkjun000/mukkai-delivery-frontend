@@ -73,7 +73,7 @@ export function FoodieMascot({ className }: FoodieMascotProps) {
             )}
           </AnimatePresence>
 
-          {/* 먹깨비 캐릭터 */}
+          {/* 스카이콩콩을 타고 있는 먹깨비 캐릭터 */}
           <motion.div
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
@@ -81,22 +81,112 @@ export function FoodieMascot({ className }: FoodieMascotProps) {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             animate={{
-              y: [0, -8, 0],
+              y: [0, -12, 0, -8, 0, -15, 0],
+              rotate: [0, -2, 0, 2, 0, -1, 0],
             }}
             transition={{
               y: {
-                duration: 2,
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut",
+              },
+              rotate: {
+                duration: 3,
                 repeat: Infinity,
                 ease: "easeInOut",
               },
             }}
-            className="relative w-16 h-16 cursor-pointer"
+            className="relative w-20 h-24 cursor-pointer"
           >
-            {/* 그림자 */}
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-2 bg-black/20 rounded-full blur-sm"></div>
+            {/* 스카이콩콩 (바운싱 공) */}
+            <motion.div
+              animate={{
+                scaleY: [1, 0.8, 1, 0.9, 1, 0.85, 1],
+                scaleX: [1, 1.2, 1, 1.1, 1, 1.15, 1],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-14 h-14"
+            >
+              {/* 스카이콩콩 본체 */}
+              <div className="relative w-14 h-14 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-full shadow-xl border-2 border-white">
+                {/* 스카이콩콩 하이라이트 */}
+                <div className="absolute top-2 left-2 w-4 h-4 bg-white/40 rounded-full blur-sm"></div>
+                
+                {/* 스카이콩콩 패턴 */}
+                <div className="absolute top-3 right-3 w-2 h-2 bg-white/30 rounded-full"></div>
+                <div className="absolute bottom-3 left-3 w-1.5 h-1.5 bg-white/25 rounded-full"></div>
+                
+                {/* 스카이콩콩 반짝임 */}
+                <motion.div
+                  animate={{
+                    opacity: [0.5, 1, 0.5],
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute inset-1 rounded-full bg-gradient-to-tr from-transparent via-white/20 to-transparent"
+                />
+              </div>
+              
+              {/* 스카이콩콩 그림자 */}
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-3 bg-black/30 rounded-full blur-md"></div>
+              
+              {/* 바운스 파티클 효과 */}
+              {[...Array(6)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  animate={{
+                    y: [0, -20 - Math.random() * 10, 0],
+                    x: [0, (Math.random() - 0.5) * 30, 0],
+                    opacity: [0, 1, 0],
+                    scale: [0, 1, 0],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    delay: Math.random() * 2,
+                    repeat: Infinity,
+                    repeatDelay: 1 + Math.random(),
+                    ease: "easeOut",
+                  }}
+                  className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-300 rounded-full"
+                />
+              ))}
+              
+              {/* 반짝 효과 */}
+              {[...Array(4)].map((_, i) => (
+                <motion.div
+                  key={`sparkle-${i}`}
+                  animate={{
+                    scale: [0, 1, 0],
+                    opacity: [0, 1, 0],
+                    rotate: [0, 360],
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    delay: i * 0.2,
+                    repeat: Infinity,
+                    repeatDelay: 2,
+                  }}
+                  className="absolute w-2 h-2 text-yellow-400"
+                  style={{
+                    top: `${20 + Math.sin((i * 90 * Math.PI) / 180) * 20}%`,
+                    left: `${20 + Math.cos((i * 90 * Math.PI) / 180) * 20}%`,
+                  }}
+                >
+                  ✨
+                </motion.div>
+              ))}
+            </motion.div>
 
-            {/* 먹깨비 몸체 */}
-            <div className="relative w-16 h-16 bg-gradient-to-b from-orange-400 via-orange-500 to-orange-600 rounded-full shadow-lg border-3 border-white">
+            {/* 먹깨비 몸체 (스카이콩콩 위에 위치) */}
+            <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gradient-to-b from-orange-400 via-orange-500 to-orange-600 rounded-full shadow-lg border-3 border-white" style={{ zIndex: 10 }}>
               {/* 하이라이트 */}
               <div className="absolute top-1.5 left-2 w-3 h-3 bg-white/30 rounded-full blur-sm"></div>
 
