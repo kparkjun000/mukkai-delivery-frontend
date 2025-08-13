@@ -95,20 +95,22 @@ export function Footer() {
          }}
          className="absolute bottom-8 right-0 z-10"
        >
-        {/* 오토바이 */}
-        <div className="relative">
-          {/* 오토바이 바디 */}
-          <div className="w-16 h-8 bg-gradient-to-r from-red-600 to-red-800 rounded-full shadow-lg border-2 border-red-900">
-            {/* 오토바이 시트 */}
-            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-8 h-3 bg-red-700 rounded-t-full"></div>
-            {/* 오토바이 핸들바 */}
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gray-800 rounded-full"></div>
-            {/* 오토바이 바퀴 */}
-            <div className="absolute -bottom-2 left-2 w-4 h-4 bg-gray-900 rounded-full border-2 border-gray-700"></div>
-            <div className="absolute -bottom-2 right-2 w-4 h-4 bg-gray-900 rounded-full border-2 border-gray-700"></div>
-            {/* 오토바이 배기관 */}
-            <div className="absolute bottom-1 right-0 w-2 h-2 bg-gray-800 rounded-full"></div>
-          </div>
+                 {/* 2륜 오토바이 */}
+         <div className="relative">
+           {/* 오토바이 바디 */}
+           <div className="w-20 h-10 bg-gradient-to-r from-red-600 to-red-800 rounded-full shadow-lg border-2 border-red-900">
+             {/* 오토바이 시트 */}
+             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-10 h-4 bg-red-700 rounded-t-full"></div>
+             {/* 오토바이 핸들바 */}
+             <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-16 h-1.5 bg-gray-800 rounded-full"></div>
+             {/* 오토바이 바퀴 - 2륜 */}
+             <div className="absolute -bottom-3 left-3 w-5 h-5 bg-gray-900 rounded-full border-2 border-gray-700 shadow-lg"></div>
+             <div className="absolute -bottom-3 right-3 w-5 h-5 bg-gray-900 rounded-full border-2 border-gray-700 shadow-lg"></div>
+             {/* 오토바이 배기관 */}
+             <div className="absolute bottom-2 right-0 w-3 h-3 bg-gray-800 rounded-full"></div>
+             {/* 오토바이 앞쪽 라이트 */}
+             <div className="absolute -top-2 left-2 w-3 h-2 bg-yellow-300 rounded-full shadow-lg"></div>
+           </div>
 
                      {/* 도깨비 라이더 */}
            <motion.div
@@ -195,16 +197,7 @@ export function Footer() {
           </motion.div>
         </div>
 
-        {/* 배달 경로 (점선) */}
-        <div className="absolute bottom-0 left-0 right-0 h-0.5">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute bottom-0 w-1 h-0.5 bg-yellow-400"
-              style={{ left: `${i * 5}%` }}
-            />
-          ))}
-        </div>
+
       </motion.div>
 
       {/* 별들 (반짝임 효과) */}
