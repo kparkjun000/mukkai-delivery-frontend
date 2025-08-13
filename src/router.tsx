@@ -14,6 +14,7 @@ import OrdersPage from "@/pages/OrdersPage";
 import OrderDetailPage from "@/pages/OrderDetailPage";
 import ProfilePage from "@/pages/ProfilePage";
 import SearchPage from "@/pages/SearchPage";
+import MenuExplorePage from "@/pages/MenuExplorePage";
 
 // 점주용 페이지들 - 직접 import
 import StoreRegisterPage from "@/pages/StoreRegisterPage";
@@ -44,6 +45,10 @@ export const router = createBrowserRouter([
       {
         path: "search",
         element: <SearchPage />,
+      },
+      {
+        path: "menu-explore",
+        element: <MenuExplorePage />,
       },
       {
         path: "cart",

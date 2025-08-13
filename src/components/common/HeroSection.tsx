@@ -270,7 +270,7 @@ export function HeroSection({ className }: HeroSectionProps) {
               </Link>
             </motion.div>
 
-            <Link to="/search">
+            <Link to="/menu-explore">
               <Button
                 size="lg"
                 variant="outline"
@@ -280,7 +280,7 @@ export function HeroSection({ className }: HeroSectionProps) {
                   "px-8 py-3 text-lg font-semibold"
                 )}
               >
-                메뉴 둘러보기
+                🍽️ 메뉴 둘러보기
               </Button>
             </Link>
           </motion.div>
