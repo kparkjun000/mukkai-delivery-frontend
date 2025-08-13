@@ -28,7 +28,7 @@ export function Footer() {
           <div className="absolute bottom-0 left-[72rem] w-12 h-20 bg-gray-700 rounded-t-lg"></div>
           <div className="absolute bottom-0 left-[76rem] w-20 h-28 bg-gray-800 rounded-t-lg"></div>
           <div className="absolute bottom-0 left-[80rem] w-16 h-22 bg-gray-600 rounded-t-lg"></div>
-          
+
           {/* 창문들 */}
           <div className="absolute bottom-8 left-2 w-2 h-2 bg-yellow-400 rounded-full"></div>
           <div className="absolute bottom-16 left-2 w-2 h-2 bg-yellow-400 rounded-full"></div>
@@ -82,74 +82,74 @@ export function Footer() {
         </div>
       </div>
 
-             {/* 도깨비 오토바이 배달 애니메이션 */}
-       <motion.div
-         animate={{
-           x: [0, -1000, -1000, 0],
-         }}
-         transition={{
-           duration: 30,
-           repeat: Infinity,
-           ease: "linear",
-           times: [0, 0.5, 0.5, 1],
-         }}
-         className="absolute bottom-8 right-0 z-10"
-       >
-                 {/* 2륜 오토바이 */}
-         <div className="relative">
-           {/* 오토바이 바디 */}
-           <div className="w-20 h-10 bg-gradient-to-r from-red-600 to-red-800 rounded-full shadow-lg border-2 border-red-900">
-             {/* 오토바이 시트 */}
-             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-10 h-4 bg-red-700 rounded-t-full"></div>
-             {/* 오토바이 핸들바 */}
-             <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-16 h-1.5 bg-gray-800 rounded-full"></div>
-             {/* 오토바이 바퀴 - 2륜 */}
-             <div className="absolute -bottom-3 left-3 w-5 h-5 bg-gray-900 rounded-full border-2 border-gray-700 shadow-lg"></div>
-             <div className="absolute -bottom-3 right-3 w-5 h-5 bg-gray-900 rounded-full border-2 border-gray-700 shadow-lg"></div>
-             {/* 오토바이 배기관 */}
-             <div className="absolute bottom-2 right-0 w-3 h-3 bg-gray-800 rounded-full"></div>
-             {/* 오토바이 앞쪽 라이트 */}
-             <div className="absolute -top-2 left-2 w-3 h-2 bg-yellow-300 rounded-full shadow-lg"></div>
-           </div>
+      {/* 도깨비 오토바이 배달 애니메이션 */}
+      <motion.div
+        animate={{
+          x: [0, -1000, -1000, 0],
+        }}
+        transition={{
+          duration: 30,
+          repeat: Infinity,
+          ease: "linear",
+          times: [0, 0.5, 0.5, 1],
+        }}
+        className="absolute bottom-8 right-0 z-10"
+      >
+        {/* 2륜 오토바이 */}
+        <div className="relative">
+          {/* 오토바이 바디 */}
+          <div className="w-20 h-10 bg-gradient-to-r from-blue-600 to-blue-800 rounded-full shadow-lg border-2 border-blue-900">
+            {/* 오토바이 시트 */}
+            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-10 h-4 bg-blue-700 rounded-t-full"></div>
+            {/* 오토바이 핸들바 */}
+            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-16 h-1.5 bg-gray-800 rounded-full"></div>
+            {/* 오토바이 바퀴 - 2륜 */}
+            <div className="absolute -bottom-3 left-3 w-5 h-5 bg-gray-900 rounded-full border-2 border-gray-700 shadow-lg"></div>
+            <div className="absolute -bottom-3 right-3 w-5 h-5 bg-gray-900 rounded-full border-2 border-gray-700 shadow-lg"></div>
+            {/* 오토바이 배기관 */}
+            <div className="absolute bottom-2 right-0 w-3 h-3 bg-gray-800 rounded-full"></div>
+            {/* 오토바이 앞쪽 라이트 */}
+            <div className="absolute -top-2 left-2 w-3 h-2 bg-yellow-300 rounded-full shadow-lg"></div>
+          </div>
 
-                     {/* 도깨비 라이더 */}
-           <motion.div
-             animate={{
-               y: [0, -2, 0],
-               rotate: [0, -1, 0, 1, 0],
-               scaleX: [1, 1, 1, -1, -1, -1, 1, 1, 1],
-             }}
-             transition={{
-               duration: 30,
-               repeat: Infinity,
-               ease: "linear",
-               times: [0, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 1, 1],
-             }}
-             className="absolute -top-6 left-1/2 transform -translate-x-1/2"
-           >
+          {/* 도깨비 라이더 */}
+          <motion.div
+            animate={{
+              y: [0, -2, 0],
+              rotate: [0, -1, 0, 1, 0],
+              scaleX: [1, 1, 1, -1, -1, -1, 1, 1, 1],
+            }}
+            transition={{
+              duration: 30,
+              repeat: Infinity,
+              ease: "linear",
+              times: [0, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 1, 1],
+            }}
+            className="absolute -top-6 left-1/2 transform -translate-x-1/2"
+          >
             {/* 도깨비 얼굴 */}
-            <div className="w-6 h-6 bg-gradient-to-b from-red-700 via-red-800 to-red-900 rounded-full shadow-lg border border-red-600">
+            <div className="w-6 h-6 bg-gradient-to-b from-green-700 via-green-800 to-green-900 rounded-full shadow-lg border border-green-600">
               {/* 도깨비 뿔 */}
               <div className="absolute -top-1 left-1 w-1 h-2 bg-gray-800 rounded-t-full transform -rotate-12"></div>
               <div className="absolute -top-1 right-1 w-1 h-2 bg-gray-800 rounded-t-full transform rotate-12"></div>
-              
+
               {/* 도깨비 눈 */}
-              <div className="absolute top-1 left-1 w-1 h-1 bg-red-500 rounded-full"></div>
-              <div className="absolute top-1 right-1 w-1 h-1 bg-red-500 rounded-full"></div>
-              
+              <div className="absolute top-1 left-1 w-1 h-1 bg-green-500 rounded-full"></div>
+              <div className="absolute top-1 right-1 w-1 h-1 bg-green-500 rounded-full"></div>
+
               {/* 도깨비 입 */}
               <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-0.5 bg-black rounded-full"></div>
             </div>
 
             {/* 도깨비 몸통 */}
-            <div className="absolute top-5 left-1/2 transform -translate-x-1/2 w-4 h-6 bg-gradient-to-b from-red-600 to-red-800 rounded-full">
+            <div className="absolute top-5 left-1/2 transform -translate-x-1/2 w-4 h-6 bg-gradient-to-b from-green-600 to-green-800 rounded-full">
               {/* 도깨비 팔 */}
-              <div className="absolute top-1 -left-2 w-2 h-3 bg-red-700 rounded-full transform -rotate-45"></div>
-              <div className="absolute top-1 -right-2 w-2 h-3 bg-red-700 rounded-full transform rotate-45"></div>
-              
+              <div className="absolute top-1 -left-2 w-2 h-3 bg-green-700 rounded-full transform -rotate-45"></div>
+              <div className="absolute top-1 -right-2 w-2 h-3 bg-green-700 rounded-full transform rotate-45"></div>
+
               {/* 도깨비 다리 */}
-              <div className="absolute bottom-0 left-0 w-1.5 h-3 bg-red-700 rounded-full transform -rotate-12"></div>
-              <div className="absolute bottom-0 right-0 w-1.5 h-3 bg-red-700 rounded-full transform rotate-12"></div>
+              <div className="absolute bottom-0 left-0 w-1.5 h-3 bg-green-700 rounded-full transform -rotate-12"></div>
+              <div className="absolute bottom-0 right-0 w-1.5 h-3 bg-green-700 rounded-full transform rotate-12"></div>
             </div>
 
             {/* 도깨비 헬멧 */}
@@ -159,45 +159,43 @@ export function Footer() {
             </div>
           </motion.div>
 
-                     {/* 배달 상자 */}
-           <motion.div
-             animate={{
-               y: [0, -1, 0],
-               x: [0, 0, 0, -2, -2, -2, 0, 0, 0],
-             }}
-             transition={{
-               duration: 30,
-               repeat: Infinity,
-               ease: "linear",
-               times: [0, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 1, 1],
-             }}
-             className="absolute -top-4 -left-2 w-4 h-3 bg-orange-600 rounded-lg border border-orange-700 shadow-md"
-           >
+          {/* 배달 상자 */}
+          <motion.div
+            animate={{
+              y: [0, -1, 0],
+              x: [0, 0, 0, -2, -2, -2, 0, 0, 0],
+            }}
+            transition={{
+              duration: 30,
+              repeat: Infinity,
+              ease: "linear",
+              times: [0, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 1, 1],
+            }}
+            className="absolute -top-4 -left-2 w-4 h-3 bg-orange-600 rounded-lg border border-orange-700 shadow-md"
+          >
             <div className="absolute top-0.5 left-0.5 w-1 h-1 bg-orange-400 rounded-full"></div>
             <div className="absolute top-0.5 right-0.5 w-1 h-1 bg-orange-400 rounded-full"></div>
             <div className="absolute bottom-0.5 left-1/2 transform -translate-x-1/2 w-2 h-0.5 bg-orange-800 rounded-full"></div>
           </motion.div>
 
-                     {/* 배달 깃발 */}
-           <motion.div
-             animate={{
-               rotate: [0, 5, 0, -5, 0],
-               x: [0, 0, 0, -1, -1, -1, 0, 0, 0],
-             }}
-             transition={{
-               duration: 30,
-               repeat: Infinity,
-               ease: "linear",
-               times: [0, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 1, 1],
-             }}
-             className="absolute -top-8 -left-1"
-           >
+          {/* 배달 깃발 */}
+          <motion.div
+            animate={{
+              rotate: [0, 5, 0, -5, 0],
+              x: [0, 0, 0, -1, -1, -1, 0, 0, 0],
+            }}
+            transition={{
+              duration: 30,
+              repeat: Infinity,
+              ease: "linear",
+              times: [0, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 1, 1],
+            }}
+            className="absolute -top-8 -left-1"
+          >
             <div className="w-0.5 h-4 bg-gray-800"></div>
             <div className="absolute top-0 -left-1 w-3 h-2 bg-red-500 rounded-r-full border border-red-600"></div>
           </motion.div>
         </div>
-
-
       </motion.div>
 
       {/* 별들 (반짝임 효과) */}
