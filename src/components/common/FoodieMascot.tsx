@@ -31,7 +31,7 @@ export function FoodieMascot() {
 
   return (
     <motion.div
-      className="fixed bottom-8 right-8 w-20 h-24 z-50 pointer-events-none"
+      className="fixed bottom-8 right-16 w-20 h-24 z-50 pointer-events-none"
       style={{
         y: mascotY,
         x: mascotX,
