@@ -278,7 +278,7 @@ export function Header() {
           {/* 검색바 (데스크톱) */}
           <form
             onSubmit={handleSearch}
-            className="hidden md:flex flex-1 max-w-xl lg:max-w-2xl mx-12 lg:mx-16"
+            className="hidden md:flex flex-1 max-w-xl lg:max-w-2xl mx-auto"
           >
             <div
               className="relative w-full"
