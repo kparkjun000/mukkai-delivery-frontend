@@ -82,18 +82,19 @@ export function Footer() {
         </div>
       </div>
 
-      {/* 도깨비 오토바이 배달 애니메이션 */}
-      <motion.div
-        animate={{
-          x: [0, -1000],
-        }}
-        transition={{
-          duration: 15,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        className="absolute bottom-8 right-0 z-10"
-      >
+             {/* 도깨비 오토바이 배달 애니메이션 */}
+       <motion.div
+         animate={{
+           x: [0, -1000, -1000, 0],
+         }}
+         transition={{
+           duration: 30,
+           repeat: Infinity,
+           ease: "linear",
+           times: [0, 0.5, 0.5, 1],
+         }}
+         className="absolute bottom-8 right-0 z-10"
+       >
         {/* 오토바이 */}
         <div className="relative">
           {/* 오토바이 바디 */}
@@ -109,19 +110,21 @@ export function Footer() {
             <div className="absolute bottom-1 right-0 w-2 h-2 bg-gray-800 rounded-full"></div>
           </div>
 
-          {/* 도깨비 라이더 */}
-          <motion.div
-            animate={{
-              y: [0, -2, 0],
-              rotate: [0, -1, 0, 1, 0],
-            }}
-            transition={{
-              duration: 0.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="absolute -top-6 left-1/2 transform -translate-x-1/2"
-          >
+                     {/* 도깨비 라이더 */}
+           <motion.div
+             animate={{
+               y: [0, -2, 0],
+               rotate: [0, -1, 0, 1, 0],
+               scaleX: [1, 1, 1, -1, -1, -1, 1, 1, 1],
+             }}
+             transition={{
+               duration: 30,
+               repeat: Infinity,
+               ease: "linear",
+               times: [0, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 1, 1],
+             }}
+             className="absolute -top-6 left-1/2 transform -translate-x-1/2"
+           >
             {/* 도깨비 얼굴 */}
             <div className="w-6 h-6 bg-gradient-to-b from-red-700 via-red-800 to-red-900 rounded-full shadow-lg border border-red-600">
               {/* 도깨비 뿔 */}
@@ -154,35 +157,39 @@ export function Footer() {
             </div>
           </motion.div>
 
-          {/* 배달 상자 */}
-          <motion.div
-            animate={{
-              y: [0, -1, 0],
-            }}
-            transition={{
-              duration: 0.8,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="absolute -top-4 -left-2 w-4 h-3 bg-orange-600 rounded-lg border border-orange-700 shadow-md"
-          >
+                     {/* 배달 상자 */}
+           <motion.div
+             animate={{
+               y: [0, -1, 0],
+               x: [0, 0, 0, -2, -2, -2, 0, 0, 0],
+             }}
+             transition={{
+               duration: 30,
+               repeat: Infinity,
+               ease: "linear",
+               times: [0, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 1, 1],
+             }}
+             className="absolute -top-4 -left-2 w-4 h-3 bg-orange-600 rounded-lg border border-orange-700 shadow-md"
+           >
             <div className="absolute top-0.5 left-0.5 w-1 h-1 bg-orange-400 rounded-full"></div>
             <div className="absolute top-0.5 right-0.5 w-1 h-1 bg-orange-400 rounded-full"></div>
             <div className="absolute bottom-0.5 left-1/2 transform -translate-x-1/2 w-2 h-0.5 bg-orange-800 rounded-full"></div>
           </motion.div>
 
-          {/* 배달 깃발 */}
-          <motion.div
-            animate={{
-              rotate: [0, 5, 0, -5, 0],
-            }}
-            transition={{
-              duration: 1,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="absolute -top-8 -left-1"
-          >
+                     {/* 배달 깃발 */}
+           <motion.div
+             animate={{
+               rotate: [0, 5, 0, -5, 0],
+               x: [0, 0, 0, -1, -1, -1, 0, 0, 0],
+             }}
+             transition={{
+               duration: 30,
+               repeat: Infinity,
+               ease: "linear",
+               times: [0, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 1, 1],
+             }}
+             className="absolute -top-8 -left-1"
+           >
             <div className="w-0.5 h-4 bg-gray-800"></div>
             <div className="absolute top-0 -left-1 w-3 h-2 bg-red-500 rounded-r-full border border-red-600"></div>
           </motion.div>
