@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Star, Heart, Clock, MapPin, Utensils, Coffee, Pizza, Burger, IceCream } from "lucide-react";
+import { Search, Star, Heart, Clock, MapPin, Utensils, Coffee, Pizza, Sandwich, IceCream } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,7 +19,7 @@ export default function MenuExplorePage() {
   const categories = [
     { id: "all", name: "전체", icon: Utensils, color: "bg-blue-500" },
     { id: "pizza", name: "피자", icon: Pizza, color: "bg-red-500" },
-    { id: "burger", name: "버거", icon: Burger, color: "bg-yellow-500" },
+    { id: "sandwich", name: "샌드위치", icon: Sandwich, color: "bg-yellow-500" },
     { id: "coffee", name: "커피/음료", icon: Coffee, color: "bg-brown-500" },
     { id: "dessert", name: "디저트", icon: IceCream, color: "bg-pink-500" },
   ];
