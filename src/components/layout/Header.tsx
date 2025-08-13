@@ -46,14 +46,27 @@ export function Header() {
     }
   };
 
-  // 검색창 포커스/블러 처리
-  const handleSearchFocus = () => {
-    setIsSearchFocused(true);
-    loadRecommendedStores();
+  // 검색창 호버 처리 - 약간의 지연으로 의도적 호버만 감지
+  const handleSearchHover = () => {
+    setTimeout(() => {
+      setIsSearchFocused(true);
+      loadRecommendedStores();
+    }, 150);
   };
 
-  const handleSearchBlur = () => {
-    // 약간의 지연을 두어 드롭다운 클릭이 가능하도록 함
+  const handleSearchLeave = () => {
+    // 약간의 지연을 두어 드롭다운 호버가 가능하도록 함
+    setTimeout(() => {
+      setIsSearchFocused(false);
+    }, 300);
+  };
+
+  // 드롭다운 영역 호버 처리
+  const handleDropdownHover = () => {
+    setIsSearchFocused(true);
+  };
+
+  const handleDropdownLeave = () => {
     setTimeout(() => {
       setIsSearchFocused(false);
     }, 200);
@@ -148,21 +161,28 @@ export function Header() {
             onSubmit={handleSearch}
             className="hidden md:flex flex-1 max-w-xl lg:max-w-2xl mx-12 lg:mx-16"
           >
-            <div className="relative w-full" ref={searchRef}>
+            <div 
+              className="relative w-full" 
+              ref={searchRef}
+              onMouseEnter={handleSearchHover}
+              onMouseLeave={handleSearchLeave}
+            >
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <Input
                 type="text"
                 placeholder="가게나 메뉴를 검색하세요"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={handleSearchFocus}
-                onBlur={handleSearchBlur}
                 className="pl-12 pr-6 py-3 text-lg smooth-focus"
               />
 
               {/* 추천 가게 드롭다운 */}
               {isSearchFocused && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-gray-100 border border-gray-300 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto backdrop-blur-sm">
+                <div 
+                  className="absolute top-full left-0 right-0 mt-1 bg-gray-100 border border-gray-300 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto backdrop-blur-sm"
+                  onMouseEnter={handleDropdownHover}
+                  onMouseLeave={handleDropdownLeave}
+                >
                   <div className="p-3 border-b border-gray-300">
                     <h3 className="text-sm font-medium text-gray-700">
                       인기 가게
@@ -293,21 +313,27 @@ export function Header() {
 
         {/* 모바일 검색바 */}
         <form onSubmit={handleSearch} className="md:hidden pb-4">
-          <div className="relative">
+          <div 
+            className="relative"
+            onMouseEnter={handleSearchHover}
+            onMouseLeave={handleSearchLeave}
+          >
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               type="text"
               placeholder="가게나 메뉴를 검색하세요"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={handleSearchFocus}
-              onBlur={handleSearchBlur}
               className="pl-12 pr-6 py-3 text-lg smooth-focus"
             />
 
             {/* 모바일 추천 가게 드롭다운 */}
             {isSearchFocused && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-gray-100 border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto backdrop-blur-sm">
+              <div 
+                className="absolute top-full left-0 right-0 mt-1 bg-gray-100 border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto backdrop-blur-sm"
+                onMouseEnter={handleDropdownHover}
+                onMouseLeave={handleDropdownLeave}
+              >
                 <div className="p-3 border-b border-gray-300">
                   <h3 className="text-sm font-medium text-gray-700">
                     인기 가게
