@@ -1,5 +1,5 @@
 import { Suspense, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { Header } from "./Header";
 import { MobileNav } from "./MobileNav";
 import { FoodieMascot } from "@/components/common/FoodieMascot";
@@ -7,6 +7,10 @@ import { useAuthStore } from "@/store";
 
 export function Layout() {
   const { loadUser } = useAuthStore();
+  const location = useLocation();
+  
+  // 메인 페이지인지 확인
+  const isHomePage = location.pathname === "/" || location.pathname === "/home";
 
   useEffect(() => {
     // 앱 시작 시 토큰이 있으면 사용자 정보 로드
@@ -20,7 +24,7 @@ export function Layout() {
     <div className="min-h-screen bg-white">
       <Header />
 
-      <main className="container-padding py-4 pb-20 md:pb-4">
+      <main className={`${isHomePage ? 'px-0' : 'container-padding'} py-4 pb-20 md:pb-4`}>
         <Suspense
           fallback={
             <div className="flex items-center justify-center min-h-[400px]">

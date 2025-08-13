@@ -149,7 +149,7 @@ export function HeroSection({ className }: HeroSectionProps) {
     <motion.section
       className={cn(
         "relative min-h-[80vh] text-gray-800",
-        "py-12 px-4 md:py-24 lg:py-32",
+        "py-12 px-0 md:py-24 lg:py-32",
         "overflow-hidden",
         className
       )}
@@ -290,7 +290,7 @@ export function HeroSection({ className }: HeroSectionProps) {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={isLoaded ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 1, delay: 1, ease: "easeOut" }}
-            className="relative w-full pt-12 px-4 sm:px-6 lg:px-8"
+            className="relative w-full pt-12 px-0"
           >
             <MockupFrame size="small">
               <Mockup type="responsive">
