@@ -1,299 +1,210 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChefHat, Heart, Utensils, Star } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useState } from "react";
 
-interface FoodieMascotProps {
-  className?: string;
-}
+export function FoodieMascot() {
+  const { scrollY } = useScroll();
+  const [scrollDirection, setScrollDirection] = useState(0);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
-export function FoodieMascot({ className }: FoodieMascotProps) {
-  const [isVisible, setIsVisible] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
-  const [currentExpression, setCurrentExpression] = useState(0);
-
-  // 먹깨비의 다양한 표정들
-  const expressions = [
-    { emoji: "😋", message: "맛있겠다!" },
-    { emoji: "🤤", message: "군침이 도네~" },
-    { emoji: "😍", message: "완전 맛있어!" },
-    { emoji: "🥰", message: "Foodie 최고!" },
-    { emoji: "😁", message: "배고파요!" },
-  ];
-
-  // 5초마다 표정 변경
+  // 스크롤 방향 감지
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentExpression((prev) => (prev + 1) % expressions.length);
-    }, 5000);
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const direction = currentScrollY > lastScrollY ? 1 : -1;
+      setScrollDirection(direction);
+      setLastScrollY(currentScrollY);
+    };
 
-    return () => clearInterval(interval);
-  }, [expressions.length]);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
-  const handleClick = () => {
-    // 클릭 시 랜덤 표정 변경
-    const randomIndex = Math.floor(Math.random() * expressions.length);
-    setCurrentExpression(randomIndex);
-  };
+  // 스크롤에 따른 도깨비 위치 변화
+  const mascotY = useTransform(scrollY, [0, 1000], [0, -100]);
+  const mascotX = useTransform(scrollY, [0, 1000], [0, 50]);
+  const mascotRotate = useTransform(scrollY, [0, 1000], [0, 360]);
+  const mascotScale = useTransform(scrollY, [0, 500], [1, 1.2]);
 
-  const currentEmoji = expressions[currentExpression];
+  // 스크롤 방향에 따른 추가 애니메이션
+  const bounceY = useTransform(scrollY, [0, 100], [0, -10]);
+  const bounceX = useTransform(scrollY, [0, 100], [0, scrollDirection * 5]);
 
   return (
-    <AnimatePresence>
-      {isVisible && (
+    <motion.div
+      className="fixed bottom-8 right-8 w-20 h-24 z-50 pointer-events-none"
+      style={{
+        y: mascotY,
+        x: mascotX,
+        rotate: mascotRotate,
+        scale: mascotScale,
+      }}
+      animate={{
+        y: [0, -20, 0],
+        rotate: [0, 5, 0],
+      }}
+      transition={{
+        duration: 3,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    >
+      {/* 스카이콩콩 */}
+      <motion.div
+        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-4 h-16 bg-gradient-to-b from-yellow-400 to-yellow-600 rounded-full shadow-lg"
+        style={{
+          y: bounceY,
+          x: bounceX,
+        }}
+        animate={{
+          scaleY: [1, 1.2, 1],
+          scaleX: [1, 0.8, 1],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      >
+        {/* 스카이콩콩 바디 */}
+        <div className="w-full h-full bg-gradient-to-b from-yellow-400 to-yellow-600 rounded-full relative">
+          {/* 스카이콩콩 하이라이트 */}
+          <div className="absolute top-2 left-2 w-1 h-2 bg-yellow-200 rounded-full opacity-60"></div>
+          {/* 스카이콩콩 패턴 */}
+          <div className="absolute top-6 left-1 w-2 h-1 bg-yellow-300 rounded-full opacity-40"></div>
+          <div className="absolute top-10 left-2 w-1 h-1 bg-yellow-300 rounded-full opacity-40"></div>
+        </div>
+
+        {/* 스카이콩콩 스파클 효과 */}
         <motion.div
-          initial={{ opacity: 0, scale: 0, rotate: -180 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          exit={{ opacity: 0, scale: 0, rotate: 180 }}
-          transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 20,
-            duration: 0.6,
+          className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-yellow-300 rounded-full"
+          animate={{
+            scale: [0.5, 1.5, 0.5],
+            opacity: [0.3, 1, 0.3],
           }}
-          className={`fixed bottom-6 right-6 z-50 ${className}`}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+
+        {/* 스카이콩콩 그림자 */}
+        <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-2 bg-black/20 rounded-full blur-sm"></div>
+
+        {/* 스카이콩콩 입구 */}
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-2 h-1 bg-yellow-300 rounded-full"></div>
+      </motion.div>
+
+      {/* 도깨비 */}
+      <motion.div
+        className="absolute top-2 left-1/2 transform -translate-x-1/2 w-12 h-12 z-10"
+        style={{
+          y: bounceY,
+          x: bounceX,
+        }}
+        animate={{
+          y: [0, -2, 0],
+          rotate: [0, -1, 0, 1, 0],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      >
+        {/* 도깨비 얼굴 */}
+        <div className="w-12 h-12 bg-gradient-to-b from-green-700 via-green-800 to-green-900 rounded-full shadow-lg border-2 border-green-600 relative">
+          {/* 도깨비 뿔 */}
+          <div className="absolute -top-2 left-2 w-2 h-3 bg-gray-800 rounded-t-full transform -rotate-12"></div>
+          <div className="absolute -top-2 right-2 w-2 h-3 bg-gray-800 rounded-t-full transform rotate-12"></div>
+
+          {/* 도깨비 눈 */}
+          <div className="absolute top-3 left-3 w-2 h-2 bg-green-500 rounded-full"></div>
+          <div className="absolute top-3 right-3 w-2 h-2 bg-green-500 rounded-full"></div>
+
+          {/* 도깨비 눈동자 */}
+          <div className="absolute top-3.5 left-3.5 w-1 h-1 bg-black rounded-full"></div>
+          <div className="absolute top-3.5 right-3.5 w-1 h-1 bg-black rounded-full"></div>
+
+          {/* 도깨비 입 */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-4 h-0.5 bg-black rounded-full"></div>
+
+          {/* 도깨비 치아 */}
+          <div className="absolute bottom-3.5 left-1/2 transform -translate-x-1/2 w-3 h-1 bg-white rounded-full"></div>
+
+          {/* 도깨비 상처 */}
+          <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-2 h-0.5 bg-red-600 rounded-full"></div>
+        </div>
+
+        {/* 도깨비 몸통 */}
+        <div className="absolute top-10 left-1/2 transform -translate-x-1/2 w-8 h-10 bg-gradient-to-b from-green-600 to-green-800 rounded-full">
+          {/* 도깨비 팔 */}
+          <div className="absolute top-2 -left-3 w-3 h-4 bg-green-700 rounded-full transform -rotate-45"></div>
+          <div className="absolute top-2 -right-3 w-3 h-4 bg-green-700 rounded-full transform rotate-45"></div>
+
+          {/* 도깨비 다리 */}
+          <div className="absolute bottom-0 left-1 w-2 h-4 bg-green-700 rounded-full transform -rotate-12"></div>
+          <div className="absolute bottom-0 right-1 w-2 h-4 bg-green-700 rounded-full transform rotate-12"></div>
+        </div>
+
+        {/* 도깨비 헬멧 */}
+        <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-10 h-4 bg-yellow-500 rounded-full border-2 border-yellow-400">
+          <div className="absolute top-1 left-2 w-1 h-1 bg-yellow-300 rounded-full"></div>
+          <div className="absolute top-1 right-2 w-1 h-1 bg-yellow-300 rounded-full"></div>
+        </div>
+
+        {/* 도깨비 방망이 */}
+        <motion.div
+          className="absolute top-4 -right-6 w-8 h-2 bg-brown-800 rounded-full transform rotate-45"
+          animate={{
+            rotate: [45, 50, 45],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
         >
-          {/* 말풍선 */}
-          <AnimatePresence>
-            {isHovered && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.8 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.8 }}
-                transition={{ duration: 0.2 }}
-                className="absolute bottom-full right-0 mb-3 mr-2"
-              >
-                <div className="relative">
-                  <div className="bg-white text-gray-800 px-4 py-2 rounded-2xl shadow-lg border border-gray-200 text-sm font-medium whitespace-nowrap">
-                    {currentEmoji.message}
-                  </div>
-                  {/* 말풍선 꼬리 */}
-                  <div className="absolute top-full right-4 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-transparent border-t-white"></div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* 스카이콩콩을 타고 있는 먹깨비 캐릭터 */}
-          <motion.div
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
-            onClick={handleClick}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            animate={{
-              y: [0, -12, 0, -8, 0, -15, 0],
-              rotate: [0, -2, 0, 2, 0, -1, 0],
-            }}
-            transition={{
-              y: {
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut",
-              },
-              rotate: {
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut",
-              },
-            }}
-            className="relative w-20 h-24 cursor-pointer"
-          >
-            {/* 스카이콩콩 (바운싱 공) */}
-            <motion.div
-              animate={{
-                scaleY: [1, 0.8, 1, 0.9, 1, 0.85, 1],
-                scaleX: [1, 1.2, 1, 1.1, 1, 1.15, 1],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-14 h-14"
-            >
-              {/* 스카이콩콩 본체 */}
-              <div className="relative w-14 h-14 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-full shadow-xl border-2 border-white">
-                {/* 스카이콩콩 하이라이트 */}
-                <div className="absolute top-2 left-2 w-4 h-4 bg-white/40 rounded-full blur-sm"></div>
-                
-                {/* 스카이콩콩 패턴 */}
-                <div className="absolute top-3 right-3 w-2 h-2 bg-white/30 rounded-full"></div>
-                <div className="absolute bottom-3 left-3 w-1.5 h-1.5 bg-white/25 rounded-full"></div>
-                
-                {/* 스카이콩콩 반짝임 */}
-                <motion.div
-                  animate={{
-                    opacity: [0.5, 1, 0.5],
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="absolute inset-1 rounded-full bg-gradient-to-tr from-transparent via-white/20 to-transparent"
-                />
-              </div>
-              
-              {/* 스카이콩콩 그림자 */}
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-3 bg-black/30 rounded-full blur-md"></div>
-              
-              {/* 바운스 파티클 효과 */}
-              {[...Array(6)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  animate={{
-                    y: [0, -20 - Math.random() * 10, 0],
-                    x: [0, (Math.random() - 0.5) * 30, 0],
-                    opacity: [0, 1, 0],
-                    scale: [0, 1, 0],
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    delay: Math.random() * 2,
-                    repeat: Infinity,
-                    repeatDelay: 1 + Math.random(),
-                    ease: "easeOut",
-                  }}
-                  className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-300 rounded-full"
-                />
-              ))}
-              
-              {/* 반짝 효과 */}
-              {[...Array(4)].map((_, i) => (
-                <motion.div
-                  key={`sparkle-${i}`}
-                  animate={{
-                    scale: [0, 1, 0],
-                    opacity: [0, 1, 0],
-                    rotate: [0, 360],
-                  }}
-                  transition={{
-                    duration: 0.8,
-                    delay: i * 0.2,
-                    repeat: Infinity,
-                    repeatDelay: 2,
-                  }}
-                  className="absolute w-2 h-2 text-yellow-400"
-                  style={{
-                    top: `${20 + Math.sin((i * 90 * Math.PI) / 180) * 20}%`,
-                    left: `${20 + Math.cos((i * 90 * Math.PI) / 180) * 20}%`,
-                  }}
-                >
-                  ✨
-                </motion.div>
-              ))}
-            </motion.div>
-
-            {/* 먹깨비 몸체 (스카이콩콩 위에 위치) */}
-            <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gradient-to-b from-orange-400 via-orange-500 to-orange-600 rounded-full shadow-lg border-3 border-white" style={{ zIndex: 10 }}>
-              {/* 하이라이트 */}
-              <div className="absolute top-1.5 left-2 w-3 h-3 bg-white/30 rounded-full blur-sm"></div>
-
-              {/* 표정 */}
-              <motion.div
-                key={currentExpression}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                className="absolute inset-0 flex items-center justify-center text-xl"
-              >
-                {currentEmoji.emoji}
-              </motion.div>
-
-              {/* 요리사 모자 */}
-              <motion.div
-                animate={isHovered ? { rotate: [-5, 5, -5] } : {}}
-                transition={{ duration: 0.5, repeat: isHovered ? Infinity : 0 }}
-                className="absolute -top-5 left-1/2 transform -translate-x-1/2"
-              >
-                <div className="w-10 h-6 bg-white rounded-t-xl border-2 border-gray-300 relative">
-                  <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-6 h-4 bg-gradient-to-b from-gray-100 to-white rounded-t-lg border border-gray-200"></div>
-                  {/* 모자 장식 */}
-                  <ChefHat className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-3 h-3 text-orange-500" />
-                </div>
-              </motion.div>
-
-              {/* 하트 효과 */}
-              <AnimatePresence>
-                {isHovered && (
-                  <>
-                    {[...Array(3)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
-                        animate={{
-                          opacity: [0, 1, 0],
-                          scale: [0, 1, 0],
-                          x: [0, (i - 1) * 20],
-                          y: [0, -30 - i * 10],
-                        }}
-                        transition={{
-                          duration: 2,
-                          delay: i * 0.3,
-                          repeat: Infinity,
-                          repeatDelay: 1,
-                        }}
-                        className="absolute top-0 left-1/2 transform -translate-x-1/2"
-                      >
-                        <Heart className="w-2 h-2 text-red-500 fill-current" />
-                      </motion.div>
-                    ))}
-                  </>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* 접촉 시 반짝임 효과 */}
-            <AnimatePresence>
-              {isHovered && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0 }}
-                  className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-400/30 to-orange-400/30"
-                >
-                  {[...Array(6)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      animate={{
-                        scale: [0, 1, 0],
-                        opacity: [0, 1, 0],
-                      }}
-                      transition={{
-                        duration: 1,
-                        delay: i * 0.1,
-                        repeat: Infinity,
-                        repeatDelay: 0.5,
-                      }}
-                      className="absolute w-1 h-1 bg-yellow-400 rounded-full"
-                      style={{
-                        top: `${20 + Math.sin((i * 60 * Math.PI) / 180) * 30}%`,
-                        left: `${
-                          20 + Math.cos((i * 60 * Math.PI) / 180) * 30
-                        }%`,
-                      }}
-                    />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-
-          {/* 닫기 버튼 */}
-          <motion.button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsVisible(false);
-            }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors"
-          >
-            ×
-          </motion.button>
+          <div className="absolute -top-1 right-0 w-3 h-4 bg-brown-900 rounded-full"></div>
         </motion.div>
-      )}
-    </AnimatePresence>
+
+        {/* 도깨비 오라 */}
+        <motion.div
+          className="absolute inset-0 w-16 h-16 bg-green-500/20 rounded-full -m-2"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      </motion.div>
+
+      {/* 파티클 효과 */}
+      {[...Array(5)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-1 h-1 bg-green-400 rounded-full"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            y: [0, -20, 0],
+            opacity: [0, 1, 0],
+            scale: [0, 1, 0],
+          }}
+          transition={{
+            duration: 2,
+            delay: i * 0.4,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </motion.div>
   );
 }
