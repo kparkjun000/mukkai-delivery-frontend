@@ -1,0 +1,50 @@
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  define: {
+    'import.meta.env.VITE_API_BASE_URL': JSON.stringify(
+      process.env.NODE_ENV === 'production' 
+        ? 'https://mukkai-delivery-backend-42373e2df9be.herokuapp.com'
+        : ''
+    ),
+  },
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/open-api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/store-api": {
+        target: "http://localhost:8081",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/store-open-api": {
+        target: "http://localhost:8081",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/sse": {
+        target: "http://localhost:8081",
+        changeOrigin: true,
+        secure: false,
+        ws: true, // WebSocket 및 SSE 지원
+      },
+    },
+  },
+});

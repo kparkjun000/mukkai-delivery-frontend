@@ -1,0 +1,747 @@
+# 배달앱 프론트엔드 PRD (Product Requirements Document)
+
+## 1. 프로젝트 개요
+
+### 1.1 제품명
+Delivery Platform Frontend
+
+### 1.2 제품 설명
+쿠팡이츠와 유사한 음식 배달 플랫폼의 프론트엔드 애플리케이션으로, 사용자가 음식점을 검색하고, 메뉴를 선택하며, 주문하고, 배달 상태를 추적할 수 있는 반응형 웹 애플리케이션
+
+### 1.3 목표
+- 직관적이고 사용하기 쉬운 음식 주문 경험 제공
+- 빠르고 반응성 높은 UI/UX 구현
+- 모바일 우선 반응형 디자인
+- 실시간 주문 상태 추적
+
+### 1.4 백엔드 API
+- Base URL: `http://localhost:8080`
+- Base URL: `http://localhost:8081`
+- Swagger Documentation: `http://localhost:8080/swagger-ui/index.html`
+- Swagger Documentation: `http://localhost:8081/swagger-ui/index.html`
+## 2. 기술 스택
+
+### 2.1 Core
+- **Framework**: React 18+
+- **Language**: TypeScript 5+
+- **Build Tool**: Vite
+- **Package Manager**: pnpm
+
+### 2.2 상태 관리 & 데이터 페칭
+- **State Management**: Zustand
+- **Data Fetching**: TanStack Query (React Query)
+- **Form Management**: React Hook Form + Zod
+
+### 2.3 스타일링
+- **UI Library**: shadcn/ui
+- **CSS Framework**: Tailwind CSS
+- **Icons**: Lucide React
+
+### 2.4 라우팅 & 네비게이션
+- **Routing**: React Router v6
+- **Navigation**: Protected Routes, Layout System
+
+### 2.5 개발 도구
+- **IDE**: Cursor
+- **MCP Integration**: taskmanager-ai MCP
+- **MCP Integration**: Context7 MCP
+- **MCP Integration**: magic MCP
+- **API Client**: Axios
+- **Type Generation**: OpenAPI TypeScript Codegen
+
+## 3. API 엔드포인트 명세
+
+### 3.1 인증 관련 API
+
+#### 3.1.1 회원가입
+```typescript
+POST /open-api/user/register
+interface RegisterRequest {
+  email: string;
+  password: string;
+  name: string;
+  phone: string;
+  address: string;
+}
+```
+
+#### 3.1.2 로그인
+```typescript
+POST /open-api/user/login
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+interface LoginResponse {
+  accessToken: string;
+  refreshToken?: string;
+  user: UserInfo;
+}
+```
+
+### 3.2 사용자 API
+
+#### 3.2.1 내 정보 조회
+```typescript
+GET /api/user/me
+Headers: { Authorization: Bearer ${token} }
+interface UserResponse {
+  id: number;
+  email: string;
+  name: string;
+  phone: string;
+  address: string;
+}
+```
+
+### 3.3 가게 관련 API
+
+#### 3.3.1 가게 검색
+```typescript
+GET /api/store/search
+Query Parameters: {
+  keyword?: string;
+  category?: string;
+  lat?: number;
+  lng?: number;
+  page?: number;
+  size?: number;
+}
+```
+
+#### 3.3.2 가게 등록 (점주용)
+```typescript
+POST /open-api/store/register
+interface StoreRegisterRequest {
+  name: string;
+  category: string;
+  address: string;
+  phone: string;
+  description: string;
+  openTime: string;
+  closeTime: string;
+  minOrderAmount: number;
+  deliveryFee: number;
+}
+```
+
+### 3.4 메뉴 관련 API
+
+#### 3.4.1 메뉴 검색
+```typescript
+GET /api/store-menu/search
+Query Parameters: {
+  storeId: number;
+  category?: string;
+}
+```
+
+#### 3.4.2 메뉴 등록 (점주용)
+```typescript
+POST /open-api/store-menu/register
+interface MenuRegisterRequest {
+  storeId: number;
+  name: string;
+  category: string;
+  price: number;
+  description: string;
+  imageUrl?: string;
+  isAvailable: boolean;
+}
+```
+
+### 3.5 주문 관련 API
+
+#### 3.5.1 주문 생성
+```typescript
+POST /api/user-order
+interface OrderRequest {
+  storeId: number;
+  items: OrderItem[];
+  deliveryAddress: string;
+  paymentMethod: string;
+  totalAmount: number;
+}
+interface OrderItem {
+  menuId: number;
+  quantity: number;
+  price: number;
+}
+```
+
+#### 3.5.2 주문 상세 조회
+```typescript
+GET /api/user-order/id/{orderId}
+```
+
+#### 3.5.3 주문 내역 조회
+```typescript
+GET /api/user-order/history
+Query Parameters: {
+  page?: number;
+  size?: number;
+}
+```
+
+#### 3.5.4 현재 진행중인 주문 조회
+```typescript
+GET /api/user-order/current
+```
+
+### 3.6 헬스체크
+```typescript
+GET /open-api/health
+```
+### 3.7
+store-user-open-api-controller
+post /open-api/store-user
+### 3.8
+store-user-api-controller
+get /api/store-user/me\
+### 3.9
+sse-api-controller
+get /api/sse/push-event
+get /api/sse/componentDidCatch
+
+## 4. 페이지 구조 및 라우팅
+
+```
+/                           # 홈 (가게 리스트)
+/auth
+  /login                    # 로그인
+  /register                 # 회원가입
+/stores
+  /:storeId                 # 가게 상세 & 메뉴
+/cart                       # 장바구니
+/checkout                   # 주문하기
+/orders
+  /current                  # 진행중인 주문
+  /history                  # 주문 내역
+  /:orderId                 # 주문 상세
+/profile                    # 내 정보
+/search                     # 검색 결과
+
+# 점주용 (선택사항)
+/owner
+  /register                 # 가게 등록
+  /menu                     # 메뉴 관리
+  /orders                   # 주문 관리
+```
+
+## 5. 컴포넌트 구조
+
+```
+src/
+├── components/
+│   ├── auth/
+│   │   ├── LoginForm.tsx
+│   │   ├── RegisterForm.tsx
+│   │   └── ProtectedRoute.tsx
+│   ├── layout/
+│   │   ├── Header.tsx
+│   │   ├── Navigation.tsx
+│   │   ├── Footer.tsx
+│   │   └── MobileNav.tsx
+│   ├── store/
+│   │   ├── StoreCard.tsx
+│   │   ├── StoreList.tsx
+│   │   ├── StoreDetail.tsx
+│   │   ├── StoreSearch.tsx
+│   │   └── CategoryFilter.tsx
+│   ├── menu/
+│   │   ├── MenuItem.tsx
+│   │   ├── MenuList.tsx
+│   │   ├── MenuCategory.tsx
+│   │   └── MenuModal.tsx
+│   ├── cart/
+│   │   ├── CartItem.tsx
+│   │   ├── CartSummary.tsx
+│   │   ├── CartButton.tsx
+│   │   └── CartDrawer.tsx
+│   ├── order/
+│   │   ├── OrderForm.tsx
+│   │   ├── OrderItem.tsx
+│   │   ├── OrderList.tsx
+│   │   ├── OrderStatus.tsx
+│   │   ├── OrderTracking.tsx
+│   │   └── PaymentMethod.tsx
+│   ├── common/
+│   │   ├── LoadingSpinner.tsx
+│   │   ├── ErrorBoundary.tsx
+│   │   ├── InfiniteScroll.tsx
+│   │   ├── SearchBar.tsx
+│   │   └── EmptyState.tsx
+│   └── ui/ (shadcn components)
+│       ├── button.tsx
+│       ├── card.tsx
+│       ├── dialog.tsx
+│       ├── drawer.tsx
+│       ├── form.tsx
+│       ├── input.tsx
+│       ├── select.tsx
+│       ├── skeleton.tsx
+│       ├── toast.tsx
+│       └── ...
+├── pages/
+│   ├── HomePage.tsx
+│   ├── LoginPage.tsx
+│   ├── RegisterPage.tsx
+│   ├── StoreDetailPage.tsx
+│   ├── CartPage.tsx
+│   ├── CheckoutPage.tsx
+│   ├── OrdersPage.tsx
+│   ├── OrderDetailPage.tsx
+│   ├── ProfilePage.tsx
+│   └── SearchPage.tsx
+├── hooks/
+│   ├── useAuth.ts
+│   ├── useCart.ts
+│   ├── useOrder.ts
+│   ├── useStore.ts
+│   ├── useInfiniteScroll.ts
+│   └── useGeolocation.ts
+├── services/
+│   ├── api/
+│   │   ├── auth.api.ts
+│   │   ├── user.api.ts
+│   │   ├── store.api.ts
+│   │   ├── menu.api.ts
+│   │   └── order.api.ts
+│   └── axios.config.ts
+├── store/
+│   ├── authStore.ts
+│   ├── cartStore.ts
+│   ├── orderStore.ts
+│   └── uiStore.ts
+├── types/
+│   ├── auth.types.ts
+│   ├── user.types.ts
+│   ├── store.types.ts
+│   ├── menu.types.ts
+│   ├── order.types.ts
+│   └── common.types.ts
+├── utils/
+│   ├── constants.ts
+│   ├── formatters.ts
+│   ├── validators.ts
+│   └── storage.ts
+├── App.tsx
+├── main.tsx
+└── router.tsx
+```
+
+## 6. 핵심 기능 요구사항
+
+### 6.1 인증 및 사용자 관리
+
+#### 기능 목록
+- 이메일/비밀번호 기반 회원가입
+- 로그인/로그아웃
+- JWT 토큰 관리 (localStorage)
+- 토큰 자동 갱신
+- 프로필 조회 및 수정
+
+#### 구현 예시
+```typescript
+// stores/authStore.ts
+interface AuthState {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  login: (credentials: LoginRequest) => Promise<void>;
+  logout: () => void;
+  register: (data: RegisterRequest) => Promise<void>;
+}
+```
+
+### 6.2 가게 탐색 및 검색
+
+#### 기능 목록
+- 카테고리별 가게 목록
+- 키워드 검색
+- 위치 기반 검색
+- 필터링 (최소 주문금액, 배달료, 평점)
+- 무한 스크롤
+- 가게 상세 정보 표시
+
+#### 구현 예시
+```typescript
+// hooks/useStore.ts
+const useStores = (filters: StoreFilters) => {
+  return useInfiniteQuery({
+    queryKey: ['stores', filters],
+    queryFn: ({ pageParam = 0 }) => 
+      storeApi.search({ ...filters, page: pageParam }),
+    getNextPageParam: (lastPage) => lastPage.hasNext ? lastPage.page + 1 : undefined,
+  });
+};
+```
+
+### 6.3 메뉴 선택 및 장바구니
+
+#### 기능 목록
+- 메뉴 카테고리별 표시
+- 메뉴 상세 정보 모달
+- 수량 선택
+- 옵션 선택 (향후 확장)
+- 장바구니 추가/수정/삭제
+- 장바구니 유지 (localStorage)
+- 다른 가게 주문 시 장바구니 초기화 알림
+
+#### 구현 예시
+```typescript
+// stores/cartStore.ts
+interface CartState {
+  items: CartItem[];
+  storeId: number | null;
+  addItem: (item: MenuItem, quantity: number) => void;
+  updateQuantity: (itemId: number, quantity: number) => void;
+  removeItem: (itemId: number) => void;
+  clearCart: () => void;
+  getTotalAmount: () => number;
+}
+```
+
+### 6.4 주문 및 결제
+
+#### 기능 목록
+- 배송 주소 입력/선택
+- 결제 수단 선택
+- 주문 요청사항 입력
+- 주문 내역 확인
+- 주문 생성
+
+#### 구현 예시
+```typescript
+// components/order/OrderForm.tsx
+interface OrderFormData {
+  deliveryAddress: string;
+  detailAddress: string;
+  phone: string;
+  paymentMethod: 'CARD' | 'CASH' | 'KAKAO_PAY';
+  request?: string;
+}
+```
+
+### 6.5 주문 추적
+
+#### 기능 목록
+- 현재 진행중인 주문 표시
+- 실시간 주문 상태 업데이트
+- 주문 내역 조회
+- 주문 상세 정보
+- 재주문 기능
+
+#### 주문 상태
+```typescript
+enum OrderStatus {
+  PENDING = '주문 접수',
+  CONFIRMED = '주문 확인',
+  PREPARING = '음식 준비중',
+  DELIVERING = '배달중',
+  DELIVERED = '배달 완료',
+  CANCELLED = '주문 취소'
+}
+```
+
+## 7. UI/UX 디자인 가이드라인
+
+### 7.1 디자인 원칙
+- **Mobile First**: 모바일 환경 최적화
+- **Simple & Clean**: 깔끔하고 직관적인 인터페이스
+- **Fast & Responsive**: 빠른 로딩과 즉각적인 반응
+- **Accessibility**: 접근성 고려
+
+### 7.2 반응형 브레이크포인트
+```css
+/* Tailwind CSS Breakpoints */
+sm: 640px   /* Mobile Landscape */
+md: 768px   /* Tablet */
+lg: 1024px  /* Desktop */
+xl: 1280px  /* Large Desktop */
+```
+
+### 7.3 컬러 시스템
+```typescript
+// tailwind.config.js
+colors: {
+  primary: {
+    DEFAULT: '#00B8D4',  // 메인 컬러
+    dark: '#0097A7',
+    light: '#4DD0E1'
+  },
+  secondary: {
+    DEFAULT: '#FF6B6B',  // 강조 컬러
+  },
+  gray: {
+    // Tailwind 기본 gray scale 사용
+  }
+}
+```
+
+### 7.4 주요 UI 패턴
+
+#### 7.4.1 카드 레이아웃
+```tsx
+<Card className="hover:shadow-lg transition-shadow">
+  <CardHeader>
+    <img src={store.image} className="aspect-video object-cover" />
+  </CardHeader>
+  <CardContent>
+    <h3>{store.name}</h3>
+    <p className="text-muted-foreground">{store.category}</p>
+  </CardContent>
+  <CardFooter>
+    <Badge>최소주문 {store.minOrderAmount}원</Badge>
+  </CardFooter>
+</Card>
+```
+
+#### 7.4.2 스켈레톤 로딩
+```tsx
+<Skeleton className="h-48 w-full" />
+<Skeleton className="h-4 w-3/4 mt-2" />
+<Skeleton className="h-4 w-1/2 mt-1" />
+```
+
+#### 7.4.3 토스트 알림
+```tsx
+toast({
+  title: "주문 완료",
+  description: "주문이 성공적으로 접수되었습니다.",
+  duration: 3000,
+});
+```
+
+## 8. 상태 관리 전략
+
+### 8.1 전역 상태 (Zustand)
+- 인증 상태
+- 장바구니 상태
+- UI 상태 (모달, 드로어)
+
+### 8.2 서버 상태 (React Query)
+- 가게 목록
+- 메뉴 목록
+- 주문 내역
+- 사용자 정보
+
+### 8.3 로컬 상태 (useState)
+- 폼 입력값
+- UI 토글 상태
+- 임시 데이터
+
+## 9. API 통신 전략
+
+### 9.1 Axios 설정
+```typescript
+// services/axios.config.ts
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:8080',
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Request Interceptor
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Response Interceptor
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      // 토큰 갱신 또는 로그아웃 처리
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+### 9.2 React Query 설정
+```typescript
+// main.tsx
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5분
+    },
+  },
+});
+```
+
+## 10. 성능 최적화
+
+### 10.1 코드 스플리팅
+```typescript
+// router.tsx
+const HomePage = lazy(() => import('./pages/HomePage'));
+const StoreDetailPage = lazy(() => import('./pages/StoreDetailPage'));
+```
+
+### 10.2 이미지 최적화
+- Lazy Loading
+- WebP 포맷 지원
+- 적절한 이미지 크기
+
+### 10.3 메모이제이션
+```typescript
+const MemoizedStoreCard = React.memo(StoreCard);
+const expensiveValue = useMemo(() => computeExpensive(data), [data]);
+```
+
+### 10.4 가상 스크롤
+- 긴 목록에 react-window 또는 react-virtualized 적용
+
+## 11. 에러 처리
+
+### 11.1 에러 바운더리
+```typescript
+// components/common/ErrorBoundary.tsx
+class ErrorBoundary extends Component {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('Error caught:', error, errorInfo);
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return <ErrorFallback />;
+    }
+    return this.props.children;
+  }
+}
+```
+
+### 11.2 API 에러 처리
+```typescript
+// hooks/useErrorHandler.ts
+const useErrorHandler = () => {
+  return (error: AxiosError) => {
+    const message = error.response?.data?.message || '오류가 발생했습니다.';
+    toast({
+      title: "오류",
+      description: message,
+      variant: "destructive",
+    });
+  };
+};
+```
+
+## 12. 테스트 전략
+
+### 12.1 단위 테스트
+- Vitest + React Testing Library
+- 컴포넌트 테스트
+- Hook 테스트
+- Utility 함수 테스트
+
+### 12.2 통합 테스트
+- API 모킹 (MSW)
+- 사용자 시나리오 테스트
+
+### 12.3 E2E 테스트
+- Playwright 또는 Cypress
+- 주요 사용자 플로우 테스트
+
+## 13. 개발 일정
+
+### Phase 1: 프로젝트 설정 (3일)
+- [ ] 프로젝트 초기 설정
+- [ ] 디렉토리 구조 설정
+- [ ] 기본 라우팅 설정
+- [ ] UI 라이브러리 설정 (shadcn/ui)
+- [ ] API 클라이언트 설정
+
+### Phase 2: 인증 시스템 (4일)
+- [ ] 로그인/회원가입 페이지
+- [ ] 인증 API 연동
+- [ ] 토큰 관리
+- [ ] Protected Routes
+- [ ] 프로필 페이지
+
+### Phase 3: 가게 & 메뉴 (5일)
+- [ ] 가게 목록 페이지
+- [ ] 가게 검색/필터
+- [ ] 가게 상세 페이지
+- [ ] 메뉴 목록 표시
+- [ ] 무한 스크롤 구현
+
+### Phase 4: 장바구니 시스템 (4일)
+- [ ] 장바구니 상태 관리
+- [ ] 메뉴 추가/삭제
+- [ ] 수량 조절
+- [ ] 장바구니 드로어/페이지
+- [ ] localStorage 연동
+
+### Phase 5: 주문 시스템 (5일)
+- [ ] 주문 페이지
+- [ ] 배송 정보 입력
+- [ ] 결제 수단 선택
+- [ ] 주문 API 연동
+- [ ] 주문 확인 페이지
+
+### Phase 6: 주문 추적 (3일)
+- [ ] 진행중인 주문 페이지
+- [ ] 주문 내역 페이지
+- [ ] 주문 상세 페이지
+- [ ] 상태 업데이트
+
+### Phase 7: UI/UX 개선 (3일)
+- [ ] 반응형 디자인 완성
+- [ ] 로딩/에러 상태
+- [ ] 애니메이션
+- [ ] 성능 최적화
+
+### Phase 8: 테스트 & 배포 (3일)
+- [ ] 단위 테스트
+- [ ] 통합 테스트
+- [ ] 버그 수정
+- [ ] 배포 준비
+
+## 14. 환경 변수
+
+```env
+# .env
+VITE_API_BASE_URL=http://localhost:8080
+VITE_GOOGLE_MAPS_API_KEY=your_google_maps_key
+VITE_KAKAO_PAY_CLIENT_ID=your_kakao_pay_client_id
+```
+
+## 15. 배포 전 체크리스트
+
+- [ ] 환경 변수 설정
+- [ ] API 엔드포인트 확인
+- [ ] CORS 설정 확인
+- [ ] 에러 로깅 설정
+- [ ] 성능 최적화
+- [ ] 보안 점검
+- [ ] 브라우저 호환성 테스트
+- [ ] 모바일 반응형 테스트
+
+## 16. 참고 자료
+
+- [React Documentation](https://react.dev)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+- [shadcn/ui Components](https://ui.shadcn.com)
+- [TanStack Query](https://tanstack.com/query)
+- [Zustand](https://github.com/pmndrs/zustand)
+- [React Hook Form](https://react-hook-form.com)
+- [Axios](https://axios-http.com)
+
+---
+
+**작성일**: 2025-01-09  
+**버전**: 1.0.0  
+**작성자**: Frontend Development Team
