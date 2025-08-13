@@ -107,13 +107,13 @@ const getCurrentUserId = () => {
     // localStorage에서 사용자 정보 가져오기
     const lastLoginEmail = localStorage.getItem("lastLoginEmail");
     const lastStoreLoginEmail = localStorage.getItem("lastStoreLoginEmail");
-    
+
     // 이메일을 간단한 사용자 ID로 변환 (해시 또는 고유 번호)
     const email = lastStoreLoginEmail || lastLoginEmail;
     if (email) {
       // 이메일을 간단한 숫자 ID로 변환 (해시 함수 대신 간단한 매핑)
-      const emailHash = email.split('').reduce((a, b) => {
-        a = ((a << 5) - a) + b.charCodeAt(0);
+      const emailHash = email.split("").reduce((a, b) => {
+        a = (a << 5) - a + b.charCodeAt(0);
         return a & a; // 32비트 정수로 변환
       }, 0);
       return Math.abs(emailHash % 1000) + 1; // 1-1000 범위의 ID
@@ -129,15 +129,19 @@ const getCurrentUserId = () => {
 export const clearInvalidCurrentOrders = (userId?: number) => {
   const currentUserId = userId || getCurrentUserId();
   const beforeCount = mockOrders.length;
-  const recentOrderTime = Date.now() - 10 * 60 * 1000; // 10분 이내 주문은 보호 (더 길게)
+  const recentOrderTime = Date.now() - 30 * 60 * 1000; // 30분 이내 주문은 보호 (더 길게)
 
-  // 진행중 주문 중 불완전한 것들을 완료 상태로 변경하거나 제거 (사용자별 적용)
-  mockOrders.forEach((order) => {
+  // 진행중 주문 중 불완전한 것들만 직접 제거 (사용자별 적용)
+  for (let i = mockOrders.length - 1; i >= 0; i--) {
+    const order = mockOrders[i];
+
     if (
-      ["PENDING", "CONFIRMED", "PREPARING", "DELIVERING"].includes(order.status) &&
+      ["PENDING", "CONFIRMED", "PREPARING", "DELIVERING"].includes(
+        order.status
+      ) &&
       order.userId === currentUserId // 현재 사용자의 주문만 처리
     ) {
-      // 최근 10분 이내에 생성된 주문은 검사하지 않음 (새로 생성된 유효한 주문 보호)
+      // 최근 30분 이내에 생성된 주문은 검사하지 않음 (새로 생성된 유효한 주문 보호)
       const orderTime = new Date(order.orderDate).getTime();
       if (orderTime > recentOrderTime) {
         console.log(
@@ -148,7 +152,7 @@ export const clearInvalidCurrentOrders = (userId?: number) => {
           "created at",
           order.orderDate
         );
-        return;
+        continue;
       }
 
       // 엉터리 주문 식별을 위한 더 정확한 로직
@@ -159,6 +163,8 @@ export const clearInvalidCurrentOrders = (userId?: number) => {
         order.storeName === "알 수 없는 가게" ||
         order.storeName === "undefined" ||
         order.storeName === "가게 정보 없음" ||
+        order.storeName.includes("Store Name") ||
+        order.storeName.includes("정보 없음") ||
         !order.orderItems ||
         order.orderItems.length === 0 ||
         !order.totalAmount ||
@@ -168,6 +174,7 @@ export const clearInvalidCurrentOrders = (userId?: number) => {
         !order.deliveryAddress ||
         order.deliveryAddress === "배송 주소 정보 없음" ||
         order.deliveryAddress === "주소 정보 없음" ||
+        order.deliveryAddress.includes("정보 없음") ||
         order.orderItems.some(
           (item) =>
             !item.id ||
@@ -175,6 +182,8 @@ export const clearInvalidCurrentOrders = (userId?: number) => {
             !item.menuName ||
             item.menuName === "메뉴명 없음" ||
             item.menuName === "정보 없음" ||
+            item.menuName.includes("Menu Name") ||
+            item.menuName.includes("정보 없음") ||
             !item.quantity ||
             item.quantity <= 0 ||
             !item.price ||
@@ -182,39 +191,65 @@ export const clearInvalidCurrentOrders = (userId?: number) => {
         );
 
       if (isInvalid) {
-        console.warn("Converting invalid current order to DELIVERED:", order);
-        order.status = "DELIVERED"; // 진행중 목록에서 제거하기 위해 완료로 변경
+        console.warn(
+          "Removing invalid current order:",
+          order.id,
+          order.storeName
+        );
+        mockOrders.splice(i, 1); // 직접 제거
       }
     }
-  });
+  }
 
-  console.log(`Cleaned up invalid current orders (recent orders protected)`);
+  const afterCount = mockOrders.length;
+  console.log(
+    `Cleaned up invalid current orders: ${
+      beforeCount - afterCount
+    } removed, ${afterCount} remaining`
+  );
 };
 
-// 불완전한 주문들을 직접 제거하는 함수
+// 불완전한 주문들을 직접 제거하는 함수 (유효한 기본 주문들은 보호)
 export const removeInvalidOrders = () => {
   const beforeCount = mockOrders.length;
 
-  // 불완전한 주문들 제거
+  // 불완전한 주문들 제거 (기본 유효한 주문들은 보호)
   for (let i = mockOrders.length - 1; i >= 0; i--) {
     const order = mockOrders[i];
+
+    // 기본 유효한 주문들(ID 1,2,3)은 보호
+    if ([1, 2, 3].includes(order.id) && order.storeName === "맛있는 치킨집") {
+      continue;
+    }
+
     const isInvalid =
       !order.id ||
       !order.storeId ||
       !order.storeName ||
       order.storeName === "알 수 없는 가게" ||
+      order.storeName === "undefined" ||
+      order.storeName === "가게 정보 없음" ||
+      order.storeName.includes("Store Name") ||
+      order.storeName.includes("정보 없음") ||
       !order.orderItems ||
       order.orderItems.length === 0 ||
       !order.totalAmount ||
       order.totalAmount <= 0 ||
+      order.totalAmount === 3000 || // 배송비만 있는 경우
       !order.orderDate ||
       !order.deliveryAddress ||
+      order.deliveryAddress === "배송 주소 정보 없음" ||
+      order.deliveryAddress === "주소 정보 없음" ||
+      order.deliveryAddress.includes("정보 없음") ||
       order.orderItems.some(
         (item) =>
           !item.id ||
           !item.menuId ||
           !item.menuName ||
           item.menuName === "메뉴명 없음" ||
+          item.menuName === "정보 없음" ||
+          item.menuName.includes("Menu Name") ||
+          item.menuName.includes("정보 없음") ||
           !item.quantity ||
           item.quantity <= 0 ||
           !item.price ||
@@ -222,7 +257,7 @@ export const removeInvalidOrders = () => {
       );
 
     if (isInvalid) {
-      console.warn("Removing invalid order:", order);
+      console.warn("Removing invalid order:", order.id, order.storeName);
       mockOrders.splice(i, 1);
     }
   }
@@ -428,6 +463,15 @@ export const orderApi = {
   getCurrentOrders: async (): Promise<UserOrderDetailResponse[]> => {
     const currentUserId = getCurrentUserId();
     console.log("getCurrentOrders called for user:", currentUserId);
+
+    // 조회 전에 자동으로 불완전한 주문들 정리
+    try {
+      removeInvalidOrders(); // 모든 불완전한 주문들 제거 (기본 주문들은 보호됨)
+      clearInvalidCurrentOrders(); // 진행중인 주문 중 불완전한 것들 제거
+    } catch (error) {
+      console.error("자동 주문 정리 중 오류:", error);
+    }
+
     console.log("Total mockOrders:", mockOrders.length);
     console.log(
       "All orders statuses:",
@@ -494,6 +538,14 @@ export const orderApi = {
   getOrderHistory: async (): Promise<UserOrderDetailResponse[]> => {
     const currentUserId = getCurrentUserId();
     console.log("getOrderHistory called for user:", currentUserId);
+
+    // 조회 전에 자동으로 불완전한 주문들 정리
+    try {
+      removeInvalidOrders(); // 모든 불완전한 주문들 제거 (기본 주문들은 보호됨)
+    } catch (error) {
+      console.error("자동 주문 정리 중 오류:", error);
+    }
+
     console.log("Total mockOrders for history:", mockOrders.length);
 
     await new Promise((resolve) => setTimeout(resolve, 300));

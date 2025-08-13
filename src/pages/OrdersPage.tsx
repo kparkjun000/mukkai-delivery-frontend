@@ -389,17 +389,11 @@ export default function OrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
   const [orders, setOrders] = useState<OrderResponse[]>([]);
 
-  // 컴포넌트 마운트 시 가벼운 정리만 (현재 주문 보호)
+  // 컴포넌트 마운트 시 초기화
   useEffect(() => {
-    console.log("OrdersPage mounted, performing minimal cleanup...");
-
-    // 1단계: 기존 orders 상태만 초기화 (mock 데이터는 건드리지 않음)
+    console.log("OrdersPage mounted");
+    // UI 상태만 초기화 (정리 로직은 API 레벨에서 자동 처리됨)
     setOrders([]);
-
-    // 2단계: 매우 오래된 엉터리 주문들만 선별적으로 정리 (10분 보호)
-    clearInvalidCurrentOrders();
-
-    console.log("Minimal cleanup finished - all recent orders protected");
   }, []);
 
   // SSE 연결
@@ -619,16 +613,12 @@ export default function OrdersPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                console.log(
-                  "Manual refresh triggered - protecting ALL recent orders"
-                );
-                // 엉터리 주문만 정리 (10분 이내 주문은 절대 건드리지 않음)
-                clearInvalidCurrentOrders();
+                console.log("Manual refresh triggered");
                 // UI 상태만 초기화
                 setOrders([]);
-                // React Query 캐시 갱신만 (페이지 새로고침 제거)
+                // React Query 캐시 갱신
                 refetch();
-                console.log("Safe refresh completed");
+                console.log("Refresh completed");
               }}
             >
               🔄 새로고침
