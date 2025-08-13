@@ -157,7 +157,7 @@ export function Header() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={handleSearchFocus}
                 onBlur={handleSearchBlur}
-                className="pl-10 pr-4"
+                className="pl-10 pr-4 smooth-focus"
               />
 
               {/* 추천 가게 드롭다운 */}
@@ -181,7 +181,7 @@ export function Header() {
                           key={store.id}
                           type="button"
                           onClick={() => handleStoreClick(store)}
-                          className="w-full px-4 py-3 hover:bg-white/80 hover:shadow-sm flex items-center gap-3 text-left transition-all duration-200"
+                          className="w-full px-4 py-3 hover:bg-white/80 hover:shadow-sm flex items-center gap-3 text-left transition-all duration-200 smooth-hover"
                         >
                           <img
                             src={
@@ -232,7 +232,7 @@ export function Header() {
               variant="ghost"
               size="icon"
               onClick={openCartDrawer}
-              className="relative"
+              className="relative smooth-hover"
             >
               <ShoppingCart className="h-5 w-5" />
               {cartItemCount > 0 && (
@@ -248,30 +248,30 @@ export function Header() {
                 <Link
                   to={isStoreAuthenticated ? "/owner/dashboard" : "/profile"}
                 >
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="smooth-hover">
                     <User className="h-4 w-4 mr-2" />
                     {userTypePrefix} {displayName}
                   </Button>
                 </Link>
-                <Button variant="ghost" size="icon" onClick={handleLogout}>
+                <Button variant="ghost" size="icon" onClick={handleLogout} className="smooth-hover">
                   <LogOut className="h-4 w-4" />
                 </Button>
               </div>
             ) : (
               <div className="hidden md:flex items-center space-x-2">
                 <Link to="/auth/login">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="smooth-hover">
                     로그인
                   </Button>
                 </Link>
                 <Link to="/auth/register">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="smooth-hover">
                     회원가입
                   </Button>
                 </Link>
                 {!isStoreAuthenticated && (
                   <Link to="/owner/login">
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 smooth-hover">
                       사장님
                     </Button>
                   </Link>
@@ -283,7 +283,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="md:hidden smooth-hover"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               <Menu className="h-5 w-5" />
@@ -302,7 +302,7 @@ export function Header() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={handleSearchFocus}
               onBlur={handleSearchBlur}
-              className="pl-10 pr-4"
+              className="pl-10 pr-4 smooth-focus"
             />
 
             {/* 모바일 추천 가게 드롭다운 */}
@@ -326,7 +326,7 @@ export function Header() {
                         key={store.id}
                         type="button"
                         onClick={() => handleStoreClick(store)}
-                        className="w-full px-4 py-3 hover:bg-white/80 hover:shadow-sm flex items-center gap-3 text-left transition-all duration-200"
+                        className="w-full px-4 py-3 hover:bg-white/80 hover:shadow-sm flex items-center gap-3 text-left transition-all duration-200 smooth-hover"
                       >
                         <img
                           src={

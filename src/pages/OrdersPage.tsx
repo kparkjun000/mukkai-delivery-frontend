@@ -612,6 +612,7 @@ export default function OrdersPage() {
             <Button
               variant="outline"
               size="sm"
+              className="smooth-hover"
               onClick={() => {
                 console.log("Manual refresh triggered");
                 // UI 상태만 초기화
