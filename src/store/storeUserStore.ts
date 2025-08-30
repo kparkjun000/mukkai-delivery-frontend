@@ -60,14 +60,25 @@ export const useStoreUserStore = create<StoreUserState>()(
           // 사장님 로그인 이메일도 저장 (Header에서 사용)
           localStorage.setItem("lastStoreLoginEmail", email);
 
+          // Mock 점주 정보 직접 설정 (API 호출 없이)
+          const mockStoreUser = {
+            id: 1,
+            email: email,
+            name: "테스트 점주",
+            phone: "010-1234-5678",
+            role: "MASTER" as const,
+            status: "REGISTERED" as const,
+            registeredAt: new Date().toISOString(),
+            unregisteredAt: null,
+          };
+
           set({
             token,
+            storeUser: mockStoreUser,
             isAuthenticated: true,
             isLoading: false,
           });
 
-          // 로그인 후 내 정보 조회
-          await get().getMe();
         } catch (error: any) {
           console.error("Store user login error:", error);
           const errorMessage =
@@ -122,6 +133,7 @@ export const useStoreUserStore = create<StoreUserState>()(
     {
       name: "store-user-store",
       partialize: (state) => ({
+        storeUser: state.storeUser,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),

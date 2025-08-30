@@ -27,10 +27,17 @@ const axiosInstance: AxiosInstance = axios.create({
   withCredentials: false,
 });
 
-// Request Interceptor - 토큰 자동 추가
+// Request Interceptor - 토큰 자동 추가 (일반 사용자 + 점주)
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
+    // 일반 사용자 토큰 우선 확인
+    let token = localStorage.getItem("accessToken");
+    
+    // 일반 사용자 토큰이 없으면 점주 토큰 확인
+    if (!token) {
+      token = localStorage.getItem("storeUserAccessToken");
+    }
+    
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
