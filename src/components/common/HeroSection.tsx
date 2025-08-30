@@ -155,12 +155,13 @@ export function HeroSection({ className }: HeroSectionProps) {
       )}
       style={{
         backgroundImage: `
-          linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.4)),
-          url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2187&q=80')
+          linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.3)),
+          url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80')
         `,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
+        filter: "brightness(1.2) contrast(0.8) saturate(1.3) hue-rotate(10deg)",
       }}
     >
       <div className="relative mx-auto max-w-[1280px] flex flex-col gap-12 lg:gap-24">
