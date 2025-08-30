@@ -1,4 +1,9 @@
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  AnimatePresence,
+} from "framer-motion";
 import { useEffect, useState } from "react";
 
 export function FoodieMascot() {

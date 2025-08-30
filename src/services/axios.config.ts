@@ -11,8 +11,10 @@ interface ApiResponse<T> {
   body: T;
 }
 
-// 환경변수에서 API URL을 가져오거나 기본값 사용 (프록시 사용)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+// 환경변수에서 API URL을 가져오거나 기본값 사용 (새로운 백엔드 전용 Heroku 앱)
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://mukkai-delivery-backend-new-0624743d472e.herokuapp.com";
 
 // Axios 인스턴스 생성
 const axiosInstance: AxiosInstance = axios.create({

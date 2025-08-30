@@ -8,7 +8,7 @@ export function MobileNav() {
   const { isAuthenticated } = useAuthStore();
   const { getItemCount } = useCartStore();
 
-  const cartItemCount = getItemCount();
+  const cartItemCount = isAuthenticated ? getItemCount() : 0;
 
   const navItems = [
     {

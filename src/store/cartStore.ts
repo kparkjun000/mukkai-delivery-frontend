@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CartItem, Cart } from '@/types/order.types';
 import { StoreMenuResponse } from '@/types/menu.types';
+import { useAuthStore } from './authStore';
+import { useStoreUserStore } from './storeUserStore';
 
 interface CartState extends Cart {
   // Actions
@@ -23,6 +25,26 @@ export const useCartStore = create<CartState>()(
       totalAmount: 0,
 
       addItem: (item: StoreMenuResponse, quantity = 1) => {
+        // 로그인 상태 체크
+        const authState = useAuthStore.getState();
+        const storeUserState = useStoreUserStore.getState();
+        
+        // 일반 사용자 로그인도 안 되어있고, 사장님 로그인도 안 되어있는 경우
+        if (!authState.isAuthenticated && !storeUserState.isAuthenticated) {
+          // 회원가입 페이지로 리다이렉트
+          window.location.href = '/auth/register';
+          return;
+        }
+        
+        // 사장님으로만 로그인되어 있는 경우
+        if (!authState.isAuthenticated && storeUserState.isAuthenticated) {
+          // 일반 사용자로 회원가입하도록 안내
+          if (window.confirm('주문하려면 일반 사용자로 로그인이 필요합니다. 회원가입 페이지로 이동하시겠습니까?')) {
+            window.location.href = '/auth/register';
+          }
+          return;
+        }
+        
         const state = get();
         
         // 다른 가게의 메뉴를 추가하려고 할 때

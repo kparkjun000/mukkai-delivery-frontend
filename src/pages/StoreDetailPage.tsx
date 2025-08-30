@@ -28,7 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { storeApi, menuApi } from "@/services/api";
-import { useCartStore } from "@/store";
+import { useCartStore, useAuthStore } from "@/store";
 import { StoreMenuResponse } from "@/types/menu.types";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { MenuItemSkeleton, ErrorMessage } from "@/components/common";
@@ -174,6 +174,7 @@ export default function StoreDetailPage() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
+  const { isAuthenticated } = useAuthStore();
   const {
     addItem,
     updateQuantity,
@@ -275,7 +276,7 @@ export default function StoreDetailPage() {
                 onClick={() => setIsCartOpen(true)}
               >
                 <ShoppingCart className="h-5 w-5" />
-                {getItemCount() > 0 && (
+                {isAuthenticated && getItemCount() > 0 && (
                   <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 text-xs">
                     {getItemCount()}
                   </Badge>
