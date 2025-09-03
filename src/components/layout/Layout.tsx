@@ -5,6 +5,7 @@ import { Footer } from "./Footer";
 import { MobileNav } from "./MobileNav";
 import { FoodieMascot } from "@/components/common/FoodieMascot";
 import { useAuthStore } from "@/store";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 
 export function Layout() {
   const { loadUser } = useAuthStore();
@@ -23,6 +24,7 @@ export function Layout() {
 
   return (
     <div className="min-h-screen bg-white">
+      <GoogleAnalytics />
       <Header />
 
       <main
