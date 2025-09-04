@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 interface AutoAdPlaceholderProps {
   position: "header" | "sidebar" | "footer" | "content" | "mobile";
@@ -9,38 +9,39 @@ const AutoAdPlaceholder: React.FC<AutoAdPlaceholderProps> = ({
   position,
   className = "",
 }) => {
-  const getPositionText = () => {
+  useEffect(() => {
+    try {
+      // AdSense 광고 초기화
+      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+    } catch (err) {
+      console.error("AdSense error:", err);
+    }
+  }, []);
+
+  const getAdStyle = () => {
     switch (position) {
       case "header":
-        return "헤더";
+        return { display: "block", width: "100%", height: "90px" };
       case "sidebar":
-        return "사이드바";
+        return { display: "block", width: "300px", height: "250px" };
       case "footer":
-        return "푸터";
-      case "content":
-        return "콘텐츠";
-      case "mobile":
-        return "모바일";
+        return { display: "block", width: "100%", height: "90px" };
       default:
-        return "광고";
+        return { display: "block" };
     }
   };
 
   return (
     <div className={`auto-ad-placeholder ${className}`}>
-      {/* 광고 대기 중 안내 메시지 */}
-      <div 
-        className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-center text-yellow-700 text-sm"
-        style={{ minHeight: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      >
-        <div>
-          <div className="font-semibold mb-1">⚠️ {getPositionText()} 광고 대기 중</div>
-          <div className="text-xs">
-            AdSense 대시보드에서 자동 광고 설정을 확인하거나<br/>
-            광고 단위를 생성해주세요
-          </div>
-        </div>
-      </div>
+      {/* 실제 AdSense 광고 */}
+      <ins
+        className="adsbygoogle"
+        style={getAdStyle()}
+        data-ad-client="ca-pub-8265488633224466"
+        data-ad-slot="8765432109"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
     </div>
   );
 };
