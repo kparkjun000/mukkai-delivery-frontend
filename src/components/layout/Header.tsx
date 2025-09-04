@@ -152,9 +152,12 @@ export function Header() {
   return (
     <>
       {/* 헤더 광고 */}
-      <div className="w-full bg-gray-50 border-b">
-        <div className="max-w-7xl mx-auto px-4 py-2">
-          <AdBanner position="header" className="flex justify-center" />
+      <div className="w-full bg-gray-50 border-b min-h-[100px]">
+        <div
+          className="max-w-7xl mx-auto px-4 py-2"
+          style={{ minWidth: "320px" }}
+        >
+          <AdBanner position="header" className="flex justify-center w-full" />
         </div>
       </div>
 
