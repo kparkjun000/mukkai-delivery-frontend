@@ -1,5 +1,5 @@
 import React from "react";
-import AdSenseAd from "./AdSenseAd";
+import AutoAdPlaceholder from "./AutoAdPlaceholder";
 
 interface AdBannerProps {
   position: "header" | "sidebar" | "footer" | "content" | "mobile";
@@ -52,11 +52,7 @@ const AdBanner: React.FC<AdBannerProps> = ({ position, className = "" }) => {
 
   return (
     <div className={`ad-banner ad-banner--${position} ${className}`}>
-      <AdSenseAd
-        adSlot={adConfig.adSlot}
-        adFormat={adConfig.adFormat}
-        adStyle={adConfig.adStyle}
-      />
+      <AutoAdPlaceholder position={position} />
     </div>
   );
 };
