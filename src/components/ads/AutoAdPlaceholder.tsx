@@ -27,11 +27,20 @@ const AutoAdPlaceholder: React.FC<AutoAdPlaceholderProps> = ({
   };
 
   return (
-    <div
-      className={`auto-ad-placeholder ${className}`}
-      style={{ display: "none" }}
-    >
-      {/* 자동 광고가 활성화되어 있으므로 플레이스홀더 숨김 */}
+    <div className={`auto-ad-placeholder ${className}`}>
+      {/* 광고 대기 중 안내 메시지 */}
+      <div 
+        className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-center text-yellow-700 text-sm"
+        style={{ minHeight: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <div>
+          <div className="font-semibold mb-1">⚠️ {getPositionText()} 광고 대기 중</div>
+          <div className="text-xs">
+            AdSense 대시보드에서 자동 광고 설정을 확인하거나<br/>
+            광고 단위를 생성해주세요
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
