@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/ai_front_mukkabi.com/PART2/ch08/service/api/src/main/resources/**)",
+      "Bash(tree:*)",
+      "Read(//c/ai_front_mukkabi.com/PART2/ch08/**)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(git init:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
