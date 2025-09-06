@@ -11,4 +11,4 @@ cmd = "npm ci"
 cmd = "npm run build"
 
 [start]
-cmd = "npm run start"
+cmd = "node server.js"

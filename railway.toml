@@ -2,7 +2,8 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "npm run build && npm run start"
+startCommand = "npm run serve"
 
 [variables]
 NODE_VERSION = "18"
+NPM_CONFIG_PRODUCTION = "false"
