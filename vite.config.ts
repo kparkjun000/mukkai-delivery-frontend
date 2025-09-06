@@ -52,6 +52,6 @@ export default defineConfig({
   preview: {
     host: true, // Railway 배포를 위해 외부 호스트 허용
     port: 4173,
-    allowedHosts: ['web-production-274dd.up.railway.app'], // Railway 호스트 허용
+    allowedHosts: 'all', // 모든 호스트 허용
   },
 });
