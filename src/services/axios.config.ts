@@ -17,12 +17,13 @@ const API_BASE_URL = "https://web-production-274dd.up.railway.app";
 // Axios 인스턴스 생성
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 30000, // 30초로 증가
   headers: {
     "Content-Type": "application/json",
+    "Accept": "application/json",
   },
-  // Spring Security CORS 설정을 위해
-  withCredentials: false,
+  // CORS 설정
+  withCredentials: false, // 쿠키를 포함하지 않음
 });
 
 // Request Interceptor - 토큰 자동 추가 (일반 사용자 + 점주)

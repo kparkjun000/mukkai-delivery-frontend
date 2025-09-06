@@ -20,7 +20,10 @@
       "Bash(chmod:*)",
       "Bash(PORT=4000 node server.js)",
       "Bash(heroku:*)",
-      "WebFetch(domain:mukkai-delivery-fe-0bdb8680ab0d.herokuapp.com)"
+      "WebFetch(domain:mukkai-delivery-fe-0bdb8680ab0d.herokuapp.com)",
+      "Read(//c/mukkai-backend-real/**)",
+      "Bash(railway login:*)",
+      "Read(//c/mukkai-backend-complete/**)"
     ],
     "deny": [],
     "ask": []
