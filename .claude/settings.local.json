@@ -17,7 +17,10 @@
       "Bash(npm install:*)",
       "Bash(sed:*)",
       "Bash(npm run build:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(PORT=4000 node server.js)",
+      "Bash(heroku:*)",
+      "WebFetch(domain:mukkai-delivery-fe-0bdb8680ab0d.herokuapp.com)"
     ],
     "deny": [],
     "ask": []
