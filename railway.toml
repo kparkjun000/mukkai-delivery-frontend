@@ -1,12 +1,8 @@
-# 이 파일은 백엔드용 설정입니다
 [build]
 builder = "nixpacks"
 
 [deploy]
-# API 프로젝트 빌드 및 실행
-startCommand = "cd api && mvn clean package -DskipTests && java -jar -Dserver.port=$PORT target/*.jar"
+startCommand = "npm run start"
 
 [variables]
-SPRING_PROFILES_ACTIVE = "default"
-SPRING_DATASOURCE_DRIVER_CLASS_NAME = "org.postgresql.Driver"
-SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT = "org.hibernate.dialect.PostgreSQLDialect"
+NODE_VERSION = "18"
