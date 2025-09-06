@@ -1,0 +1,10 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "java -jar -Dspring.profiles.active=railway target/*.jar"
+
+[variables]
+SPRING_PROFILES_ACTIVE = "railway"
+SPRING_DATASOURCE_DRIVER_CLASS_NAME = "org.postgresql.Driver"
+SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT = "org.hibernate.dialect.PostgreSQLDialect"

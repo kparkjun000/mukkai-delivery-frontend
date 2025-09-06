@@ -1,0 +1,34 @@
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:railway}
+
+  rabbitmq:
+    # Railway에서 RabbitMQ 서비스를 사용하는 경우 CLOUDAMQP_URL 환경변수 설정 필요
+    url: ${CLOUDAMQP_URL:amqp://admin:1234@web-production-dc795.up.railway.app:5672}
+
+  jpa:
+    show-sql: false
+    properties:
+      format_sql: false
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+      
+  datasource:
+    # Railway PostgreSQL 환경변수 사용
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/delivery}
+    driver-class-name: org.postgresql.Driver
+    username: ${PGUSER:postgres}
+    password: ${PGPASSWORD:1234}
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+
+server:
+  port: ${PORT:8080}
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.hibernate: INFO

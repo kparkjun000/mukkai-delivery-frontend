@@ -1,16 +1,16 @@
 spring:
   rabbitmq:
-    url: ${CLOUDAMQP_URL:amqp://admin:1234@localhost:5672}
+    url: ${CLOUDAMQP_URL:amqp://admin:1234@web-production-dc795.up.railway.app:5672}
 
   jpa:
     show-sql: false
     properties:
       format_sql: false
-      dialect: org.hibernate.dialect.MySQL8Dialect
+      dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
   datasource:
-    url: ${JAWSDB_URL:jdbc:mysql://localhost:3306/delivery?useSSL=false&useUnicode=true&allowPublicKeyRetrieval=true}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:1234}
+    url: ${DATABASE_URL:jdbc:postgresql://web-production-dc795.up.railway.app:5432/delivery}
+    driver-class-name: org.postgresql.Driver
+    username: ${PGUSER:postgres}
+    password: ${PGPASSWORD:1234}

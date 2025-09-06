@@ -1,0 +1,385 @@
+{
+  "stores": [
+    {
+      "id": 1,
+      "storeName": "맛있는 치킨집",
+      "address": "서울시 강남구 역삼동 123-45",
+      "status": "REGISTERED",
+      "category": "CHICKEN",
+      "star": 4.5,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 15000,
+      "minimumDeliveryAmount": 3000,
+      "phoneNumber": "02-1234-5678",
+      "deliveryTime": "30-40분",
+      "isOpen": true,
+      "description": "바삭하고 맛있는 치킨을 제공합니다."
+    },
+    {
+      "id": 2,
+      "storeName": "피자나라 치킨공주",
+      "address": "서울시 서초구 서초동 567-89",
+      "status": "REGISTERED",
+      "category": "PIZZA",
+      "star": 4.2,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 20000,
+      "minimumDeliveryAmount": 3500,
+      "phoneNumber": "02-9876-5432",
+      "deliveryTime": "25-35분",
+      "isOpen": true,
+      "description": "신선한 재료로 만든 수제 피자"
+    },
+    {
+      "id": 3,
+      "storeName": "한식당 고향맛",
+      "address": "서울시 종로구 종로 789",
+      "status": "REGISTERED",
+      "category": "KOREAN",
+      "star": 4.3,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 12000,
+      "minimumDeliveryAmount": 3500,
+      "phoneNumber": "02-3456-7890",
+      "deliveryTime": "35-45분",
+      "isOpen": true,
+      "description": "엄마가 해주는 따뜻한 한식"
+    },
+    {
+      "id": 4,
+      "storeName": "중화반점",
+      "address": "서울시 마포구 홍대입구로 321",
+      "status": "REGISTERED",
+      "category": "CHINESE",
+      "star": 4.2,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1526318896980-cf78c088247c?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 15000,
+      "minimumDeliveryAmount": 2000,
+      "phoneNumber": "02-4567-8901",
+      "deliveryTime": "20-30분",
+      "isOpen": true,
+      "description": "정통 중화요리의 진수"
+    },
+    {
+      "id": 5,
+      "storeName": "일식집 스시로",
+      "address": "서울시 강남구 논현로 456",
+      "status": "REGISTERED",
+      "category": "JAPANESE",
+      "star": 4.6,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1553621042-f6e147245754?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 25000,
+      "minimumDeliveryAmount": 4000,
+      "phoneNumber": "02-5678-9012",
+      "deliveryTime": "40-50분",
+      "isOpen": true,
+      "description": "신선한 회와 초밥 전문점"
+    },
+    {
+      "id": 6,
+      "storeName": "버거킹",
+      "address": "서울시 마포구 홍대입구역 111-22",
+      "status": "UNREGISTERED",
+      "category": "HAMBURGER",
+      "star": 4.0,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 10000,
+      "minimumDeliveryAmount": 2500,
+      "phoneNumber": "02-5555-1234",
+      "deliveryTime": "20-30분",
+      "isOpen": false,
+      "description": "프리미엄 햄버거 전문점"
+    },
+    {
+      "id": 7,
+      "storeName": "카페 드롭탑",
+      "address": "서울시 성동구 성수동 654",
+      "status": "REGISTERED",
+      "category": "COFFEE",
+      "star": 4.4,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 8000,
+      "minimumDeliveryAmount": 2000,
+      "phoneNumber": "02-6789-0123",
+      "deliveryTime": "15-25분",
+      "isOpen": true,
+      "description": "신선한 원두로 내린 커피와 디저트"
+    },
+    {
+      "id": 8,
+      "storeName": "한식당 서울집",
+      "address": "서울시 중구 명동길 123-45",
+      "status": "REGISTERED",
+      "category": "KOREAN",
+      "star": 4.4,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 10000,
+      "minimumDeliveryAmount": 3000,
+      "phoneNumber": "02-7777-8888",
+      "deliveryTime": "30-40분",
+      "isOpen": true,
+      "description": "전통 한식의 깊은 맛"
+    },
+    {
+      "id": 9,
+      "storeName": "한식당 정가네",
+      "address": "서울시 서초구 반포대로 567",
+      "status": "REGISTERED",
+      "category": "KOREAN",
+      "star": 4.5,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1590736969955-71cc94901144?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 11000,
+      "minimumDeliveryAmount": 3500,
+      "phoneNumber": "02-9999-0000",
+      "deliveryTime": "25-35분",
+      "isOpen": true,
+      "description": "집밥 같은 푸근한 한식"
+    },
+    {
+      "id": 10,
+      "storeName": "중화반점 황금성",
+      "address": "서울시 용산구 이태원로 789",
+      "status": "REGISTERED",
+      "category": "CHINESE",
+      "star": 4.3,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 12000,
+      "minimumDeliveryAmount": 2500,
+      "phoneNumber": "02-1111-2222",
+      "deliveryTime": "25-35분",
+      "isOpen": true,
+      "description": "정통 중화요리 전문점"
+    },
+    {
+      "id": 11,
+      "storeName": "중화반점 만리장성",
+      "address": "서울시 영등포구 여의도동 456",
+      "status": "REGISTERED",
+      "category": "CHINESE",
+      "star": 4.1,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1526318896980-cf78c088247c?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 13000,
+      "minimumDeliveryAmount": 3000,
+      "phoneNumber": "02-3333-4444",
+      "deliveryTime": "30-40분",
+      "isOpen": true,
+      "description": "깔끔한 중화요리"
+    },
+    {
+      "id": 12,
+      "storeName": "일식집 도쿄",
+      "address": "서울시 서초구 서초대로 321",
+      "status": "REGISTERED",
+      "category": "JAPANESE",
+      "star": 4.7,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 20000,
+      "minimumDeliveryAmount": 4000,
+      "phoneNumber": "02-5555-6666",
+      "deliveryTime": "40-50분",
+      "isOpen": true,
+      "description": "정통 일본 요리"
+    },
+    {
+      "id": 13,
+      "storeName": "일식집 오사카",
+      "address": "서울시 송파구 올림픽로 654",
+      "status": "REGISTERED",
+      "category": "JAPANESE",
+      "star": 4.4,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1553621042-f6e147245754?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 18000,
+      "minimumDeliveryAmount": 3500,
+      "phoneNumber": "02-7777-8888",
+      "deliveryTime": "35-45분",
+      "isOpen": true,
+      "description": "신선한 회와 초밥"
+    },
+    {
+      "id": 14,
+      "storeName": "카페 블루문",
+      "address": "서울시 마포구 홍대입구역로 123",
+      "status": "REGISTERED",
+      "category": "CAFE",
+      "star": 4.5,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 8000,
+      "minimumDeliveryAmount": 2000,
+      "phoneNumber": "02-9999-0000",
+      "deliveryTime": "15-25분",
+      "isOpen": true,
+      "description": "향긋한 원두커피와 디저트"
+    },
+    {
+      "id": 15,
+      "storeName": "카페 그린빈",
+      "address": "서울시 강남구 테헤란로 987",
+      "status": "REGISTERED",
+      "category": "CAFE",
+      "star": 4.2,
+      "thumbnailUrl": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&h=300&fit=crop&auto=format",
+      "minimumAmount": 10000,
+      "minimumDeliveryAmount": 2500,
+      "phoneNumber": "02-1010-2020",
+      "deliveryTime": "20-30분",
+      "isOpen": true,
+      "description": "프리미엄 커피와 수제 케이크"
+    }
+  ],
+  "menus": [
+    {
+      "storeId": 1,
+      "storeName": "맛있는 치킨집",
+      "items": [
+        {"id": 1, "name": "후라이드 치킨", "price": 18000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=300&fit=crop&auto=format", "likeCount": 120},
+        {"id": 2, "name": "양념 치킨", "price": 19000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=400&h=300&fit=crop&auto=format", "likeCount": 98},
+        {"id": 3, "name": "치킨 무 세트", "price": 3000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=300&fit=crop&auto=format", "likeCount": 45}
+      ]
+    },
+    {
+      "storeId": 2,
+      "storeName": "피자나라 치킨공주",
+      "items": [
+        {"id": 4, "name": "마르게리타 피자", "price": 22000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=300&fit=crop&auto=format", "likeCount": 85},
+        {"id": 5, "name": "페퍼로니 피자", "price": 25000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=400&h=300&fit=crop&auto=format", "likeCount": 110},
+        {"id": 6, "name": "콜라 (1.25L)", "price": 3000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400&h=300&fit=crop&auto=format", "likeCount": 30}
+      ]
+    },
+    {
+      "storeId": 3,
+      "storeName": "한식당 고향맛",
+      "items": [
+        {"id": 7, "name": "김치찌개", "price": 8000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1559847844-d721426d6edc?w=400&h=300&fit=crop&auto=format", "likeCount": 65},
+        {"id": 8, "name": "된장찌개", "price": 7000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=400&h=300&fit=crop&auto=format", "likeCount": 55},
+        {"id": 9, "name": "비빔밥", "price": 9000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=400&h=300&fit=crop&auto=format", "likeCount": 75},
+        {"id": 20, "name": "불고기", "price": 12000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop&auto=format", "likeCount": 95},
+        {"id": 21, "name": "공기밥", "price": 1000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1586201375761-83865001e26c?w=400&h=300&fit=crop&auto=format", "likeCount": 20},
+        {"id": 30, "name": "갈비탕", "price": 13000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1590736969955-71cc94901144?w=400&h=300&fit=crop&auto=format", "likeCount": 85},
+        {"id": 31, "name": "제육볶음", "price": 10000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&h=300&fit=crop&auto=format", "likeCount": 78},
+        {"id": 32, "name": "삼계탕", "price": 15000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=400&h=300&fit=crop&auto=format", "likeCount": 90},
+        {"id": 33, "name": "김치볶음밥", "price": 8500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1513407030348-c983a97b98d8?w=400&h=300&fit=crop&auto=format", "likeCount": 65},
+        {"id": 34, "name": "순두부찌개", "price": 7500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=400&h=300&fit=crop&auto=format", "likeCount": 70},
+        {"id": 35, "name": "파전", "price": 12000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1590031905406-f18a426d772d?w=400&h=300&fit=crop&auto=format", "likeCount": 60},
+        {"id": 36, "name": "냉면", "price": 9000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1582923443272-6270b7754c5a?w=400&h=300&fit=crop&auto=format", "likeCount": 80},
+        {"id": 37, "name": "잡채", "price": 11000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop&auto=format", "likeCount": 72}
+      ]
+    },
+    {
+      "storeId": 4,
+      "storeName": "중화반점",
+      "items": [
+        {"id": 10, "name": "짜장면", "price": 6000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400&h=300&fit=crop&auto=format", "likeCount": 95},
+        {"id": 11, "name": "짬뽕", "price": 7000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop&auto=format", "likeCount": 88},
+        {"id": 12, "name": "탕수육 (소)", "price": 15000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&h=300&fit=crop&auto=format", "likeCount": 72},
+        {"id": 22, "name": "볶음밥", "price": 8000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=400&h=300&fit=crop&auto=format", "likeCount": 65},
+        {"id": 23, "name": "마파두부", "price": 12000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=400&h=300&fit=crop&auto=format", "likeCount": 55}
+      ]
+    },
+    {
+      "storeId": 5,
+      "storeName": "일식집 스시로",
+      "items": [
+        {"id": 13, "name": "연어 초밥 세트", "price": 28000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1553621042-f6e147245754?w=400&h=300&fit=crop&auto=format", "likeCount": 150},
+        {"id": 14, "name": "참치 사시미", "price": 35000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop&auto=format", "likeCount": 125},
+        {"id": 24, "name": "텐동", "price": 15000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1576466213444-631c98e8cee9?w=400&h=300&fit=crop&auto=format", "likeCount": 85},
+        {"id": 25, "name": "규동", "price": 12000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1559847844-5315695dadae?w=400&h=300&fit=crop&auto=format", "likeCount": 95},
+        {"id": 26, "name": "우동", "price": 9000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1618841557871-b4664fbf0cb3?w=400&h=300&fit=crop&auto=format", "likeCount": 70}
+      ]
+    },
+    {
+      "storeId": 6,
+      "storeName": "버거킹",
+      "items": [
+        {"id": 15, "name": "와퍼", "price": 8000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop&auto=format", "likeCount": 80},
+        {"id": 16, "name": "감자튀김", "price": 3000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&h=300&fit=crop&auto=format", "likeCount": 45}
+      ]
+    },
+    {
+      "storeId": 7,
+      "storeName": "카페 드롭탑",
+      "items": [
+        {"id": 17, "name": "아메리카노", "price": 4000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&h=300&fit=crop&auto=format", "likeCount": 60},
+        {"id": 18, "name": "카페라떼", "price": 4500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1549007953-2f2dc0b24019?w=400&h=300&fit=crop&auto=format", "likeCount": 50},
+        {"id": 19, "name": "치즈케이크", "price": 6000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&h=300&fit=crop&auto=format", "likeCount": 35},
+        {"id": 27, "name": "에스프레소", "price": 3500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=400&h=300&fit=crop&auto=format", "likeCount": 40},
+        {"id": 28, "name": "카푸치노", "price": 4500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&h=300&fit=crop&auto=format", "likeCount": 55},
+        {"id": 29, "name": "크로와상", "price": 3500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=400&h=300&fit=crop&auto=format", "likeCount": 45},
+        {"id": 30, "name": "블루베리 머핀", "price": 4000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&h=300&fit=crop&auto=format", "likeCount": 38}
+      ]
+    },
+    {
+      "storeId": 8,
+      "storeName": "한식당 서울집",
+      "items": [
+        {"id": 38, "name": "육개장", "price": 9500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1606850975341-b2e92b3b3226?w=400&h=300&fit=crop&auto=format", "likeCount": 88},
+        {"id": 39, "name": "된장찌개", "price": 7500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=400&h=300&fit=crop&auto=format", "likeCount": 75},
+        {"id": 40, "name": "떡갈비", "price": 13500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop&auto=format", "likeCount": 92}
+      ]
+    },
+    {
+      "storeId": 9,
+      "storeName": "한식당 정가네",
+      "items": [
+        {"id": 41, "name": "한정식", "price": 18000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1574484284002-952d92456975?w=400&h=300&fit=crop&auto=format", "likeCount": 95},
+        {"id": 42, "name": "갈비찜", "price": 16000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1590736969955-71cc94901144?w=400&h=300&fit=crop&auto=format", "likeCount": 100},
+        {"id": 43, "name": "보쌈", "price": 14000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop&auto=format", "likeCount": 85}
+      ]
+    },
+    {
+      "storeId": 10,
+      "storeName": "중화반점 황금성",
+      "items": [
+        {"id": 44, "name": "탕수육", "price": 18000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&h=300&fit=crop&auto=format", "likeCount": 120},
+        {"id": 45, "name": "마파두부", "price": 14000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1526318896980-cf78c088247c?w=400&h=300&fit=crop&auto=format", "likeCount": 85},
+        {"id": 46, "name": "깐풍기", "price": 16000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400&h=300&fit=crop&auto=format", "likeCount": 95}
+      ]
+    },
+    {
+      "storeId": 11,
+      "storeName": "중화반점 만리장성",
+      "items": [
+        {"id": 47, "name": "울면", "price": 7500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400&h=300&fit=crop&auto=format", "likeCount": 70},
+        {"id": 48, "name": "양장피", "price": 15000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1526318896980-cf78c088247c?w=400&h=300&fit=crop&auto=format", "likeCount": 80},
+        {"id": 49, "name": "고추잡채", "price": 13000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop&auto=format", "likeCount": 75}
+      ]
+    },
+    {
+      "storeId": 12,
+      "storeName": "일식집 도쿄",
+      "items": [
+        {"id": 50, "name": "연어 초밥", "price": 22000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop&auto=format", "likeCount": 110},
+        {"id": 51, "name": "라멘", "price": 12000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop&auto=format", "likeCount": 95},
+        {"id": 52, "name": "덴푸라", "price": 18000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1601645191163-3fc0d5d64e35?w=400&h=300&fit=crop&auto=format", "likeCount": 85}
+      ]
+    },
+    {
+      "storeId": 13,
+      "storeName": "일식집 오사카",
+      "items": [
+        {"id": 53, "name": "모듬 사시미", "price": 25000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1553621042-f6e147245754?w=400&h=300&fit=crop&auto=format", "likeCount": 130},
+        {"id": 54, "name": "우동", "price": 9000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop&auto=format", "likeCount": 65},
+        {"id": 55, "name": "치킨 가라아게", "price": 14000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=300&fit=crop&auto=format", "likeCount": 90}
+      ]
+    },
+    {
+      "storeId": 14,
+      "storeName": "카페 블루문",
+      "items": [
+        {"id": 56, "name": "아메리카노", "price": 4500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=300&fit=crop&auto=format", "likeCount": 85},
+        {"id": 57, "name": "카페라떼", "price": 5500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&h=300&fit=crop&auto=format", "likeCount": 95},
+        {"id": 58, "name": "초콜릿 케이크", "price": 7000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=300&fit=crop&auto=format", "likeCount": 110},
+        {"id": 59, "name": "크로와상", "price": 5000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1555507036-ab794f9dc1a3?w=400&h=300&fit=crop&auto=format", "likeCount": 70}
+      ]
+    },
+    {
+      "storeId": 15,
+      "storeName": "카페 그린빈",
+      "items": [
+        {"id": 60, "name": "에스프레소", "price": 3500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=400&h=300&fit=crop&auto=format", "likeCount": 50},
+        {"id": 61, "name": "카푸치노", "price": 6000, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&h=300&fit=crop&auto=format", "likeCount": 80},
+        {"id": 62, "name": "티라미수", "price": 8500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&h=300&fit=crop&auto=format", "likeCount": 120},
+        {"id": 63, "name": "치즈케이크", "price": 7500, "status": "REGISTERED", "thumbnailUrl": "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400&h=300&fit=crop&auto=format", "likeCount": 100}
+      ]
+    }
+  ]
+}

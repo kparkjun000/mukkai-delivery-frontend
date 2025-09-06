@@ -10,7 +10,11 @@
       "Bash(git push:*)",
       "Bash(git init:*)",
       "Bash(curl:*)",
-      "Bash(git remote set-url:*)"
+      "Bash(git remote set-url:*)",
+      "WebFetch(domain:web-production-274dd.up.railway.app)",
+      "WebFetch(domain:web-production-dc795.up.railway.app)",
+      "Bash(node:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []
