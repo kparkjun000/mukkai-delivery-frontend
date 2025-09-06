@@ -21,6 +21,9 @@ const axiosInstance: AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
   },
   // CORS 설정
   withCredentials: false, // 쿠키를 포함하지 않음
@@ -70,6 +73,22 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// 백엔드 연결 테스트 함수
+export const testBackendConnection = async (): Promise<boolean> => {
+  try {
+    const response = await axiosInstance.get('/health', { timeout: 5000 });
+    console.log('✅ Backend connection successful:', API_BASE_URL);
+    return true;
+  } catch (error) {
+    console.error('❌ Backend connection failed:', error);
+    console.log('Backend URL:', API_BASE_URL);
+    return false;
+  }
+};
+
+// 앱 시작시 연결 테스트
+testBackendConnection();
 
 export { axiosInstance };
 export default axiosInstance;
