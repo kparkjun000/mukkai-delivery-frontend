@@ -15,7 +15,8 @@
       "WebFetch(domain:web-production-dc795.up.railway.app)",
       "Bash(node:*)",
       "Bash(npm install:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

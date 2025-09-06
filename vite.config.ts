@@ -19,6 +19,7 @@ export default defineConfig({
     ),
   },
   server: {
+    host: true, // Railway 배포를 위해 외부 호스트 허용
     proxy: {
       "/api": {
         target: "http://localhost:8080",
@@ -47,5 +48,9 @@ export default defineConfig({
         ws: true, // WebSocket 및 SSE 지원
       },
     },
+  },
+  preview: {
+    host: true, // Railway 배포를 위해 외부 호스트 허용
+    port: 4173,
   },
 });
