@@ -12,7 +12,7 @@ interface ApiResponse<T> {
 }
 
 // 환경변수에서 API URL을 가져오거나 기본값 사용 (Railway 백엔드)
-const API_BASE_URL = "https://web-production-274dd.up.railway.app";
+const API_BASE_URL = "https://web-production-8d925.up.railway.app";
 
 // Axios 인스턴스 생성
 const axiosInstance: AxiosInstance = axios.create({
