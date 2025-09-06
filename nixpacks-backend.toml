@@ -1,0 +1,15 @@
+# Backend (Spring Boot) 배포 설정
+[variables]
+JAVA_VERSION = "17"
+
+[phases.setup]
+nixPkgs = ["maven", "openjdk17"]
+
+[phases.build]
+cmd = "cd api && mvn clean package -DskipTests"
+
+[phases.start]
+cmd = "cd api && java -jar -Dserver.port=$PORT target/*.jar"
+
+[start]
+cmd = "cd api && java -jar -Dserver.port=$PORT target/*.jar"
