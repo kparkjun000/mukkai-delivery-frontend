@@ -2,9 +2,10 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "java -jar -Dspring.profiles.active=railway target/*.jar"
+# API 프로젝트 빌드 및 실행
+startCommand = "cd api && mvn clean package -DskipTests && java -jar -Dserver.port=$PORT target/*.jar"
 
 [variables]
-SPRING_PROFILES_ACTIVE = "railway"
+SPRING_PROFILES_ACTIVE = "default"
 SPRING_DATASOURCE_DRIVER_CLASS_NAME = "org.postgresql.Driver"
 SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT = "org.hibernate.dialect.PostgreSQLDialect"
