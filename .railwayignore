@@ -1,0 +1,7 @@
+vite.config.ts
+src/
+public/
+*.md
+.git
+node_modules
+.claude

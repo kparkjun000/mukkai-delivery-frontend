@@ -2,8 +2,9 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "npm run serve"
+startCommand = "npm run railway:start"
 
 [variables]
 NODE_VERSION = "18"
 NPM_CONFIG_PRODUCTION = "false"
+RAILWAY_STATIC_URL = ""
