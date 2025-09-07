@@ -200,19 +200,33 @@ export function HeroSection({ className }: HeroSectionProps) {
       }}
     >
       <div className="relative mx-auto max-w-[1280px] flex flex-col gap-12 lg:gap-24">
-        <div className="relative z-10 flex flex-col items-center gap-6 pt-8 md:pt-16 text-center lg:gap-12">
-          {/* Badge */}
+        {/* Badge - 왼쪽 상단으로 이동 */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={isLoaded ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="absolute top-8 left-8 z-20"
+        >
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isLoaded ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            animate={{ 
+              opacity: [0.7, 1, 0.7],
+              scale: [1, 1.05, 1]
+            }}
+            transition={{ 
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
           >
-            <Badge variant="outline" className="gap-2 px-4 py-2 text-sm">
+            <Badge variant="outline" className="gap-2 px-4 py-2 text-sm bg-white/90 backdrop-blur-sm border-primary shadow-lg">
               <Utensils className="h-4 w-4 text-primary" />
-              <span className="text-muted-foreground">지금 주문 가능</span>
-              <ArrowRight className="h-3 w-3" />
+              <span className="text-primary font-semibold">지금 주문 가능</span>
+              <ArrowRight className="h-3 w-3 text-primary" />
             </Badge>
           </motion.div>
+        </motion.div>
+
+        <div className="relative z-10 flex flex-col items-center gap-6 pt-8 md:pt-16 text-center lg:gap-12">
 
           {/* Heading */}
           <motion.h1
