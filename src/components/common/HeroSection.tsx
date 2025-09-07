@@ -149,7 +149,7 @@ export function HeroSection({ className }: HeroSectionProps) {
     <motion.section
       className={cn(
         "relative min-h-[80vh] text-gray-800",
-        "py-12 px-0 md:py-24 lg:py-32",
+        "mt-0 py-12 px-0 md:py-24 lg:py-32",
         "overflow-hidden",
         className
       )}
