@@ -230,9 +230,8 @@ export function HeroSection({ className }: HeroSectionProps) {
 
           {/* Heading - 역동적으로 움직이는 광고카피 */}
           <motion.h1
-            initial={{ opacity: 0, x: -100, rotate: -5 }}
+            initial={{ opacity: 1, x: 0, rotate: 0 }}
             animate={isLoaded ? { 
-              opacity: 1, 
               x: [0, 20, -10, 0], 
               y: [0, -15, 10, 0],
               rotate: [0, 2, -1, 0],
