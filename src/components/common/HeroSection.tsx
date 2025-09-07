@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   motion,
   useMotionTemplate,
@@ -124,6 +124,14 @@ interface HeroSectionProps {
 export function HeroSection({ className }: HeroSectionProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const color = useMotionValue(COLORS[0]);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  
+  // 무료 음악 URL 목록 (YouTube Audio Library 등 저작권 없는 음악)
+  const musicTracks = [
+    "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
+    "https://www.soundjay.com/misc/sounds/cash-register-01.wav",
+    "https://www.soundjay.com/misc/sounds/magic-chime-02.wav"
+  ];
 
   useEffect(() => {
     setIsLoaded(true);
@@ -133,6 +141,25 @@ export function HeroSection({ className }: HeroSectionProps) {
       repeat: Infinity,
       repeatType: "mirror",
     });
+
+    // 랜덤 음악 재생
+    const playRandomMusic = () => {
+      const randomTrack = musicTracks[Math.floor(Math.random() * musicTracks.length)];
+      if (audioRef.current) {
+        audioRef.current.src = randomTrack;
+        audioRef.current.volume = 0.3;
+        audioRef.current.loop = true;
+        
+        // 사용자 상호작용 후 재생 (브라우저 정책 준수)
+        const handleFirstClick = () => {
+          audioRef.current?.play().catch(console.log);
+          document.removeEventListener('click', handleFirstClick);
+        };
+        document.addEventListener('click', handleFirstClick);
+      }
+    };
+
+    playRandomMusic();
   }, [color]);
 
   const backgroundImage = useMotionTemplate`radial-gradient(125% 125% at 50% 0%, hsl(var(--background)) 50%, ${color}15)`;
@@ -481,6 +508,9 @@ export function HeroSection({ className }: HeroSectionProps) {
           </motion.div>
         ))}
       </div>
+
+      {/* 배경 음악 */}
+      <audio ref={audioRef} preload="none" />
     </motion.section>
   );
 }
