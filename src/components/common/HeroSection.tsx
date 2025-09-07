@@ -238,7 +238,7 @@ export function HeroSection({ className }: HeroSectionProps) {
               scale: [1, 1.02, 0.98, 1]
             } : {}}
             transition={{ 
-              duration: 3,
+              duration: 1.5,
               delay: 0.2,
               repeat: Infinity,
               repeatType: "loop",
@@ -263,10 +263,10 @@ export function HeroSection({ className }: HeroSectionProps) {
                 rotate: [0, -1, 1, 0]
               }}
               transition={{
-                duration: 2.5,
+                duration: 1.2,
                 repeat: Infinity,
                 ease: "easeInOut",
-                delay: 0.5
+                delay: 0.3
               }}
             >
               맛있는 음식을
@@ -281,10 +281,10 @@ export function HeroSection({ className }: HeroSectionProps) {
                 scale: [1, 1.05, 0.95, 1]
               }}
               transition={{
-                duration: 2.8,
+                duration: 1.4,
                 repeat: Infinity,
                 ease: "easeInOut",
-                delay: 1
+                delay: 0.7
               }}
             >
               빠르게 배달
