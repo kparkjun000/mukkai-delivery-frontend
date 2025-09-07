@@ -21,12 +21,12 @@ export default function HomePage() {
   });
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-0">
       {/* 히어로 섹션 */}
       <HeroSection />
 
       {/* 가게 섹션 */}
-      <div className="px-4 sm:px-6 lg:px-8 space-y-8">
+      <div className="px-4 sm:px-6 lg:px-8 space-y-8 pt-12">
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-bold text-gray-900">
             인기 맛집을 둘러보세요

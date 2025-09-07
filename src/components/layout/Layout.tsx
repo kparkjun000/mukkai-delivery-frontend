@@ -29,8 +29,8 @@ export function Layout() {
 
       <main
         className={`${
-          isHomePage ? "px-0" : "container-padding"
-        } py-4 pb-20 md:pb-4`}
+          isHomePage ? "px-0 py-0" : "container-padding py-4"
+        } pb-20 md:pb-4`}
       >
         <Suspense
           fallback={
