@@ -35,7 +35,7 @@ export function MobileNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t md:hidden mb-0">
       <div className="grid grid-cols-4">
         {navItems.map((item) => {
           const Icon = item.icon;
