@@ -126,11 +126,11 @@ export function HeroSection({ className }: HeroSectionProps) {
   const color = useMotionValue(COLORS[0]);
   const audioRef = useRef<HTMLAudioElement>(null);
   
-  // 무료 음악 URL 목록 - 간단한 톤으로 테스트
+  // 무료 음악 URL 목록 - 실제 작동하는 음원들
   const musicTracks = [
-    "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFA",
-    "data:audio/wav;base64,UklGRn4CAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQoCAAD//f////3//f/+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA",
-    "data:audio/wav;base64,UklGRh4EAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YfoDAACgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCg"
+    "https://www.soundjay.com/misc/sounds/magic-chime-02.mp3",
+    "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3", 
+    "https://freesound.org/data/previews/316/316847_5123451-lq.mp3"
   ];
 
   useEffect(() => {
@@ -142,28 +142,42 @@ export function HeroSection({ className }: HeroSectionProps) {
       repeatType: "mirror",
     });
 
-    // 랜덤 음악 재생
+    // 웹 오디오로 간단한 음악 생성 및 재생
     const playRandomMusic = async () => {
-      const randomTrack = musicTracks[Math.floor(Math.random() * musicTracks.length)];
-      if (audioRef.current) {
-        audioRef.current.src = randomTrack;
-        audioRef.current.volume = 0.3;
-        audioRef.current.loop = true;
+      try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         
-        // 자동 재생 시도
-        try {
-          await audioRef.current.play();
-        } catch (error) {
-          console.log('자동 재생이 차단되었습니다. 사용자 상호작용 후 재생됩니다.');
-          // 브라우저에서 자동재생이 차단된 경우에만 클릭 이벤트 사용
-          const handleFirstInteraction = () => {
-            audioRef.current?.play().catch(console.log);
-            document.removeEventListener('click', handleFirstInteraction);
-            document.removeEventListener('touchstart', handleFirstInteraction);
-          };
-          document.addEventListener('click', handleFirstInteraction);
-          document.addEventListener('touchstart', handleFirstInteraction);
-        }
+        // 간단한 멜로디 생성
+        const frequencies = [440, 523, 659, 784]; // A4, C5, E5, G5
+        const randomFreq = frequencies[Math.floor(Math.random() * frequencies.length)];
+        
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(randomFreq, audioContext.currentTime);
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
+        
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 2);
+        
+        // 2초 후 다시 재생
+        setTimeout(() => playRandomMusic(), 3000);
+      } catch (error) {
+        console.log('오디오 재생 실패:', error);
+        // 사용자 상호작용 후 재생
+        const handleFirstInteraction = () => {
+          playRandomMusic();
+          document.removeEventListener('click', handleFirstInteraction);
+          document.removeEventListener('touchstart', handleFirstInteraction);
+        };
+        document.addEventListener('click', handleFirstInteraction);
+        document.addEventListener('touchstart', handleFirstInteraction);
       }
     };
 
@@ -572,8 +586,7 @@ export function HeroSection({ className }: HeroSectionProps) {
         ))}
       </div>
 
-      {/* 배경 음악 */}
-      <audio ref={audioRef} preload="auto" autoPlay muted={false} />
+      {/* 배경 음악 - Web Audio API 사용으로 불필요 */}
     </motion.section>
   );
 }
