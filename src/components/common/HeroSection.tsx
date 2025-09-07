@@ -213,7 +213,7 @@ export function HeroSection({ className }: HeroSectionProps) {
               scale: [1, 1.05, 1]
             }}
             transition={{ 
-              duration: 2,
+              duration: 0.8,
               repeat: Infinity,
               ease: "easeInOut"
             }}
