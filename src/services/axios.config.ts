@@ -11,7 +11,7 @@ interface ApiResponse<T> {
   body: T;
 }
 
-// 환경변수에서 API URL을 가져오거나 기본값 사용 (Heroku 백엔드)
+// 백엔드 API URL - context-path 제거됨
 const API_BASE_URL = "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
 
 // Axios 인스턴스 생성

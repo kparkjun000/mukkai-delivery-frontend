@@ -33,8 +33,17 @@ class StoreUserApi {
     }
   }
 
-  // 점주 로그인 - 일반 사용자 로그인 API 사용 (8080 포트)
+  // 점주 로그인 - 목 데이터로 처리
   async login(email: string, password: string): Promise<TokenResponse> {
+    // 테스트 계정일 경우 목 토큰 반환
+    if (email === "owner@test.com" && password === "1234") {
+      return {
+        accessToken: "mock-store-access-token-" + Date.now(),
+        refreshToken: "mock-store-refresh-token-" + Date.now(),
+      };
+    }
+
+    // 다른 계정의 경우 실제 API 호출 (현재는 백엔드에 API가 없으므로 404 에러 발생)
     try {
       const response = await axiosInstance.post<ApiResponse<TokenResponse>>(
         "/open-api/user/login",  // 8080 포트의 일반 사용자 로그인 API 사용

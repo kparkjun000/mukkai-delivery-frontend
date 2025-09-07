@@ -8,7 +8,6 @@ import { useAuthStore, useCartStore, useUIStore } from "@/store";
 import { useStoreUserStore } from "@/store/storeUserStore";
 import { storeApi } from "@/services/api/store.api";
 import { StoreResponse } from "@/types/store.types";
-import AdBanner from "@/components/ads/AdBanner";
 
 export function Header() {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -151,15 +150,6 @@ export function Header() {
 
   return (
     <>
-      {/* 헤더 광고 */}
-      <div className="w-full bg-gray-50 border-b min-h-[100px]">
-        <div
-          className="max-w-7xl mx-auto px-4 py-2"
-          style={{ minWidth: "320px" }}
-        >
-          <AdBanner position="header" className="flex justify-center w-full" />
-        </div>
-      </div>
 
       <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="w-full px-6 sm:px-8 lg:px-12 xl:px-16">

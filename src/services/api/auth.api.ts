@@ -37,6 +37,14 @@ export const authApi = {
 
   // 로그인
   login: async (data: LoginRequest): Promise<TokenResponse> => {
+    // 테스트 계정일 경우 목 토큰 반환
+    if (data.email === "test@user.com" && data.password === "1234") {
+      return {
+        accessToken: "mock-user-access-token-" + Date.now(),
+        refreshToken: "mock-user-refresh-token-" + Date.now(),
+      };
+    }
+
     try {
       console.log("Login request data:", data);
 
@@ -75,7 +83,6 @@ export const authApi = {
       console.error("Login API error:", error);
       console.error("Error response:", error.response?.data);
 
-      // Mock 데이터 fallback 제거 - 실제 API만 사용
       throw new Error(
         error.response?.data?.message ||
           error.message ||
