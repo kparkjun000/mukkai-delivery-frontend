@@ -228,11 +228,23 @@ export function HeroSection({ className }: HeroSectionProps) {
 
         <div className="relative z-10 flex flex-col items-center gap-6 pt-8 md:pt-16 text-center lg:gap-12">
 
-          {/* Heading */}
+          {/* Heading - 역동적으로 움직이는 광고카피 */}
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={isLoaded ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            initial={{ opacity: 0, x: -100, rotate: -5 }}
+            animate={isLoaded ? { 
+              opacity: 1, 
+              x: [0, 20, -10, 0], 
+              y: [0, -15, 10, 0],
+              rotate: [0, 2, -1, 0],
+              scale: [1, 1.02, 0.98, 1]
+            } : {}}
+            transition={{ 
+              duration: 3,
+              delay: 0.2,
+              repeat: Infinity,
+              repeatType: "loop",
+              ease: "easeInOut"
+            }}
             className={cn(
               "inline-block",
               "text-gray-900",
@@ -245,9 +257,39 @@ export function HeroSection({ className }: HeroSectionProps) {
                 "2px 2px 4px rgba(0,0,0,0.3), 0 0 8px rgba(255,255,255,0.8)",
             }}
           >
-            맛있는 음식을
+            <motion.div
+              animate={{
+                x: [0, -30, 20, 0],
+                y: [0, 10, -5, 0],
+                rotate: [0, -1, 1, 0]
+              }}
+              transition={{
+                duration: 2.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.5
+              }}
+            >
+              맛있는 음식을
+            </motion.div>
             <br />
-            <span className="text-primary drop-shadow-lg">빠르게 배달</span>
+            <motion.span 
+              className="text-primary drop-shadow-lg"
+              animate={{
+                x: [0, 25, -15, 0],
+                y: [0, -8, 12, 0],
+                rotate: [0, 1.5, -0.5, 0],
+                scale: [1, 1.05, 0.95, 1]
+              }}
+              transition={{
+                duration: 2.8,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 1
+              }}
+            >
+              빠르게 배달
+            </motion.span>
           </motion.h1>
 
           {/* Description */}
