@@ -150,7 +150,7 @@ export function HeroSection({ className }: HeroSectionProps) {
       className={cn(
         "relative min-h-[80vh] text-gray-800",
         "mt-0 py-12 px-0 md:py-24 lg:py-32",
-        "overflow-hidden",
+        "overflow-hidden rounded-xl",
         className
       )}
       style={{
