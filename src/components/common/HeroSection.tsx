@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   motion,
   useMotionTemplate,
@@ -124,14 +124,6 @@ interface HeroSectionProps {
 export function HeroSection({ className }: HeroSectionProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const color = useMotionValue(COLORS[0]);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  
-  // 무료 음악 URL 목록 - 실제 작동하는 음원들
-  const musicTracks = [
-    "https://www.soundjay.com/misc/sounds/magic-chime-02.mp3",
-    "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3", 
-    "https://freesound.org/data/previews/316/316847_5123451-lq.mp3"
-  ];
 
   useEffect(() => {
     setIsLoaded(true);
@@ -141,47 +133,6 @@ export function HeroSection({ className }: HeroSectionProps) {
       repeat: Infinity,
       repeatType: "mirror",
     });
-
-    // 웹 오디오로 간단한 음악 생성 및 재생
-    const playRandomMusic = async () => {
-      try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        
-        // 간단한 멜로디 생성
-        const frequencies = [440, 523, 659, 784]; // A4, C5, E5, G5
-        const randomFreq = frequencies[Math.floor(Math.random() * frequencies.length)];
-        
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.setValueAtTime(randomFreq, audioContext.currentTime);
-        oscillator.type = 'sine';
-        
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
-        
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + 2);
-        
-        // 2초 후 다시 재생
-        setTimeout(() => playRandomMusic(), 3000);
-      } catch (error) {
-        console.log('오디오 재생 실패:', error);
-        // 사용자 상호작용 후 재생
-        const handleFirstInteraction = () => {
-          playRandomMusic();
-          document.removeEventListener('click', handleFirstInteraction);
-          document.removeEventListener('touchstart', handleFirstInteraction);
-        };
-        document.addEventListener('click', handleFirstInteraction);
-        document.addEventListener('touchstart', handleFirstInteraction);
-      }
-    };
-
-    playRandomMusic();
   }, [color]);
 
   const backgroundImage = useMotionTemplate`radial-gradient(125% 125% at 50% 0%, hsl(var(--background)) 50%, ${color}15)`;
