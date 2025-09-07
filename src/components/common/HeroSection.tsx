@@ -205,7 +205,7 @@ export function HeroSection({ className }: HeroSectionProps) {
           initial={{ opacity: 0, x: -20 }}
           animate={isLoaded ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="absolute top-4 left-8 z-20"
+          className="absolute top-2 left-8 z-20"
         >
           <motion.div
             animate={{ 
