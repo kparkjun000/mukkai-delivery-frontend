@@ -126,11 +126,11 @@ export function HeroSection({ className }: HeroSectionProps) {
   const color = useMotionValue(COLORS[0]);
   const audioRef = useRef<HTMLAudioElement>(null);
   
-  // 무료 음악 URL 목록 (YouTube Audio Library 등 저작권 없는 음악)
+  // 무료 음악 URL 목록 - 간단한 톤으로 테스트
   const musicTracks = [
-    "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-    "https://www.soundjay.com/misc/sounds/cash-register-01.wav",
-    "https://www.soundjay.com/misc/sounds/magic-chime-02.wav"
+    "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUaBjuZ2/LNeSsFJHfH8N2QQAoUXrTp66hVFA",
+    "data:audio/wav;base64,UklGRn4CAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQoCAAD//f////3//f/+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA/v8AAP7/AAD+/wAA",
+    "data:audio/wav;base64,UklGRh4EAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YfoDAACgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCg"
   ];
 
   useEffect(() => {
