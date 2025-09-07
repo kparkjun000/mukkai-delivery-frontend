@@ -280,7 +280,7 @@ export function Header() {
             {/* 검색바 (데스크톱) */}
             <form
               onSubmit={handleSearch}
-              className="hidden md:flex flex-1 max-w-md lg:max-w-lg mx-auto"
+              className="hidden md:flex flex-1 max-w-xs lg:max-w-sm mx-auto"
             >
               <div
                 className="relative w-full"
@@ -288,13 +288,13 @@ export function Header() {
                 onMouseEnter={handleSearchHover}
                 onMouseLeave={handleSearchLeave}
               >
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
                   type="text"
-                  placeholder="가게나 메뉴를 검색하세요"
+                  placeholder="가게나 메뉴 검색"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 pr-6 py-3 text-lg smooth-focus"
+                  className="pl-10 pr-4 py-2 text-sm smooth-focus"
                 />
 
                 {/* 추천 가게 드롭다운 */}
@@ -304,25 +304,25 @@ export function Header() {
                     onMouseEnter={handleDropdownHover}
                     onMouseLeave={handleDropdownLeave}
                   >
-                    <div className="p-3 border-b border-gray-300">
-                      <h3 className="text-sm font-medium text-gray-700">
+                    <div className="p-2 border-b border-gray-300">
+                      <h3 className="text-xs font-medium text-gray-700">
                         인기 가게
                       </h3>
                     </div>
 
                     {isLoadingStores ? (
-                      <div className="p-4 text-center text-gray-500">
-                        <div className="animate-spin inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full"></div>
-                        <span className="ml-2">로딩 중...</span>
+                      <div className="p-3 text-center text-gray-500">
+                        <div className="animate-spin inline-block w-3 h-3 border-2 border-current border-t-transparent rounded-full"></div>
+                        <span className="ml-1 text-xs">로딩 중...</span>
                       </div>
                     ) : recommendedStores.length > 0 ? (
-                      <div className="py-2">
+                      <div className="py-1">
                         {recommendedStores.map((store) => (
                           <button
                             key={store.id}
                             type="button"
                             onClick={() => handleStoreClick(store)}
-                            className="w-full px-4 py-3 hover:bg-white/80 hover:shadow-sm flex items-center gap-3 text-left transition-all duration-200 smooth-hover"
+                            className="w-full px-3 py-2 hover:bg-white/80 hover:shadow-sm flex items-center gap-2 text-left transition-all duration-200 smooth-hover"
                           >
                             <img
                               src={
@@ -331,25 +331,20 @@ export function Header() {
                                 "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=60&h=60&fit=crop"
                               }
                               alt={store.name || store.storeName}
-                              className="w-12 h-12 rounded-lg object-cover"
+                              className="w-8 h-8 rounded object-cover flex-shrink-0"
                               onError={(e) => {
                                 e.currentTarget.src =
                                   "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=60&h=60&fit=crop";
                               }}
                             />
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-medium text-gray-900 truncate">
+                              <h4 className="font-medium text-gray-900 truncate text-sm">
                                 {store.name || store.storeName}
                               </h4>
-                              <div className="flex items-center gap-1 mt-1">
+                              <div className="flex items-center gap-1">
                                 <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                                 <span className="text-xs text-gray-600">
                                   {(store.rating || store.star || 0).toFixed(1)}
-                                </span>
-                                <span className="text-xs text-gray-400 ml-2">
-                                  {store.address
-                                    ? store.address.slice(0, 20) + "..."
-                                    : ""}
                                 </span>
                               </div>
                             </div>
@@ -357,7 +352,7 @@ export function Header() {
                         ))}
                       </div>
                     ) : (
-                      <div className="p-4 text-center text-gray-600">
+                      <div className="p-3 text-center text-gray-600 text-xs">
                         추천 가게가 없습니다
                       </div>
                     )}
@@ -459,13 +454,13 @@ export function Header() {
               onMouseEnter={handleSearchHover}
               onMouseLeave={handleSearchLeave}
             >
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
                 type="text"
-                placeholder="가게나 메뉴를 검색하세요"
+                placeholder="가게나 메뉴 검색"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 pr-6 py-3 text-lg smooth-focus"
+                className="pl-10 pr-4 py-2 text-sm smooth-focus"
               />
 
               {/* 모바일 추천 가게 드롭다운 */}
@@ -475,25 +470,25 @@ export function Header() {
                   onMouseEnter={handleDropdownHover}
                   onMouseLeave={handleDropdownLeave}
                 >
-                  <div className="p-3 border-b border-gray-300">
-                    <h3 className="text-sm font-medium text-gray-700">
+                  <div className="p-2 border-b border-gray-300">
+                    <h3 className="text-xs font-medium text-gray-700">
                       인기 가게
                     </h3>
                   </div>
 
                   {isLoadingStores ? (
-                    <div className="p-4 text-center text-gray-500">
-                      <div className="animate-spin inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full"></div>
-                      <span className="ml-2">로딩 중...</span>
+                    <div className="p-3 text-center text-gray-500">
+                      <div className="animate-spin inline-block w-3 h-3 border-2 border-current border-t-transparent rounded-full"></div>
+                      <span className="ml-1 text-xs">로딩 중...</span>
                     </div>
                   ) : recommendedStores.length > 0 ? (
-                    <div className="py-2">
+                    <div className="py-1">
                       {recommendedStores.map((store) => (
                         <button
                           key={store.id}
                           type="button"
                           onClick={() => handleStoreClick(store)}
-                          className="w-full px-4 py-3 hover:bg-white/80 hover:shadow-sm flex items-center gap-3 text-left transition-all duration-200 smooth-hover"
+                          className="w-full px-3 py-2 hover:bg-white/80 hover:shadow-sm flex items-center gap-2 text-left transition-all duration-200 smooth-hover"
                         >
                           <img
                             src={
@@ -502,7 +497,7 @@ export function Header() {
                               "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=60&h=60&fit=crop"
                             }
                             alt={store.name || store.storeName}
-                            className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                            className="w-8 h-8 rounded object-cover flex-shrink-0"
                             onError={(e) => {
                               e.currentTarget.src =
                                 "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=60&h=60&fit=crop";
@@ -512,7 +507,7 @@ export function Header() {
                             <h4 className="font-medium text-gray-900 truncate text-sm">
                               {store.name || store.storeName}
                             </h4>
-                            <div className="flex items-center gap-1 mt-1">
+                            <div className="flex items-center gap-1">
                               <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                               <span className="text-xs text-gray-600">
                                 {(store.rating || store.star || 0).toFixed(1)}
@@ -523,7 +518,7 @@ export function Header() {
                       ))}
                     </div>
                   ) : (
-                    <div className="p-4 text-center text-gray-600">
+                    <div className="p-3 text-center text-gray-600 text-xs">
                       추천 가게가 없습니다
                     </div>
                   )}
