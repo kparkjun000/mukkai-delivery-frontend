@@ -143,19 +143,27 @@ export function HeroSection({ className }: HeroSectionProps) {
     });
 
     // 랜덤 음악 재생
-    const playRandomMusic = () => {
+    const playRandomMusic = async () => {
       const randomTrack = musicTracks[Math.floor(Math.random() * musicTracks.length)];
       if (audioRef.current) {
         audioRef.current.src = randomTrack;
         audioRef.current.volume = 0.3;
         audioRef.current.loop = true;
         
-        // 사용자 상호작용 후 재생 (브라우저 정책 준수)
-        const handleFirstClick = () => {
-          audioRef.current?.play().catch(console.log);
-          document.removeEventListener('click', handleFirstClick);
-        };
-        document.addEventListener('click', handleFirstClick);
+        // 자동 재생 시도
+        try {
+          await audioRef.current.play();
+        } catch (error) {
+          console.log('자동 재생이 차단되었습니다. 사용자 상호작용 후 재생됩니다.');
+          // 브라우저에서 자동재생이 차단된 경우에만 클릭 이벤트 사용
+          const handleFirstInteraction = () => {
+            audioRef.current?.play().catch(console.log);
+            document.removeEventListener('click', handleFirstInteraction);
+            document.removeEventListener('touchstart', handleFirstInteraction);
+          };
+          document.addEventListener('click', handleFirstInteraction);
+          document.addEventListener('touchstart', handleFirstInteraction);
+        }
       }
     };
 
@@ -510,7 +518,7 @@ export function HeroSection({ className }: HeroSectionProps) {
       </div>
 
       {/* 배경 음악 */}
-      <audio ref={audioRef} preload="none" />
+      <audio ref={audioRef} preload="auto" autoPlay muted={false} />
     </motion.section>
   );
 }
