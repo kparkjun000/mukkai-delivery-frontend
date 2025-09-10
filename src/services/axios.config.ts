@@ -12,14 +12,20 @@ interface ApiResponse<T> {
 }
 
 // 백엔드 API URL - 프로덕션에서는 프록시 사용
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
+// Heroku 환경 또는 빌드된 환경에서는 프록시 사용
+const isProduction = process.env.NODE_ENV === 'production' || 
+                    typeof window !== 'undefined' && 
+                    window.location.hostname.includes('herokuapp.com');
+
+const API_BASE_URL = isProduction
   ? '' // 프로덕션에서는 프록시 사용 
   : "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
 
 console.log('🔧 API Configuration:', {
   NODE_ENV: process.env.NODE_ENV,
-  API_BASE_URL,
-  isProduction: process.env.NODE_ENV === 'production'
+  hostname: typeof window !== 'undefined' ? window.location.hostname : 'server',
+  isProduction,
+  API_BASE_URL
 });
 
 // Axios 인스턴스 생성
