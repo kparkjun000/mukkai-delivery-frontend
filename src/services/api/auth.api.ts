@@ -1,4 +1,4 @@
-import axiosInstance from "../axios.config";
+import axiosWithFallback from "../axios.config";
 import {
   LoginRequest,
   RegisterRequest,
@@ -19,7 +19,7 @@ export const authApi = {
   // 회원가입
   register: async (data: RegisterRequest): Promise<UserResponse> => {
     try {
-      const response = await axiosInstance.post<ApiResponse<UserResponse>>(
+      const response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
         "/open-api/user/register",
         { body: data }
       );
@@ -53,7 +53,7 @@ export const authApi = {
 
       try {
         // 첫 번째: body 래퍼와 함께
-        response = await axiosInstance.post<ApiResponse<TokenResponse>>(
+        response = await axiosWithFallback.post<ApiResponse<TokenResponse>>(
           "/open-api/user/login",
           { body: data },
           {
@@ -66,7 +66,7 @@ export const authApi = {
         console.log("First attempt failed, trying direct format...");
 
         // 두 번째: 직접 데이터 전송
-        response = await axiosInstance.post<ApiResponse<TokenResponse>>(
+        response = await axiosWithFallback.post<ApiResponse<TokenResponse>>(
           "/open-api/user/login",
           data,
           {

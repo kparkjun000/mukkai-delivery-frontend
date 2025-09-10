@@ -140,7 +140,7 @@ export const axiosWithFallback = {
       console.log('🎯 Trying primary request...');
       return await axiosInstance.get(url, config);
     } catch (error: any) {
-      if (error.code === 'ERR_NETWORK' && isProduction) {
+      if ((error.code === 'ERR_NETWORK' || error.message?.includes('CORS') || error.message?.includes('blocked')) && isProduction) {
         console.log('🔄 Network error detected, trying fallback...');
         try {
           return await fallbackAxiosInstance.get(url, config);
@@ -158,12 +158,21 @@ export const axiosWithFallback = {
       console.log('🎯 Trying primary request...');
       return await axiosInstance.post(url, data, config);
     } catch (error: any) {
-      if (error.code === 'ERR_NETWORK' && isProduction) {
-        console.log('🔄 Network error detected, trying fallback...');
+      console.log('❌ Primary request failed:', {
+        code: error.code,
+        message: error.message,
+        isProduction,
+        willTryFallback: (error.code === 'ERR_NETWORK' || error.message?.includes('CORS') || error.message?.includes('blocked')) && isProduction
+      });
+      
+      if ((error.code === 'ERR_NETWORK' || error.message?.includes('CORS') || error.message?.includes('blocked')) && isProduction) {
+        console.log('🔄 Network/CORS error detected, trying fallback...');
         try {
-          return await fallbackAxiosInstance.post(url, data, config);
-        } catch (fallbackError) {
-          console.error('❌ Both primary and fallback failed');
+          const fallbackResult = await fallbackAxiosInstance.post(url, data, config);
+          console.log('✅ Fallback request succeeded');
+          return fallbackResult;
+        } catch (fallbackError: any) {
+          console.error('❌ Both primary and fallback failed:', fallbackError);
           throw fallbackError;
         }
       }
