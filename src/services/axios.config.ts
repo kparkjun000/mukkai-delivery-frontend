@@ -11,10 +11,14 @@ interface ApiResponse<T> {
   body: T;
 }
 
-// 백엔드 API URL - 프로덕션에서는 상대 경로 사용 (CORS 문제 해결)
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '' // 프로덕션에서는 상대 경로 사용 (같은 도메인)
-  : "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
+// 백엔드 API URL - 임시로 프로덕션에서도 직접 호출 (디버깅용)
+const API_BASE_URL = "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
+
+console.log('🔧 API Configuration:', {
+  NODE_ENV: process.env.NODE_ENV,
+  API_BASE_URL,
+  isProduction: process.env.NODE_ENV === 'production'
+});
 
 // Axios 인스턴스 생성
 const axiosInstance: AxiosInstance = axios.create({
@@ -23,9 +27,6 @@ const axiosInstance: AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
   },
   // CORS 설정
   withCredentials: false, // 쿠키를 포함하지 않음
@@ -34,6 +35,9 @@ const axiosInstance: AxiosInstance = axios.create({
 // Request Interceptor - 토큰 자동 추가 (일반 사용자 + 점주)
 axiosInstance.interceptors.request.use(
   (config) => {
+    console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
+    console.log('📝 Request data:', config.data);
+    
     // 일반 사용자 토큰 우선 확인
     let token = localStorage.getItem("accessToken");
     
@@ -56,9 +60,19 @@ axiosInstance.interceptors.request.use(
 // Response Interceptor - 에러 처리 및 토큰 갱신
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse<ApiResponse<any>>) => {
+    console.log(`✅ API Response: ${response.status}`, response.data);
     return response;
   },
   async (error: AxiosError) => {
+    console.error('❌ API Error:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      url: error.config?.url,
+      method: error.config?.method,
+      data: error.response?.data,
+      message: error.message
+    });
+    
     const originalRequest = error.config;
 
     // 401 에러 처리 (토큰 만료)
