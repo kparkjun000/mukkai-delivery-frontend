@@ -9,6 +9,10 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Parse JSON bodies
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Debug middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
@@ -36,6 +40,13 @@ app.use('/api', createProxyMiddleware({
   logLevel: 'debug',
   onProxyReq: (proxyReq, req, res) => {
     console.log(`🔗 Proxying API request: ${req.method} ${req.originalUrl} -> ${API_TARGET}${req.url}`);
+    // Content-Type 헤더 명시적 설정
+    if (req.body && req.method === 'POST') {
+      proxyReq.setHeader('Content-Type', 'application/json');
+    }
+  },
+  onProxyRes: (proxyRes, req, res) => {
+    console.log(`✅ Proxy response: ${proxyRes.statusCode} ${proxyRes.statusMessage}`);
   },
   onError: (err, req, res) => {
     console.error('❌ Proxy error:', err.message);
@@ -50,6 +61,13 @@ app.use('/open-api', createProxyMiddleware({
   logLevel: 'debug',
   onProxyReq: (proxyReq, req, res) => {
     console.log(`🔗 Proxying Open-API request: ${req.method} ${req.originalUrl} -> ${API_TARGET}${req.url}`);
+    // Content-Type 헤더 명시적 설정
+    if (req.body && req.method === 'POST') {
+      proxyReq.setHeader('Content-Type', 'application/json');
+    }
+  },
+  onProxyRes: (proxyRes, req, res) => {
+    console.log(`✅ Proxy response: ${proxyRes.statusCode} ${proxyRes.statusMessage}`);
   },
   onError: (err, req, res) => {
     console.error('❌ Proxy error:', err.message);

@@ -80,7 +80,8 @@ axiosInstance.interceptors.response.use(
 // 백엔드 연결 테스트 함수
 export const testBackendConnection = async (): Promise<boolean> => {
   try {
-    const response = await axiosInstance.get('/health', { timeout: 5000 });
+    // 루트 엔드포인트로 연결 테스트 (health 엔드포인트가 없으므로)
+    const response = await axiosInstance.get('/', { timeout: 5000 });
     console.log('✅ Backend connection successful:', API_BASE_URL);
     return true;
   } catch (error) {
