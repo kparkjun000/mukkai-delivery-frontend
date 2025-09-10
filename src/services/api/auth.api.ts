@@ -105,7 +105,7 @@ export const authApi = {
         "/api/user/me",
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            "authorization-token": token,
           },
         }
       );

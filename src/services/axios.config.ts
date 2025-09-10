@@ -41,7 +41,8 @@ axiosInstance.interceptors.request.use(
     }
     
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      // 백엔드가 authorization-token 헤더를 기대함 (Bearer 접두사 없이)
+      config.headers["authorization-token"] = token;
     }
     return config;
   },
