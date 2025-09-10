@@ -54,31 +54,23 @@ app.use('/api', createProxyMiddleware({
   }
 }));
 
+// 간단한 프록시 설정 (문제 해결용)
 app.use('/open-api', createProxyMiddleware({
   target: API_TARGET,
   changeOrigin: true,
   secure: true,
-  logLevel: 'debug',
+  logLevel: 'info',
   onProxyReq: (proxyReq, req, res) => {
-    console.log(`🔗 Proxying Open-API request: ${req.method} ${req.originalUrl} -> ${API_TARGET}${req.url}`);
-    console.log('📋 Request headers:', req.headers);
-    console.log('📝 Request body:', req.body);
-    
-    // JSON 요청인 경우 body를 문자열로 변환하여 전송
-    if (req.body && req.method === 'POST') {
-      const bodyData = JSON.stringify(req.body);
-      proxyReq.setHeader('Content-Type', 'application/json');
-      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-      proxyReq.write(bodyData);
-    }
+    console.log(`🔗 [PROXY] ${req.method} ${req.originalUrl} -> ${API_TARGET}${req.url}`);
   },
   onProxyRes: (proxyRes, req, res) => {
-    console.log(`✅ Proxy response: ${proxyRes.statusCode} ${proxyRes.statusMessage}`);
-    console.log('📋 Response headers:', proxyRes.headers);
+    console.log(`✅ [PROXY] Response: ${proxyRes.statusCode}`);
   },
   onError: (err, req, res) => {
-    console.error('❌ Proxy error:', err.message);
-    res.status(500).json({ error: 'Proxy error', message: err.message });
+    console.error('❌ [PROXY] Error:', err.message);
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Proxy error' });
+    }
   }
 }));
 

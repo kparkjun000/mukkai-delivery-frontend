@@ -11,7 +11,7 @@ interface ApiResponse<T> {
   body: T;
 }
 
-// 백엔드 API URL - 프로덕션에서는 프록시 사용
+// 백엔드 API URL - 프로덕션에서는 프록시 사용, fallback으로 직접 호출
 // Heroku 환경 또는 빌드된 환경에서는 프록시 사용
 const isProduction = process.env.NODE_ENV === 'production' || 
                     typeof window !== 'undefined' && 
@@ -21,17 +21,20 @@ const API_BASE_URL = isProduction
   ? '' // 프로덕션에서는 프록시 사용 
   : "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
 
+const FALLBACK_API_BASE_URL = "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
+
 console.log('🔧 API Configuration:', {
   NODE_ENV: process.env.NODE_ENV,
   hostname: typeof window !== 'undefined' ? window.location.hostname : 'server',
   isProduction,
-  API_BASE_URL
+  API_BASE_URL,
+  FALLBACK_API_BASE_URL
 });
 
 // Axios 인스턴스 생성
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 30000, // 30초로 증가
+  timeout: 15000, // 15초로 단축 (빠른 fallback)
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json",
@@ -40,30 +43,47 @@ const axiosInstance: AxiosInstance = axios.create({
   withCredentials: false, // 쿠키를 포함하지 않음
 });
 
-// Request Interceptor - 토큰 자동 추가 (일반 사용자 + 점주)
-axiosInstance.interceptors.request.use(
-  (config) => {
-    console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
-    console.log('📝 Request data:', config.data);
-    
-    // 일반 사용자 토큰 우선 확인
-    let token = localStorage.getItem("accessToken");
-    
-    // 일반 사용자 토큰이 없으면 점주 토큰 확인
-    if (!token) {
-      token = localStorage.getItem("storeUserAccessToken");
-    }
-    
-    if (token) {
-      // 백엔드가 authorization-token 헤더를 기대함 (Bearer 접두사 없이)
-      config.headers["authorization-token"] = token;
-    }
-    return config;
+// Fallback 인스턴스 (직접 백엔드 호출)
+const fallbackAxiosInstance: AxiosInstance = axios.create({
+  baseURL: FALLBACK_API_BASE_URL,
+  timeout: 15000,
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
   },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+  withCredentials: false,
+});
+
+// Request Interceptor를 양쪽 인스턴스에 적용하는 함수
+const addRequestInterceptor = (instance: AxiosInstance, name: string) => {
+  instance.interceptors.request.use(
+    (config) => {
+      console.log(`🚀 [${name}] API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
+      console.log(`📝 [${name}] Request data:`, config.data);
+      
+      // 일반 사용자 토큰 우선 확인
+      let token = localStorage.getItem("accessToken");
+      
+      // 일반 사용자 토큰이 없으면 점주 토큰 확인
+      if (!token) {
+        token = localStorage.getItem("storeUserAccessToken");
+      }
+      
+      if (token) {
+        // 백엔드가 authorization-token 헤더를 기대함 (Bearer 접두사 없이)
+        config.headers["authorization-token"] = token;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+};
+
+// 양쪽 인스턴스에 인터셉터 추가
+addRequestInterceptor(axiosInstance, 'PROXY');
+addRequestInterceptor(fallbackAxiosInstance, 'DIRECT');
 
 // Response Interceptor - 에러 처리 및 토큰 갱신
 axiosInstance.interceptors.response.use(
@@ -113,8 +133,47 @@ export const testBackendConnection = async (): Promise<boolean> => {
   }
 };
 
+// fallback을 시도하는 래퍼 함수
+export const axiosWithFallback = {
+  async get(url: string, config?: any) {
+    try {
+      console.log('🎯 Trying primary request...');
+      return await axiosInstance.get(url, config);
+    } catch (error: any) {
+      if (error.code === 'ERR_NETWORK' && isProduction) {
+        console.log('🔄 Network error detected, trying fallback...');
+        try {
+          return await fallbackAxiosInstance.get(url, config);
+        } catch (fallbackError) {
+          console.error('❌ Both primary and fallback failed');
+          throw fallbackError;
+        }
+      }
+      throw error;
+    }
+  },
+  
+  async post(url: string, data?: any, config?: any) {
+    try {
+      console.log('🎯 Trying primary request...');
+      return await axiosInstance.post(url, data, config);
+    } catch (error: any) {
+      if (error.code === 'ERR_NETWORK' && isProduction) {
+        console.log('🔄 Network error detected, trying fallback...');
+        try {
+          return await fallbackAxiosInstance.post(url, data, config);
+        } catch (fallbackError) {
+          console.error('❌ Both primary and fallback failed');
+          throw fallbackError;
+        }
+      }
+      throw error;
+    }
+  }
+};
+
 // 앱 시작시 연결 테스트
 testBackendConnection();
 
 export { axiosInstance };
-export default axiosInstance;
+export default axiosWithFallback; // fallback 지원 인스턴스를 기본으로 내보내기
