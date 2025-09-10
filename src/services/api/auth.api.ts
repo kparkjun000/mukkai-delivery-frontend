@@ -23,21 +23,39 @@ export const authApi = {
       let response;
 
       try {
-        // 첫 번째: body 래퍼와 함께
-        console.log("Trying with body wrapper...");
+        // 첫 번째: 올바른 API 형식 (result + body)
+        console.log("Trying with correct API format (result + body)...");
         response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
           "/open-api/user/register",
-          { body: data }
+          {
+            result: {
+              result_code: 0,
+              result_message: "OK",
+              result_description: "SUCCESS"
+            },
+            body: data
+          }
         );
       } catch (firstError: any) {
-        console.log("First attempt failed, trying direct format...");
+        console.log("API format failed, trying legacy body wrapper...");
         console.error("First error:", firstError.response?.status, firstError.response?.data);
 
-        // 두 번째: 직접 데이터 전송
-        response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
-          "/open-api/user/register",
-          data
-        );
+        try {
+          // 두 번째: 기존 body 래퍼 형식
+          response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
+            "/open-api/user/register",
+            { body: data }
+          );
+        } catch (secondError: any) {
+          console.log("Body wrapper failed, trying direct format...");
+          console.error("Second error:", secondError.response?.status, secondError.response?.data);
+
+          // 세 번째: 직접 데이터 전송
+          response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
+            "/open-api/user/register",
+            data
+          );
+        }
       }
 
       console.log("Register API response:", response.data);
@@ -88,10 +106,17 @@ export const authApi = {
       let response;
 
       try {
-        // 첫 번째: body 래퍼와 함께
+        // 첫 번째: 올바른 API 형식 (result + body)
         response = await axiosWithFallback.post<ApiResponse<TokenResponse>>(
           "/open-api/user/login",
-          { body: data },
+          {
+            result: {
+              result_code: 0,
+              result_message: "OK",
+              result_description: "SUCCESS"
+            },
+            body: data
+          },
           {
             headers: {
               "Content-Type": "application/json",
@@ -99,18 +124,33 @@ export const authApi = {
           }
         );
       } catch (firstError) {
-        console.log("First attempt failed, trying direct format...");
+        console.log("API format failed, trying legacy body wrapper...");
 
-        // 두 번째: 직접 데이터 전송
-        response = await axiosWithFallback.post<ApiResponse<TokenResponse>>(
-          "/open-api/user/login",
-          data,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        try {
+          // 두 번째: 기존 body 래퍼 형식
+          response = await axiosWithFallback.post<ApiResponse<TokenResponse>>(
+            "/open-api/user/login",
+            { body: data },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        } catch (secondError) {
+          console.log("Body wrapper failed, trying direct format...");
+
+          // 세 번째: 직접 데이터 전송
+          response = await axiosWithFallback.post<ApiResponse<TokenResponse>>(
+            "/open-api/user/login",
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        }
       }
 
       console.log("Login API response:", response.data);
