@@ -61,17 +61,24 @@ app.use('/open-api', createProxyMiddleware({
   logLevel: 'debug',
   onProxyReq: (proxyReq, req, res) => {
     console.log(`🔗 Proxying Open-API request: ${req.method} ${req.originalUrl} -> ${API_TARGET}${req.url}`);
-    // Content-Type 헤더 명시적 설정
+    console.log('📋 Request headers:', req.headers);
+    console.log('📝 Request body:', req.body);
+    
+    // JSON 요청인 경우 body를 문자열로 변환하여 전송
     if (req.body && req.method === 'POST') {
+      const bodyData = JSON.stringify(req.body);
       proxyReq.setHeader('Content-Type', 'application/json');
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      proxyReq.write(bodyData);
     }
   },
   onProxyRes: (proxyRes, req, res) => {
     console.log(`✅ Proxy response: ${proxyRes.statusCode} ${proxyRes.statusMessage}`);
+    console.log('📋 Response headers:', proxyRes.headers);
   },
   onError: (err, req, res) => {
     console.error('❌ Proxy error:', err.message);
-    res.status(500).json({ error: 'Proxy error' });
+    res.status(500).json({ error: 'Proxy error', message: err.message });
   }
 }));
 

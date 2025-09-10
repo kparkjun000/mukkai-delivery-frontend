@@ -11,8 +11,10 @@ interface ApiResponse<T> {
   body: T;
 }
 
-// 백엔드 API URL - 임시로 프로덕션에서도 직접 호출 (디버깅용)
-const API_BASE_URL = "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
+// 백엔드 API URL - 프로덕션에서는 프록시 사용
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? '' // 프로덕션에서는 프록시 사용 
+  : "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
 
 console.log('🔧 API Configuration:', {
   NODE_ENV: process.env.NODE_ENV,
