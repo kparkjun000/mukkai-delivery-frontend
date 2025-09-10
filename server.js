@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,6 +25,37 @@ app.get('/health', (req, res) => {
     distExists: fs.existsSync(path.join(__dirname, 'dist'))
   });
 });
+
+// Proxy API requests to backend (CORS 문제 해결)
+const API_TARGET = 'https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com';
+
+app.use('/api', createProxyMiddleware({
+  target: API_TARGET,
+  changeOrigin: true,
+  secure: true,
+  logLevel: 'debug',
+  onProxyReq: (proxyReq, req, res) => {
+    console.log(`🔗 Proxying API request: ${req.method} ${req.originalUrl} -> ${API_TARGET}${req.url}`);
+  },
+  onError: (err, req, res) => {
+    console.error('❌ Proxy error:', err.message);
+    res.status(500).json({ error: 'Proxy error' });
+  }
+}));
+
+app.use('/open-api', createProxyMiddleware({
+  target: API_TARGET,
+  changeOrigin: true,
+  secure: true,
+  logLevel: 'debug',
+  onProxyReq: (proxyReq, req, res) => {
+    console.log(`🔗 Proxying Open-API request: ${req.method} ${req.originalUrl} -> ${API_TARGET}${req.url}`);
+  },
+  onError: (err, req, res) => {
+    console.error('❌ Proxy error:', err.message);
+    res.status(500).json({ error: 'Proxy error' });
+  }
+}));
 
 // Serve static files from the dist directory
 app.use(express.static(path.join(__dirname, 'dist')));

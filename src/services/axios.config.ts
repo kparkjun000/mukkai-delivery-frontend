@@ -11,8 +11,10 @@ interface ApiResponse<T> {
   body: T;
 }
 
-// 백엔드 API URL - context-path 제거됨
-const API_BASE_URL = "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
+// 백엔드 API URL - 프로덕션에서는 상대 경로 사용 (CORS 문제 해결)
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? '' // 프로덕션에서는 상대 경로 사용 (같은 도메인)
+  : "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
 
 // Axios 인스턴스 생성
 const axiosInstance: AxiosInstance = axios.create({
