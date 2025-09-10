@@ -122,17 +122,36 @@ axiosInstance.interceptors.response.use(
 // 백엔드 연결 테스트 함수
 export const testBackendConnection = async (): Promise<boolean> => {
   try {
-    // health 엔드포인트로 연결 테스트 (인증 필요하지만 연결은 확인 가능)
+    // health 엔드포인트로 연결 테스트
     const response = await axiosInstance.get('/health', { timeout: 5000 });
-    console.log('✅ Backend connection successful:', API_BASE_URL);
-    return true;
-  } catch (error: any) {
-    // 401/403은 연결 성공을 의미 (인증만 필요)
-    if (error.response?.status === 401 || error.response?.status === 403 || 
-        error.response?.data?.result?.result_code === 2003) {
+    
+    // 2003 코드는 "인증 토큰 없음"으로 연결은 성공
+    if (response.data?.result?.result_code === 2003) {
       console.log('✅ Backend connection successful (auth required):', API_BASE_URL);
       return true;
     }
+    
+    console.log('✅ Backend connection successful:', API_BASE_URL);
+    return true;
+  } catch (error: any) {
+    // 응답이 있고 2003 코드면 연결 성공 (400 상태코드여도 백엔드 응답이므로 연결됨)
+    if (error.response?.data?.result?.result_code === 2003) {
+      console.log('✅ Backend connection successful (auth required):', API_BASE_URL);
+      return true;
+    }
+    
+    // 400 에러도 백엔드 응답이 있으면 연결 성공
+    if (error.response?.status === 400 && error.response?.data?.result) {
+      console.log('✅ Backend connection successful (bad request but server responding):', API_BASE_URL);
+      return true;
+    }
+    
+    // 401/403도 연결 성공을 의미 (인증만 필요)
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      console.log('✅ Backend connection successful (auth required):', API_BASE_URL);
+      return true;
+    }
+    
     console.error('❌ Backend connection failed:', error);
     console.log('Backend URL:', API_BASE_URL);
     return false;
