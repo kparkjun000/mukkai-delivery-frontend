@@ -165,12 +165,19 @@ export const axiosWithFallback = {
       console.log('🎯 Trying primary request...');
       return await axiosInstance.get(url, config);
     } catch (error: any) {
-      if ((error.code === 'ERR_NETWORK' || error.message?.includes('CORS') || error.message?.includes('blocked')) && isProduction) {
-        console.log('🔄 Network error detected, trying fallback...');
+      // 프로덕션 환경에서는 모든 요청 실패에 대해 fallback 시도
+      if (isProduction) {
+        console.log('🔄 GET request failed in production, trying fallback...', {
+          errorCode: error.code,
+          errorMessage: error.message,
+          status: error.response?.status
+        });
         try {
-          return await fallbackAxiosInstance.get(url, config);
-        } catch (fallbackError) {
-          console.error('❌ Both primary and fallback failed');
+          const fallbackResult = await fallbackAxiosInstance.get(url, config);
+          console.log('✅ Fallback GET request succeeded');
+          return fallbackResult;
+        } catch (fallbackError: any) {
+          console.error('❌ Both primary and fallback GET failed:', fallbackError);
           throw fallbackError;
         }
       }
@@ -190,8 +197,13 @@ export const axiosWithFallback = {
         willTryFallback: (error.code === 'ERR_NETWORK' || error.message?.includes('CORS') || error.message?.includes('blocked')) && isProduction
       });
       
-      if ((error.code === 'ERR_NETWORK' || error.message?.includes('CORS') || error.message?.includes('blocked')) && isProduction) {
-        console.log('🔄 Network/CORS error detected, trying fallback...');
+      // 프로덕션 환경에서는 모든 요청 실패에 대해 fallback 시도
+      if (isProduction) {
+        console.log('🔄 Request failed in production, trying fallback...', {
+          errorCode: error.code,
+          errorMessage: error.message,
+          status: error.response?.status
+        });
         try {
           const fallbackResult = await fallbackAxiosInstance.post(url, data, config);
           console.log('✅ Fallback request succeeded');
