@@ -19,16 +19,38 @@ export const authApi = {
   // 회원가입
   register: async (data: RegisterRequest): Promise<UserResponse> => {
     try {
-      const response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
-        "/open-api/user/register",
-        { body: data }
-      );
+      console.log("Register request data:", data);
+      let response;
+
+      try {
+        // 첫 번째: body 래퍼와 함께
+        console.log("Trying with body wrapper...");
+        response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
+          "/open-api/user/register",
+          { body: data }
+        );
+      } catch (firstError: any) {
+        console.log("First attempt failed, trying direct format...");
+        console.error("First error:", firstError.response?.status, firstError.response?.data);
+
+        // 두 번째: 직접 데이터 전송
+        response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
+          "/open-api/user/register",
+          data
+        );
+      }
+
+      console.log("Register API response:", response.data);
       return response.data.body;
     } catch (error: any) {
       console.error("Register API error:", error);
+      console.error("Error response:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+      
       // Mock 데이터 fallback 제거 - 실제 API만 사용
       throw new Error(
-        error.response?.data?.message ||
+        error.response?.data?.result?.result_message ||
+          error.response?.data?.message ||
           error.message ||
           "회원가입에 실패했습니다. 백엔드 API를 확인해주세요."
       );

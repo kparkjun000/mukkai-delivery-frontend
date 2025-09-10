@@ -122,11 +122,17 @@ axiosInstance.interceptors.response.use(
 // 백엔드 연결 테스트 함수
 export const testBackendConnection = async (): Promise<boolean> => {
   try {
-    // 루트 엔드포인트로 연결 테스트 (health 엔드포인트가 없으므로)
-    const response = await axiosInstance.get('/', { timeout: 5000 });
+    // health 엔드포인트로 연결 테스트 (인증 필요하지만 연결은 확인 가능)
+    const response = await axiosInstance.get('/health', { timeout: 5000 });
     console.log('✅ Backend connection successful:', API_BASE_URL);
     return true;
-  } catch (error) {
+  } catch (error: any) {
+    // 401/403은 연결 성공을 의미 (인증만 필요)
+    if (error.response?.status === 401 || error.response?.status === 403 || 
+        error.response?.data?.result?.result_code === 2003) {
+      console.log('✅ Backend connection successful (auth required):', API_BASE_URL);
+      return true;
+    }
     console.error('❌ Backend connection failed:', error);
     console.log('Backend URL:', API_BASE_URL);
     return false;
