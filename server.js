@@ -53,28 +53,13 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Proxy API requests to backend (CORS 문제 해결)
+// Simple proxy for /open-api
 const API_TARGET = 'https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com';
 
-app.use('/api', createProxyMiddleware({
+app.use('/open-api', createProxyMiddleware({
   target: API_TARGET,
   changeOrigin: true,
-  secure: true,
-  logLevel: 'debug',
-  onProxyReq: (proxyReq, req, res) => {
-    console.log(`🔗 Proxying API request: ${req.method} ${req.originalUrl} -> ${API_TARGET}${req.url}`);
-    // Content-Type 헤더 명시적 설정
-    if (req.body && req.method === 'POST') {
-      proxyReq.setHeader('Content-Type', 'application/json');
-    }
-  },
-  onProxyRes: (proxyRes, req, res) => {
-    console.log(`✅ Proxy response: ${proxyRes.statusCode} ${proxyRes.statusMessage}`);
-  },
-  onError: (err, req, res) => {
-    console.error('❌ Proxy error:', err.message);
-    res.status(500).json({ error: 'Proxy error' });
-  }
+  secure: true
 }));
 
 // 강화된 프록시 설정 - 모든 /open-api 요청 처리
