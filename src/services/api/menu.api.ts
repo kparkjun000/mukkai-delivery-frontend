@@ -12,24 +12,27 @@ interface ApiResponse<T> {
 }
 
 export const menuApi = {
-  // 가게 메뉴 조회 - Mock 데이터 우선 사용으로 안정성 확보
+  // 가게 메뉴 조회 - 실제 백엔드 API 우선 시도 후 Mock fallback
   getStoreMenus: async (storeId: number): Promise<StoreMenuResponse[]> => {
-    // TODO: 백엔드 준비되면 실제 API 호출 활성화
-    console.log("Store menus - Using mock data to avoid 400 errors");
+    console.log("가게 메뉴 조회 API 호출, storeId:", storeId);
 
-    if (false) {
-      // 실제 API 호출을 임시로 비활성화
-      try {
-        // 실제 API 호출 시도
-        const response = await axiosInstance.get<
-          ApiResponse<StoreMenuResponse[]>
-        >(`/api/store-menu/search`, {
+    // 실제 백엔드 API 호출 시도
+    try {
+      console.log("백엔드 메뉴 조회 API 시도");
+      
+      const response = await axiosInstance.get<ApiResponse<StoreMenuResponse[]>>(
+        `/api/store-menu/search`,
+        {
           params: { storeId },
-        });
-        return response.data.body;
-      } catch (error) {
-        console.warn("실제 API 호출 실패, Mock 데이터 사용:", error);
-      }
+          timeout: 10000
+        }
+      );
+      
+      console.log("백엔드 메뉴 조회 성공:", response.data);
+      return response.data.body;
+      
+    } catch (error: any) {
+      console.log("백엔드 메뉴 조회 실패, Mock 데이터로 fallback:", error.response?.data || error.message);
     }
 
     // Mock 데이터 사용 (현재 기본 동작)

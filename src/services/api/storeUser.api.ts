@@ -15,25 +15,39 @@ import {
 import axiosInstance from "../axios.config";
 
 class StoreUserApi {
-  // 점주 회원가입 - 8081 포트 API 사용 (실제 경로)
+  // 점주 회원가입 - 백엔드 API 스펙에 맞춰 body 래퍼로 전송
   async register(data: StoreUserRegisterRequest): Promise<StoreUserResponse> {
     try {
+      const requestBody = {
+        body: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          role: data.role || "MASTER"
+        }
+      };
+      
+      console.log("점주 회원가입 API 호출:", requestBody);
+      
       const response = await axiosInstance.post<ApiResponse<StoreUserResponse>>(
-        "/open-api/store-user",  // 8081 포트의 점주 회원가입 API
-        data
+        "/open-api/store-user",
+        requestBody
       );
+      
+      console.log("점주 회원가입 API 응답:", response.data);
       return response.data.body;
     } catch (error: any) {
-      console.error("Store user register API error:", error);
+      console.error("점주 회원가입 API 에러:", error.response?.data);
       throw new Error(
+        error.response?.data?.result?.resultMessage ||
         error.response?.data?.message ||
-          error.message ||
-          "점주 회원가입에 실패했습니다. 백엔드 API를 확인해주세요."
+        error.message ||
+        "점주 회원가입에 실패했습니다."
       );
     }
   }
 
-  // 점주 로그인 - 목 데이터로 처리
+  // 점주 로그인 - 백엔드 API 스펙에 맞춰 body 래퍼로 전송
   async login(email: string, password: string): Promise<TokenResponse> {
     // 테스트 계정일 경우 목 토큰 반환
     if (email === "owner@test.com" && password === "1234") {
@@ -43,19 +57,30 @@ class StoreUserApi {
       };
     }
 
-    // 다른 계정의 경우 실제 API 호출 (현재는 백엔드에 API가 없으므로 404 에러 발생)
     try {
+      const requestBody = {
+        body: {
+          email: email,
+          password: password
+        }
+      };
+      
+      console.log("점주 로그인 API 호출:", requestBody);
+      
       const response = await axiosInstance.post<ApiResponse<TokenResponse>>(
-        "/open-api/user/login",  // 8080 포트의 일반 사용자 로그인 API 사용
-        { email, password }
+        "/open-api/user/login",
+        requestBody
       );
+      
+      console.log("점주 로그인 API 응답:", response.data);
       return response.data.body;
     } catch (error: any) {
-      console.error("Store user login API error:", error);
+      console.error("점주 로그인 API 에러:", error.response?.data);
       throw new Error(
+        error.response?.data?.result?.resultMessage ||
         error.response?.data?.message ||
-          error.message ||
-          "점주 로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요."
+        error.message ||
+        "점주 로그인에 실패했습니다."
       );
     }
   }

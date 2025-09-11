@@ -12,25 +12,46 @@ interface ApiResponse<T> {
 }
 
 export const storeApi = {
-  // 가게 검색 API - Mock 데이터 우선 사용으로 안정성 확보
+  // 가게 검색 API - 실제 백엔드 API 우선 시도 후 Mock fallback
   search: async (category?: string): Promise<StoreResponse[]> => {
-    // TODO: 백엔드 준비되면 실제 API 호출 활성화
-    console.log("Store search - Using mock data to avoid 400 errors");
+    console.log("가게 검색 API 호출, 카테고리:", category);
 
-    if (false) {
-      // 실제 API 호출을 임시로 비활성화
-      try {
-        // 실제 API 호출 시도
-        const response = await axiosInstance.get<ApiResponse<StoreResponse[]>>(
-          "/api/store/search",
-          {
-            params: category && category !== "ALL" ? { category } : {},
-          }
-        );
-        return response.data.body;
-      } catch (error) {
-        console.warn("실제 API 호출 실패, Mock 데이터 사용:", error);
+    // 실제 백엔드 API 호출 시도
+    try {
+      const params: any = {};
+      if (category && category !== "ALL") {
+        // 프론트엔드 카테고리를 백엔드 enum과 매핑
+        const categoryMap: { [key: string]: string } = {
+          "KOREAN_FOOD": "KOREAN_FOOD",
+          "CHINESE_FOOD": "CHINESE_FOOD", 
+          "JAPANESE_FOOD": "JAPANESE_FOOD",
+          "WESTERN_FOOD": "WESTERN_FOOD",
+          "COFFEE_TEA": "COFFEE_TEA",
+          "CHICKEN": "CHICKEN",
+          "PIZZA": "PIZZA",
+          "HAMBURGER": "HAMBURGER",
+          "CAFE": "COFFEE_TEA"
+        };
+        
+        const mappedCategory = categoryMap[category] || category;
+        params.storeCategory = mappedCategory;
       }
+      
+      console.log("백엔드 가게 검색 API 시도, 파라미터:", params);
+      
+      const response = await axiosInstance.get<ApiResponse<StoreResponse[]>>(
+        "/api/store/search",
+        { 
+          params,
+          timeout: 10000 
+        }
+      );
+      
+      console.log("백엔드 가게 검색 성공:", response.data);
+      return response.data.body;
+      
+    } catch (error: any) {
+      console.log("백엔드 가게 검색 실패, Mock 데이터로 fallback:", error.response?.data || error.message);
     }
 
     // Mock 데이터 사용 (현재 기본 동작)
@@ -522,22 +543,24 @@ export const storeApi = {
     return mockStores;
   },
 
-  // 특정 가게 상세 조회 - Mock 데이터 우선 사용으로 안정성 확보
+  // 특정 가게 상세 조회 - 실제 백엔드 API 우선 시도 후 Mock fallback
   getStoreDetail: async (storeId: number): Promise<StoreResponse> => {
-    // TODO: 백엔드 준비되면 실제 API 호출 활성화
-    console.log("Store detail - Using mock data to avoid 400 errors");
+    console.log("가게 상세 조회 API 호출, ID:", storeId);
 
-    if (false) {
-      // 실제 API 호출을 임시로 비활성화
-      try {
-        // 실제 API 호출 시도
-        const response = await axiosInstance.get<ApiResponse<StoreResponse>>(
-          `/api/store/${storeId}`
-        );
-        return response.data.body;
-      } catch (error) {
-        console.warn("실제 API 호출 실패, Mock 데이터 사용:", error);
-      }
+    // 실제 백엔드 API 호출 시도
+    try {
+      console.log("백엔드 가게 상세 조회 API 시도");
+      
+      const response = await axiosInstance.get<ApiResponse<StoreResponse>>(
+        `/api/store/${storeId}`,
+        { timeout: 10000 }
+      );
+      
+      console.log("백엔드 가게 상세 조회 성공:", response.data);
+      return response.data.body;
+      
+    } catch (error: any) {
+      console.log("백엔드 가게 상세 조회 실패, Mock 데이터로 fallback:", error.response?.data || error.message);
     }
 
     // Mock 데이터에서 해당 가게 찾기 (현재 기본 동작)

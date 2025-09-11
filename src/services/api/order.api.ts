@@ -360,8 +360,38 @@ export const resetMockOrders = () => {
 };
 
 export const orderApi = {
-  // 주문 생성 - Mock 데이터
+  // 주문 생성 - 백엔드 API 우선 시도 후 Mock fallback
   createOrder: async (data: UserOrderRequest): Promise<UserOrderResponse> => {
+    console.log("주문 생성 API 호출:", data);
+    
+    // 실제 백엔드 API 호출 시도
+    try {
+      const requestBody = {
+        body: {
+          storeId: data.storeId,
+          deliveryAddress: data.deliveryAddress || "서울시 강남구 테헤란로 123",
+          userOrderMenuRequestList: data.userOrderMenuRequestList || data.orderItems || [],
+          totalAmount: data.totalAmount,
+          deliveryFee: data.deliveryFee || 3000
+        }
+      };
+      
+      console.log("백엔드 주문 생성 API 시도:", requestBody);
+      
+      const response = await axiosInstance.post<ApiResponse<UserOrderResponse>>(
+        "/api/user-order",
+        requestBody,
+        { timeout: 10000 }
+      );
+      
+      console.log("백엔드 주문 생성 성공:", response.data);
+      return response.data.body;
+      
+    } catch (error: any) {
+      console.log("백엔드 주문 생성 실패, Mock 데이터로 fallback:", error.response?.data || error.message);
+    }
+    
+    // Mock 데이터 처리 (기존 로직 유지)
     // 로딩 시뮬레이션
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -459,8 +489,34 @@ export const orderApi = {
     return newOrder;
   },
 
-  // 현재 진행중인 주문 조회 - Mock 데이터 (완전한 데이터만 반환, 사용자별 필터링)
+  // 현재 진행중인 주문 조회 - 백엔드 API 우선 시도 후 Mock fallback
   getCurrentOrders: async (): Promise<UserOrderDetailResponse[]> => {
+    console.log("현재 진행중인 주문 조회 API 호출");
+    
+    // 실제 백엔드 API 호출 시도
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        console.log("백엔드 현재 주문 조회 API 시도");
+        
+        const response = await axiosInstance.get<ApiResponse<UserOrderDetailResponse[]>>(
+          "/api/user-order/current",
+          {
+            headers: {
+              "authorization-token": token,
+            },
+            timeout: 10000
+          }
+        );
+        
+        console.log("백엔드 현재 주문 조회 성공:", response.data);
+        return response.data.body;
+      }
+    } catch (error: any) {
+      console.log("백엔드 현재 주문 조회 실패, Mock 데이터로 fallback:", error.response?.data || error.message);
+    }
+    
+    // Mock 데이터 처리 (기존 로직 유지)
     const currentUserId = getCurrentUserId();
     console.log("getCurrentOrders called for user:", currentUserId);
 
@@ -534,8 +590,34 @@ export const orderApi = {
     return validOrders;
   },
 
-  // 주문 내역 조회 - Mock 데이터 (완전한 데이터만 반환, 사용자별 필터링)
+  // 주문 내역 조회 - 백엔드 API 우선 시도 후 Mock fallback
   getOrderHistory: async (): Promise<UserOrderDetailResponse[]> => {
+    console.log("주문 내역 조회 API 호출");
+    
+    // 실제 백엔드 API 호출 시도
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        console.log("백엔드 주문 내역 조회 API 시도");
+        
+        const response = await axiosInstance.get<ApiResponse<UserOrderDetailResponse[]>>(
+          "/api/user-order/history",
+          {
+            headers: {
+              "authorization-token": token,
+            },
+            timeout: 10000
+          }
+        );
+        
+        console.log("백엔드 주문 내역 조회 성공:", response.data);
+        return response.data.body;
+      }
+    } catch (error: any) {
+      console.log("백엔드 주문 내역 조회 실패, Mock 데이터로 fallback:", error.response?.data || error.message);
+    }
+    
+    // Mock 데이터 처리 (기존 로직 유지)
     const currentUserId = getCurrentUserId();
     console.log("getOrderHistory called for user:", currentUserId);
 
@@ -598,8 +680,34 @@ export const orderApi = {
       );
   },
 
-  // 특정 주문 상세 조회 - Mock 데이터
+  // 특정 주문 상세 조회 - 백엔드 API 우선 시도 후 Mock fallback
   getOrderDetail: async (orderId: number): Promise<UserOrderDetailResponse> => {
+    console.log("주문 상세 조회 API 호출, ID:", orderId);
+    
+    // 실제 백엔드 API 호출 시도
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        console.log("백엔드 주문 상세 조회 API 시도");
+        
+        const response = await axiosInstance.get<ApiResponse<UserOrderDetailResponse>>(
+          `/api/user-order/id/${orderId}`,
+          {
+            headers: {
+              "authorization-token": token,
+            },
+            timeout: 10000
+          }
+        );
+        
+        console.log("백엔드 주문 상세 조회 성공:", response.data);
+        return response.data.body;
+      }
+    } catch (error: any) {
+      console.log("백엔드 주문 상세 조회 실패, Mock 데이터로 fallback:", error.response?.data || error.message);
+    }
+    
+    // Mock 데이터 처리 (기존 로직 유지)
     await new Promise((resolve) => setTimeout(resolve, 200));
 
     const order = mockOrders.find((o) => o.id === orderId);

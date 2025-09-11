@@ -90,32 +90,31 @@ export const authApi = {
     }
   },
 
-  // 내 정보 조회 - 실제 API만 사용
+  // 내 정보 조회 - 백엔드 API 호출
   getMe: async (): Promise<UserResponse> => {
-    // 토큰이 없으면 에러 발생
     const token = localStorage.getItem("accessToken");
     if (!token) {
       throw new Error("인증 토큰이 없습니다.");
     }
 
     try {
-      console.log("GetMe - Attempting API call with token:", token);
+      console.log("사용자 정보 조회 API 호출");
+      
       const response = await axiosInstance.get<ApiResponse<UserResponse>>(
         "/api/user/me",
         {
           headers: {
             "authorization-token": token,
           },
+          timeout: 10000
         }
       );
-      console.log("GetMe - API response:", response.data);
+      
+      console.log("사용자 정보 조회 성공:", response.data);
       return response.data.body;
+      
     } catch (error: any) {
-      console.error(
-        "GetMe API 호출 실패:",
-        error.response?.status,
-        error.response?.data
-      );
+      console.error("사용자 정보 조회 API 에러:", error.response?.data);
 
       // 401/403 오류인 경우 토큰 무효화
       if (error.response?.status === 401 || error.response?.status === 403) {
@@ -124,11 +123,11 @@ export const authApi = {
         throw new Error("인증 토큰이 만료되었습니다.");
       }
 
-      // Mock 데이터 fallback 제거 - 실제 API만 사용
       throw new Error(
+        error.response?.data?.result?.resultMessage ||
         error.response?.data?.message ||
-          error.message ||
-          "사용자 정보를 가져올 수 없습니다. 백엔드 API를 확인해주세요."
+        error.message ||
+        "사용자 정보를 가져올 수 없습니다."
       );
     }
   },
