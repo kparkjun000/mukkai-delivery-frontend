@@ -22,41 +22,12 @@ export const authApi = {
       console.log("Register request data:", data);
       let response;
 
-      try {
-        // 첫 번째: 올바른 API 형식 (result + body)
-        console.log("Trying with correct API format (result + body)...");
-        response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
-          "/open-api/user/register",
-          {
-            result: {
-              result_code: 0,
-              result_message: "OK",
-              result_description: "SUCCESS"
-            },
-            body: data
-          }
-        );
-      } catch (firstError: any) {
-        console.log("API format failed, trying legacy body wrapper...");
-        console.error("First error:", firstError.response?.status, firstError.response?.data);
-
-        try {
-          // 두 번째: 기존 body 래퍼 형식
-          response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
-            "/open-api/user/register",
-            { body: data }
-          );
-        } catch (secondError: any) {
-          console.log("Body wrapper failed, trying direct format...");
-          console.error("Second error:", secondError.response?.status, secondError.response?.data);
-
-          // 세 번째: 직접 데이터 전송
-          response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
-            "/open-api/user/register",
-            data
-          );
-        }
-      }
+      // Swagger에서는 직접 데이터 전송이 성공했을 가능성이 높음
+      console.log("Sending registration request with data:", data);
+      response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
+        "/open-api/user/register",
+        data  // 직접 데이터 전송 (Swagger 방식)
+      );
 
       console.log("Register API response:", response.data);
       return response.data.body;
@@ -105,53 +76,16 @@ export const authApi = {
       // Spring Security를 위한 여러 형식 시도
       let response;
 
-      try {
-        // 첫 번째: 올바른 API 형식 (result + body)
-        response = await axiosWithFallback.post<ApiResponse<TokenResponse>>(
-          "/open-api/user/login",
-          {
-            result: {
-              result_code: 0,
-              result_message: "OK",
-              result_description: "SUCCESS"
-            },
-            body: data
+      // Swagger 방식: 직접 데이터 전송
+      response = await axiosWithFallback.post<ApiResponse<TokenResponse>>(
+        "/open-api/user/login",
+        data,  // 직접 데이터 전송
+        {
+          headers: {
+            "Content-Type": "application/json",
           },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-      } catch (firstError) {
-        console.log("API format failed, trying legacy body wrapper...");
-
-        try {
-          // 두 번째: 기존 body 래퍼 형식
-          response = await axiosWithFallback.post<ApiResponse<TokenResponse>>(
-            "/open-api/user/login",
-            { body: data },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-        } catch (secondError) {
-          console.log("Body wrapper failed, trying direct format...");
-
-          // 세 번째: 직접 데이터 전송
-          response = await axiosWithFallback.post<ApiResponse<TokenResponse>>(
-            "/open-api/user/login",
-            data,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
         }
-      }
+      );
 
       console.log("Login API response:", response.data);
       return response.data.body;

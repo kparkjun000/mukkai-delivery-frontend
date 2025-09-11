@@ -21,7 +21,10 @@ const API_BASE_URL = isProduction
   ? '' // 프로덕션에서는 프록시 사용 
   : "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
 
-const FALLBACK_API_BASE_URL = "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
+// Fallback도 프로덕션에서는 프록시 사용해야 함 (CORS 때문에)
+const FALLBACK_API_BASE_URL = isProduction
+  ? '' // 프로덕션에서는 fallback도 프록시 사용
+  : "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
 
 console.log('🔧 API Configuration:', {
   NODE_ENV: process.env.NODE_ENV,
@@ -158,65 +161,8 @@ export const testBackendConnection = async (): Promise<boolean> => {
   }
 };
 
-// fallback을 시도하는 래퍼 함수
-export const axiosWithFallback = {
-  async get(url: string, config?: any) {
-    try {
-      console.log('🎯 Trying primary request...');
-      return await axiosInstance.get(url, config);
-    } catch (error: any) {
-      // 프로덕션 환경에서는 모든 요청 실패에 대해 fallback 시도
-      if (isProduction) {
-        console.log('🔄 GET request failed in production, trying fallback...', {
-          errorCode: error.code,
-          errorMessage: error.message,
-          status: error.response?.status
-        });
-        try {
-          const fallbackResult = await fallbackAxiosInstance.get(url, config);
-          console.log('✅ Fallback GET request succeeded');
-          return fallbackResult;
-        } catch (fallbackError: any) {
-          console.error('❌ Both primary and fallback GET failed:', fallbackError);
-          throw fallbackError;
-        }
-      }
-      throw error;
-    }
-  },
-  
-  async post(url: string, data?: any, config?: any) {
-    try {
-      console.log('🎯 Trying primary request...');
-      return await axiosInstance.post(url, data, config);
-    } catch (error: any) {
-      console.log('❌ Primary request failed:', {
-        code: error.code,
-        message: error.message,
-        isProduction,
-        willTryFallback: (error.code === 'ERR_NETWORK' || error.message?.includes('CORS') || error.message?.includes('blocked')) && isProduction
-      });
-      
-      // 프로덕션 환경에서는 모든 요청 실패에 대해 fallback 시도
-      if (isProduction) {
-        console.log('🔄 Request failed in production, trying fallback...', {
-          errorCode: error.code,
-          errorMessage: error.message,
-          status: error.response?.status
-        });
-        try {
-          const fallbackResult = await fallbackAxiosInstance.post(url, data, config);
-          console.log('✅ Fallback request succeeded');
-          return fallbackResult;
-        } catch (fallbackError: any) {
-          console.error('❌ Both primary and fallback failed:', fallbackError);
-          throw fallbackError;
-        }
-      }
-      throw error;
-    }
-  }
-};
+// CORS 문제로 인해 프로덕션에서는 프록시만 사용 (fallback 제거)
+export const axiosWithFallback = axiosInstance;
 
 // 앱 시작시 연결 테스트
 testBackendConnection();
