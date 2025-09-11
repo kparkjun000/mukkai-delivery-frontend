@@ -77,45 +77,62 @@ app.use('/api', createProxyMiddleware({
   }
 }));
 
-// 간단한 프록시 설정 (문제 해결용) - 경로 재작성 포함
-app.use('/open-api', createProxyMiddleware({
+// 강화된 프록시 설정 - 모든 /open-api 요청 처리
+app.use('/open-api', (req, res, next) => {
+  console.log(`🎯 [INTERCEPTOR] ${req.method} ${req.originalUrl}`);
+  console.log(`📝 [INTERCEPTOR] Headers:`, req.headers);
+  next();
+}, createProxyMiddleware({
   target: API_TARGET,
   changeOrigin: true,
   secure: true,
-  timeout: 45000, // 45초 타임아웃
-  proxyTimeout: 45000, // 프록시 타임아웃
-  pathRewrite: {
-    '^/open-api': '/open-api' // 경로 유지 (백엔드가 /open-api 경로 사용)
-  },
+  timeout: 60000, // 60초 타임아웃 
+  proxyTimeout: 60000,
   logLevel: 'debug',
   onProxyReq: (proxyReq, req, res) => {
-    const targetUrl = `${API_TARGET}${proxyReq.path}`;
-    console.log(`🔗 [PROXY] ${req.method} ${req.originalUrl} -> ${targetUrl}`);
-    console.log(`📝 [PROXY] Headers:`, req.headers);
-    console.log(`🎯 [PROXY] Target Path:`, proxyReq.path);
-    // 타임아웃 확장
-    proxyReq.setTimeout(45000);
+    const fullTargetUrl = `${API_TARGET}${req.url}`;
+    console.log(`🔗 [PROXY] ${req.method} ${req.originalUrl} -> ${fullTargetUrl}`);
+    console.log(`🎯 [PROXY] ProxyReq Path:`, proxyReq.path);
+    
+    // Content-Type 명시적 설정
+    if (req.method === 'POST' || req.method === 'PUT') {
+      proxyReq.setHeader('Content-Type', 'application/json');
+    }
+    
+    // 타임아웃 설정
+    proxyReq.setTimeout(60000);
   },
   onProxyRes: (proxyRes, req, res) => {
-    const targetUrl = `${API_TARGET}${req.url}`;
-    console.log(`✅ [PROXY] Response: ${proxyRes.statusCode} (${proxyRes.statusMessage}) from ${targetUrl}`);
-    console.log(`📊 [PROXY] Response headers:`, proxyRes.headers);
-    // CORS 헤더 강제 추가
+    const fullTargetUrl = `${API_TARGET}${req.url}`;
+    console.log(`✅ [PROXY] ${proxyRes.statusCode} ${proxyRes.statusMessage} from ${fullTargetUrl}`);
+    console.log(`📊 [PROXY] Response Size:`, proxyRes.headers['content-length'] || 'unknown');
+    
+    // CORS 헤더 강제 추가 (매우 중요!)
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, authorization-token');
+    res.setHeader('Access-Control-Allow-Credentials', 'false');
   },
   onError: (err, req, res) => {
-    const targetUrl = `${API_TARGET}${req.url}`;
-    console.error('❌ [PROXY] Error:', err.message);
-    console.error('❌ [PROXY] Target URL:', targetUrl);
-    console.error('❌ [PROXY] Error details:', err);
+    const fullTargetUrl = `${API_TARGET}${req.url}`;
+    console.error('❌ [PROXY] ERROR DETAILS:');
+    console.error('   URL:', fullTargetUrl);
+    console.error('   Error:', err.message);
+    console.error('   Code:', err.code);
+    console.error('   Stack:', err.stack);
+    
     if (!res.headersSent) {
-      res.status(504).json({ 
-        error: 'Proxy timeout or connection error',
+      // CORS 헤더도 에러 응답에 추가
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, authorization-token');
+      
+      res.status(502).json({ 
+        error: 'Proxy Error',
         message: err.message,
         code: err.code,
-        targetUrl: targetUrl
+        targetUrl: fullTargetUrl,
+        timestamp: new Date().toISOString()
       });
     }
   }
@@ -151,31 +168,7 @@ app.get('/assets/index-BUhxMOPx.*', (req, res) => {
   res.redirect(301, newUrl);
 });
 
-// 구버전 JS가 직접 백엔드를 호출할 때 프록시로 처리 (더 강력한 인터셉트)
-app.use((req, res, next) => {
-  // 모든 백엔드 직접 호출을 인터셉트
-  if (req.url.includes('mukkai-backend-api-f9dc2d5aad02.herokuapp.com')) {
-    console.log('🚫 Intercepting direct backend call:', req.originalUrl);
-    
-    if (req.url.includes('/health')) {
-      console.log('🔄 Redirecting health check to local');
-      return res.redirect('/health');
-    } else if (req.url.includes('/open-api/')) {
-      const apiPath = req.url.split('/open-api/')[1] || req.url.split('open-api/')[1];
-      console.log('🔄 Redirecting API call to proxy:', `/open-api/${apiPath}`);
-      return res.redirect(307, `/open-api/${apiPath}`);
-    }
-  }
-  
-  // 프록시 요청 로깅
-  if (req.url.startsWith('/open-api/')) {
-    console.log(`🎯 [ROUTE] Processing /open-api request: ${req.method} ${req.url}`);
-  }
-  
-  next();
-});
-
-// Serve static files from the dist directory
+// Serve static files from the dist directory (프록시보다 먼저 배치)
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Handle React routing, return all requests to React app
