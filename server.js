@@ -55,6 +55,19 @@ app.get('/health', (req, res) => {
   });
 });
 
+// CORS 해결을 위한 프록시
+const API_TARGET = 'https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com';
+
+app.use('/open-api', createProxyMiddleware({
+  target: API_TARGET,
+  changeOrigin: true,
+  secure: true,
+  onProxyRes: (proxyRes, req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', '*');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+  }
+}));
 
 // 구버전 JS 파일을 새 JS 파일 내용으로 완전 교체
 app.get('/assets/index-BUhxMOPx.js', (req, res) => {
