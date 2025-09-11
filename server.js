@@ -117,11 +117,18 @@ app.get('/assets/index-BUhxMOPx.js', (req, res) => {
   }
 });
 
-// 백엔드 직접 호출을 프록시로 리다이렉트
-app.all('https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com/*', (req, res) => {
-  const proxyPath = req.url.replace('https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com', '');
-  console.log(`Redirecting direct backend call to proxy: ${proxyPath}`);
-  res.redirect(302, proxyPath);
+// 구버전 JS가 직접 백엔드를 호출할 때 프록시로 처리
+app.all('*mukkai-backend-api-f9dc2d5aad02.herokuapp.com*', (req, res, next) => {
+  console.log('Direct backend call intercepted:', req.url);
+  // health 요청을 로컬로 리다이렉트
+  if (req.url.includes('/health')) {
+    res.redirect('/health');
+  } else if (req.url.includes('/open-api/')) {
+    const apiPath = req.url.split('/open-api/')[1];
+    res.redirect(`/open-api/${apiPath}`);
+  } else {
+    next();
+  }
 });
 
 // Serve static files from the dist directory
