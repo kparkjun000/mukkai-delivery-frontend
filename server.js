@@ -86,20 +86,12 @@ const API_TARGET = 'https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com';
 // /open-api와 /api로 시작하는 모든 요청을 백엔드로 프록시
 console.log(`🚀 Setting up proxy to: ${API_TARGET}`);
 
-// 조건부 프록시 설정 - API 요청만 백엔드로 전달
-app.use('/', createProxyMiddleware({
+// API 요청만 백엔드로 프록시
+app.use('/open-api', createProxyMiddleware({
   target: API_TARGET,
   changeOrigin: true,
   secure: true,
   logLevel: 'debug',
-  router: (req) => {
-    // API 요청만 백엔드로 프록시
-    if (req.originalUrl.startsWith('/open-api') || req.originalUrl.startsWith('/api')) {
-      console.log(`🎯 Routing to backend: ${req.method} ${req.originalUrl}`);
-      return API_TARGET;
-    }
-    return null; // 프록시하지 않음
-  },
   onProxyReq: (proxyReq, req, res) => {
     console.log(`🔄 Proxying ${req.method} ${req.originalUrl} to ${API_TARGET}${req.originalUrl}`);
     console.log(`🔍 Original headers:`, JSON.stringify(req.headers, null, 2));
@@ -134,6 +126,42 @@ app.use('/', createProxyMiddleware({
         console.log(`❌ Error response body:`, body);
       }
     });
+  },
+  onError: (err, req, res) => {
+    console.error('❌ Proxy error:', err.message, 'for', req.originalUrl);
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Proxy error', message: err.message, url: req.originalUrl });
+    }
+  }
+}));
+
+app.use('/api', createProxyMiddleware({
+  target: API_TARGET,
+  changeOrigin: true,
+  secure: true,
+  logLevel: 'debug',
+  onProxyReq: (proxyReq, req, res) => {
+    console.log(`🔄 Proxying ${req.method} ${req.originalUrl} to ${API_TARGET}${req.originalUrl}`);
+    
+    // Authorization 헤더 전달
+    if (req.headers['authorization-token']) {
+      proxyReq.setHeader('authorization-token', req.headers['authorization-token']);
+      console.log(`🔑 Added authorization-token header`);
+    }
+    
+    // Content-Type 헤더가 있으면 전달
+    if (req.headers['content-type']) {
+      proxyReq.setHeader('Content-Type', req.headers['content-type']);
+      console.log(`📝 Set Content-Type: ${req.headers['content-type']}`);
+    }
+  },
+  onProxyRes: (proxyRes, req, res) => {
+    console.log(`✅ Proxy response: ${proxyRes.statusCode} for ${req.originalUrl}`);
+    
+    // CORS 헤더 설정
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', '*');
+    res.setHeader('Access-Control-Allow-Headers', '*');
   },
   onError: (err, req, res) => {
     console.error('❌ Proxy error:', err.message, 'for', req.originalUrl);
