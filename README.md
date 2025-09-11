@@ -27,4 +27,4 @@ npm run dev
 ```
 
 ## Deployment
-Configured for Railway deployment with automatic builds.
+Configured for Railway deployment with automatic builds.# Deploy 2025년 09월 11일 목 오후 12:29:43
