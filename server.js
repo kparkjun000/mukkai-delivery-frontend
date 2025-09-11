@@ -33,6 +33,16 @@ app.use((req, res, next) => {
 // Debug middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  
+  // API 요청 특별 로깅
+  if (req.url.startsWith('/open-api') || req.url.startsWith('/api')) {
+    console.log(`🔍 API Request detected: ${req.method} ${req.url}`);
+    console.log(`🔍 Headers:`, JSON.stringify(req.headers, null, 2));
+    if (req.body) {
+      console.log(`🔍 Body:`, JSON.stringify(req.body, null, 2));
+    }
+  }
+  
   next();
 });
 
@@ -148,6 +158,17 @@ app.use('/api', createProxyMiddleware({
     }
   }
 }));
+
+// 프록시 설정 확인용 테스트 엔드포인트
+app.get('/proxy-test', (req, res) => {
+  res.json({
+    message: 'Proxy middleware is working',
+    timestamp: new Date().toISOString(),
+    proxies: ['/open-api', '/api']
+  });
+});
+
+console.log('✅ Proxy middleware setup completed');
 
 // 구버전 JS 파일을 새 JS 파일 내용으로 완전 교체
 app.get('/assets/index-BUhxMOPx.js', (req, res) => {
