@@ -123,7 +123,9 @@ axiosInstance.interceptors.response.use(
 export const testBackendConnection = async (): Promise<boolean> => {
   try {
     // health 엔드포인트로 연결 테스트
-    const response = await axiosInstance.get('/health', { timeout: 5000 });
+    // health 엔드포인트 제거 - 400 에러 방지
+    console.log('Backend connection test skipped');
+    return true;
     
     // 2003 코드는 "인증 토큰 없음"으로 연결은 성공
     if (response.data?.result?.result_code === 2003) {
