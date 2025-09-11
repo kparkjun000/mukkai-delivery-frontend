@@ -18,24 +18,79 @@ interface ApiResponse<T> {
 export const authApi = {
   // 회원가입 - 백엔드 호출만 하고 응답 그대로 반환
   register: async (data: RegisterRequest): Promise<UserResponse> => {
-    const requestBody = {
-      name: data.name,
-      email: data.email,
-      address: data.address || "서울시 강남구",
-      password: data.password
-    };
+    // 여러 형식 시도
+    const formats = [
+      // 형식 1: 기본
+      {
+        name: data.name,
+        email: data.email,
+        address: data.address || "서울시 강남구",
+        password: data.password
+      },
+      // 형식 2: user 접두사
+      {
+        userName: data.name,
+        userEmail: data.email,
+        userAddress: data.address || "서울시 강남구", 
+        userPassword: data.password
+      },
+      // 형식 3: snake_case
+      {
+        user_name: data.name,
+        user_email: data.email,
+        user_address: data.address || "서울시 강남구",
+        user_password: data.password
+      },
+      // 형식 4: userRegisterRequest wrapper
+      {
+        userRegisterRequest: {
+          name: data.name,
+          email: data.email,
+          address: data.address || "서울시 강남구",
+          password: data.password
+        }
+      },
+      // 형식 5: request wrapper
+      {
+        request: {
+          name: data.name,
+          email: data.email,
+          address: data.address || "서울시 강남구",
+          password: data.password
+        }
+      },
+      // 형식 6: 대소문자 다른 형식
+      {
+        Name: data.name,
+        Email: data.email,
+        Address: data.address || "서울시 강남구",
+        Password: data.password
+      }
+    ];
     
-    console.log("Calling backend:", requestBody);
+    for (let i = 0; i < formats.length; i++) {
+      try {
+        const requestBody = formats[i];
+        console.log(`Trying format ${i + 1}:`, requestBody);
+        
+        const response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
+          "/open-api/user/register",
+          requestBody
+        );
+        
+        console.log("Success! Backend response:", response.data);
+        return response.data.body;
+        
+      } catch (error: any) {
+        console.log(`Format ${i + 1} failed:`, error.response?.data);
+        if (i === formats.length - 1) {
+          // 마지막 형식도 실패하면 에러 던지기
+          throw error;
+        }
+      }
+    }
     
-    const response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
-      "/open-api/user/register",
-      requestBody
-    );
-    
-    console.log("Backend response:", response.data);
-    
-    // 백엔드 응답 그대로 반환
-    return response.data.body;
+    throw new Error("모든 형식 시도 실패");
   },
 
   // 로그인
