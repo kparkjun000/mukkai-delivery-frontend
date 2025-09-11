@@ -9,9 +9,24 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Parse JSON bodies
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Parse JSON bodies - API 경로는 제외하고 프록시에서 처리하도록 함
+app.use((req, res, next) => {
+  if (req.url.startsWith('/open-api') || req.url.startsWith('/api')) {
+    // API 요청은 body parsing 건너뛰고 프록시에서 처리
+    console.log(`⚠️ Skipping body parsing for API request: ${req.method} ${req.url}`);
+    next();
+  } else {
+    // 일반 요청만 body parsing 적용
+    express.json()(req, res, next);
+  }
+});
+app.use((req, res, next) => {
+  if (req.url.startsWith('/open-api') || req.url.startsWith('/api')) {
+    next();
+  } else {
+    express.urlencoded({ extended: true })(req, res, next);
+  }
+});
 
 // 강력한 CORS 설정 - 모든 요청 허용
 app.use((req, res, next) => {
@@ -81,19 +96,18 @@ app.use('/open-api', createProxyMiddleware({
   },
   onProxyReq: (proxyReq, req, res) => {
     console.log(`🔄 Proxying ${req.method} ${req.originalUrl} to ${API_TARGET}${req.originalUrl}`);
+    console.log(`🔍 Original headers:`, JSON.stringify(req.headers, null, 2));
     
     // Authorization 헤더 전달
     if (req.headers['authorization-token']) {
       proxyReq.setHeader('authorization-token', req.headers['authorization-token']);
+      console.log(`🔑 Added authorization-token header`);
     }
     
-    // Body가 있는 경우 처리
-    if (req.body && Object.keys(req.body).length > 0) {
-      const bodyData = JSON.stringify(req.body);
-      console.log(`📤 Request body:`, bodyData);
-      proxyReq.setHeader('Content-Type', 'application/json');
-      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-      proxyReq.write(bodyData);
+    // Content-Type 헤더가 있으면 전달
+    if (req.headers['content-type']) {
+      proxyReq.setHeader('Content-Type', req.headers['content-type']);
+      console.log(`📝 Set Content-Type: ${req.headers['content-type']}`);
     }
   },
   onProxyRes: (proxyRes, req, res) => {
