@@ -26,7 +26,8 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     port: PORT,
     env: process.env.NODE_ENV,
-    distExists: fs.existsSync(path.join(__dirname, 'dist'))
+    distExists: fs.existsSync(path.join(__dirname, 'dist')),
+    version: '2.0.0' // 버전 업데이트로 Heroku 재빌드 강제
   });
 });
 
