@@ -101,10 +101,20 @@ app.use('/open-api', createProxyMiddleware({
   }
 }));
 
-// 구버전 JS 파일 요청을 새 버전으로 리다이렉트
+// 구버전 JS 파일을 새 JS 파일 내용으로 완전 교체
 app.get('/assets/index-BUhxMOPx.js', (req, res) => {
-  console.log('Redirecting old JS to new version');
-  res.redirect(301, '/assets/index-4wFnBNQF.js');
+  console.log('Serving new JS content for old filename');
+  const newJsPath = path.join(__dirname, 'dist', 'assets', 'index-4wFnBNQF.js');
+  
+  // 새 JS 파일이 존재하면 그 내용을 서빙
+  if (fs.existsSync(newJsPath)) {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.sendFile(newJsPath);
+  } else {
+    // 새 파일이 없으면 리다이렉트
+    res.redirect(301, '/assets/index-4wFnBNQF.js');
+  }
 });
 
 // 백엔드 직접 호출을 프록시로 리다이렉트
