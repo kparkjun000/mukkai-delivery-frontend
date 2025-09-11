@@ -55,85 +55,11 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Simple proxy for /open-api
-const API_TARGET = 'https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com';
-
-app.use('/open-api', createProxyMiddleware({
-  target: API_TARGET,
-  changeOrigin: true,
-  secure: true,
-  onProxyRes: (proxyRes, req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', '*');
-    res.setHeader('Access-Control-Allow-Headers', '*');
-  }
-}));
-
-// 강화된 프록시 설정 - 모든 /open-api 요청 처리
-app.use('/open-api', (req, res, next) => {
-  console.log(`🎯 [INTERCEPTOR] ${req.method} ${req.originalUrl}`);
-  console.log(`📝 [INTERCEPTOR] Headers:`, req.headers);
-  next();
-}, createProxyMiddleware({
-  target: API_TARGET,
-  changeOrigin: true,
-  secure: true,
-  timeout: 60000, // 60초 타임아웃 
-  proxyTimeout: 60000,
-  logLevel: 'debug',
-  onProxyReq: (proxyReq, req, res) => {
-    const fullTargetUrl = `${API_TARGET}${req.url}`;
-    console.log(`🔗 [PROXY] ${req.method} ${req.originalUrl} -> ${fullTargetUrl}`);
-    console.log(`🎯 [PROXY] ProxyReq Path:`, proxyReq.path);
-    
-    // Content-Type 명시적 설정
-    if (req.method === 'POST' || req.method === 'PUT') {
-      proxyReq.setHeader('Content-Type', 'application/json');
-    }
-    
-    // 타임아웃 설정
-    proxyReq.setTimeout(60000);
-  },
-  onProxyRes: (proxyRes, req, res) => {
-    const fullTargetUrl = `${API_TARGET}${req.url}`;
-    console.log(`✅ [PROXY] ${proxyRes.statusCode} ${proxyRes.statusMessage} from ${fullTargetUrl}`);
-    console.log(`📊 [PROXY] Response Size:`, proxyRes.headers['content-length'] || 'unknown');
-    
-    // CORS 헤더 강제 추가 (매우 중요!)
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, authorization-token');
-    res.setHeader('Access-Control-Allow-Credentials', 'false');
-  },
-  onError: (err, req, res) => {
-    const fullTargetUrl = `${API_TARGET}${req.url}`;
-    console.error('❌ [PROXY] ERROR DETAILS:');
-    console.error('   URL:', fullTargetUrl);
-    console.error('   Error:', err.message);
-    console.error('   Code:', err.code);
-    console.error('   Stack:', err.stack);
-    
-    if (!res.headersSent) {
-      // CORS 헤더도 에러 응답에 추가
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, authorization-token');
-      
-      res.status(502).json({ 
-        error: 'Proxy Error',
-        message: err.message,
-        code: err.code,
-        targetUrl: fullTargetUrl,
-        timestamp: new Date().toISOString()
-      });
-    }
-  }
-}));
 
 // 구버전 JS 파일을 새 JS 파일 내용으로 완전 교체
 app.get('/assets/index-BUhxMOPx.js', (req, res) => {
   console.log('🔄 Intercepting old JS file request - serving new JS content');
-  const newJsPath = path.join(__dirname, 'dist', 'assets', 'index-s0SLxQ-h.js');
+  const newJsPath = path.join(__dirname, 'dist', 'assets', 'index-B0zYYzYT.js');
   
   // 강력한 캐시 무효화 헤더
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
@@ -155,7 +81,7 @@ app.get('/assets/index-BUhxMOPx.js', (req, res) => {
 // 모든 구버전 에셋 파일들을 새 버전으로 리다이렉트
 app.get('/assets/index-BUhxMOPx.*', (req, res) => {
   console.log('🔄 Redirecting old asset request:', req.url);
-  const newUrl = req.url.replace('index-BUhxMOPx', 'index-s0SLxQ-h');
+  const newUrl = req.url.replace('index-BUhxMOPx', 'index-B0zYYzYT');
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.redirect(301, newUrl);
 });
@@ -201,7 +127,7 @@ app.get('*', (req, res) => {
         }, 100);
       }
     </script>
-    <script type="module" crossorigin src="/assets/index-s0SLxQ-h.js?v=${timestamp}&bust=${randomId}&t=${Date.now()}"></script>
+    <script type="module" crossorigin src="/assets/index-B0zYYzYT.js?v=${timestamp}&bust=${randomId}&t=${Date.now()}"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-D_RYoknR.css?v=${timestamp}&bust=${randomId}&t=${Date.now()}">
   </head>
   <body>
