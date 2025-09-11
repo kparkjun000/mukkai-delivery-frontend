@@ -58,13 +58,14 @@ app.get('/health', (req, res) => {
 // API 프록시 설정 - /open-api 경로 그대로 백엔드로 전달
 const API_TARGET = 'https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com';
 
-// /open-api로 시작하는 모든 요청을 백엔드로 프록시
-app.use('/open-api', createProxyMiddleware({
+// /open-api와 /api로 시작하는 모든 요청을 백엔드로 프록시
+const proxyOptions = {
   target: API_TARGET,
   changeOrigin: true,
   secure: true,
   logLevel: 'debug',
   onProxyReq: (proxyReq, req, res) => {
+    console.log(`🔄 Proxying ${req.method} ${req.url} to ${API_TARGET}${req.url}`);
     // Body가 있는 경우 처리
     if (req.body) {
       const bodyData = JSON.stringify(req.body);
@@ -74,15 +75,19 @@ app.use('/open-api', createProxyMiddleware({
     }
   },
   onProxyRes: (proxyRes, req, res) => {
+    console.log(`✅ Proxy response: ${proxyRes.statusCode} for ${req.url}`);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');
   },
   onError: (err, req, res) => {
-    console.error('Proxy error:', err);
+    console.error('❌ Proxy error:', err.message, 'for', req.url);
     res.status(500).json({ error: 'Proxy error', message: err.message });
   }
-}));
+};
+
+app.use('/open-api', createProxyMiddleware(proxyOptions));
+app.use('/api', createProxyMiddleware(proxyOptions));
 
 // 구버전 JS 파일을 새 JS 파일 내용으로 완전 교체
 app.get('/assets/index-BUhxMOPx.js', (req, res) => {
