@@ -16,84 +16,42 @@ interface ApiResponse<T> {
 }
 
 export const authApi = {
-  // 회원가입 - 백엔드 호출만 하고 응답 그대로 반환
+  // 회원가입 - 백엔드 API 스펙에 맞춰 body 래퍼로 전송
   register: async (data: RegisterRequest): Promise<UserResponse> => {
-    // 여러 형식 시도
-    const formats = [
-      // 형식 1: 기본
-      {
-        name: data.name,
-        email: data.email,
-        address: data.address || "서울시 강남구",
-        password: data.password
-      },
-      // 형식 2: user 접두사
-      {
-        userName: data.name,
-        userEmail: data.email,
-        userAddress: data.address || "서울시 강남구", 
-        userPassword: data.password
-      },
-      // 형식 3: snake_case
-      {
-        user_name: data.name,
-        user_email: data.email,
-        user_address: data.address || "서울시 강남구",
-        user_password: data.password
-      },
-      // 형식 4: userRegisterRequest wrapper
-      {
-        userRegisterRequest: {
-          name: data.name,
-          email: data.email,
-          address: data.address || "서울시 강남구",
-          password: data.password
-        }
-      },
-      // 형식 5: request wrapper
-      {
-        request: {
-          name: data.name,
-          email: data.email,
-          address: data.address || "서울시 강남구",
-          password: data.password
-        }
-      },
-      // 형식 6: 대소문자 다른 형식
-      {
-        Name: data.name,
-        Email: data.email,
-        Address: data.address || "서울시 강남구",
-        Password: data.password
-      }
-    ];
+    console.log("회원가입 API 호출:", data);
     
-    for (let i = 0; i < formats.length; i++) {
-      try {
-        const requestBody = formats[i];
-        console.log(`Trying format ${i + 1}:`, requestBody);
-        
-        const response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
-          "/open-api/user/register",
-          requestBody
-        );
-        
-        console.log("Success! Backend response:", response.data);
-        return response.data.body;
-        
-      } catch (error: any) {
-        console.log(`Format ${i + 1} failed:`, error.response?.data);
-        if (i === formats.length - 1) {
-          // 마지막 형식도 실패하면 에러 던지기
-          throw error;
+    try {
+      const requestBody = {
+        body: {
+          name: data.name,
+          email: data.email,
+          address: data.address || "서울시 강남구",
+          password: data.password
         }
-      }
+      };
+      
+      console.log("회원가입 요청 데이터:", requestBody);
+      
+      const response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
+        "/open-api/user/register",
+        requestBody
+      );
+      
+      console.log("회원가입 API 응답:", response.data);
+      return response.data.body;
+      
+    } catch (error: any) {
+      console.error("회원가입 API 에러:", error.response?.data);
+      throw new Error(
+        error.response?.data?.result?.resultMessage ||
+        error.response?.data?.message ||
+        error.message ||
+        "회원가입에 실패했습니다."
+      );
     }
-    
-    throw new Error("모든 형식 시도 실패");
   },
 
-  // 로그인
+  // 로그인 - 백엔드 API 스펙에 맞춰 body 래퍼로 전송
   login: async (data: LoginRequest): Promise<TokenResponse> => {
     // 테스트 계정일 경우 목 토큰 반환
     if (data.email === "test@user.com" && data.password === "1234") {
@@ -104,32 +62,30 @@ export const authApi = {
     }
 
     try {
-      console.log("Login request data:", data);
-
-      // Spring Security를 위한 여러 형식 시도
-      let response;
-
-      // Swagger 방식: 직접 데이터 전송
-      response = await axiosWithFallback.post<ApiResponse<TokenResponse>>(
-        "/open-api/user/login",
-        data,  // 직접 데이터 전송
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+      const requestBody = {
+        body: {
+          email: data.email,
+          password: data.password
         }
+      };
+      
+      console.log("로그인 API 호출:", requestBody);
+
+      const response = await axiosWithFallback.post<ApiResponse<TokenResponse>>(
+        "/open-api/user/login",
+        requestBody
       );
 
-      console.log("Login API response:", response.data);
+      console.log("로그인 API 응답:", response.data);
       return response.data.body;
     } catch (error: any) {
-      console.error("Login API error:", error);
-      console.error("Error response:", error.response?.data);
+      console.error("로그인 API 에러:", error.response?.data);
 
       throw new Error(
+        error.response?.data?.result?.resultMessage ||
         error.response?.data?.message ||
-          error.message ||
-          "로그인에 실패했습니다. 백엔드 API를 확인해주세요."
+        error.message ||
+        "로그인에 실패했습니다."
       );
     }
   },
