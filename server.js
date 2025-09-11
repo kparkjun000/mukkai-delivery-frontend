@@ -103,18 +103,32 @@ app.use('/open-api', createProxyMiddleware({
 
 // 구버전 JS 파일을 새 JS 파일 내용으로 완전 교체
 app.get('/assets/index-BUhxMOPx.js', (req, res) => {
-  console.log('Serving new JS content for old filename');
+  console.log('🔄 Intercepting old JS file request - serving new JS content');
   const newJsPath = path.join(__dirname, 'dist', 'assets', 'index-4wFnBNQF.js');
+  
+  // 강력한 캐시 무효화 헤더
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('ETag', 'W/"new-js-' + Date.now() + '"');
   
   // 새 JS 파일이 존재하면 그 내용을 서빙
   if (fs.existsSync(newJsPath)) {
-    res.setHeader('Content-Type', 'application/javascript');
-    res.setHeader('Cache-Control', 'no-cache');
+    console.log('✅ Serving new JS file content from:', newJsPath);
     res.sendFile(newJsPath);
   } else {
-    // 새 파일이 없으면 리다이렉트
+    console.log('❌ New JS file not found, redirecting');
     res.redirect(301, '/assets/index-4wFnBNQF.js');
   }
+});
+
+// 모든 구버전 에셋 파일들을 새 버전으로 리다이렉트
+app.get('/assets/index-BUhxMOPx.*', (req, res) => {
+  console.log('🔄 Redirecting old asset request:', req.url);
+  const newUrl = req.url.replace('index-BUhxMOPx', 'index-4wFnBNQF');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.redirect(301, newUrl);
 });
 
 // 구버전 JS가 직접 백엔드를 호출할 때 프록시로 처리
@@ -139,7 +153,8 @@ app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, 'dist', 'index.html');
   console.log(`Serving ${req.path} -> ${indexPath}`);
   
-  // 강제로 새 index.html 내용 전송
+  // 강제로 새 index.html 내용 전송 - 캐시 버스팅 강화
+  const timestamp = Date.now();
   const newIndexHtml = `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -157,8 +172,8 @@ app.get('*', (req, res) => {
       gtag("js", new Date());
       gtag("config", "G-VHEL5W2V27");
     </script>
-    <script type="module" crossorigin src="/assets/index-4wFnBNQF.js?v=${Date.now()}"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-D_RYoknR.css?v=${Date.now()}">
+    <script type="module" crossorigin src="/assets/index-4wFnBNQF.js?v=${timestamp}&bust=${Math.random()}"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D_RYoknR.css?v=${timestamp}&bust=${Math.random()}">
   </head>
   <body>
     <div id="root"></div>
