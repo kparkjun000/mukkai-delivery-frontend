@@ -75,6 +75,12 @@ app.use('/open-api', createProxyMiddleware({
   }
 }));
 
+// 구버전 JS 파일 요청을 새 버전으로 리다이렉트
+app.get('/assets/index-BUhxMOPx.js', (req, res) => {
+  console.log('Redirecting old JS to new version');
+  res.redirect(301, '/assets/index-4wFnBNQF.js');
+});
+
 // Serve static files from the dist directory
 app.use(express.static(path.join(__dirname, 'dist')));
 
@@ -82,7 +88,37 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, 'dist', 'index.html');
   console.log(`Serving ${req.path} -> ${indexPath}`);
-  res.sendFile(indexPath);
+  
+  // 강제로 새 index.html 내용 전송
+  const newIndexHtml = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Foodie - 맛있는 음식을 빠르게</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=D2+Coding:wght@400;700&display=swap" rel="stylesheet" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VHEL5W2V27"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag("js", new Date());
+      gtag("config", "G-VHEL5W2V27");
+    </script>
+    <script type="module" crossorigin src="/assets/index-4wFnBNQF.js?v=${Date.now()}"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D_RYoknR.css?v=${Date.now()}">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>`;
+
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.send(newIndexHtml);
 });
 
 const PORT = process.env.PORT || 3000;
