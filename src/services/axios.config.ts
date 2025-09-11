@@ -40,7 +40,7 @@ console.log('🔧 API Configuration:', {
 // Axios 인스턴스 생성
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000, // 15초로 단축 (빠른 fallback)
+  timeout: 30000, // 30초로 연장 (백엔드 응답 대기)
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json",

@@ -77,17 +77,23 @@ app.use('/api', createProxyMiddleware({
   }
 }));
 
-// 간단한 프록시 설정 (문제 해결용)
+// 간단한 프록시 설정 (문제 해결용) - 타임아웃 연장
 app.use('/open-api', createProxyMiddleware({
   target: API_TARGET,
   changeOrigin: true,
   secure: true,
+  timeout: 45000, // 45초 타임아웃
+  proxyTimeout: 45000, // 프록시 타임아웃
   logLevel: 'info',
   onProxyReq: (proxyReq, req, res) => {
     console.log(`🔗 [PROXY] ${req.method} ${req.originalUrl} -> ${API_TARGET}${req.url}`);
+    console.log(`📝 [PROXY] Headers:`, req.headers);
+    // 타임아웃 확장
+    proxyReq.setTimeout(45000);
   },
   onProxyRes: (proxyRes, req, res) => {
-    console.log(`✅ [PROXY] Response: ${proxyRes.statusCode}`);
+    console.log(`✅ [PROXY] Response: ${proxyRes.statusCode} (${proxyRes.statusMessage})`);
+    console.log(`📊 [PROXY] Response headers:`, proxyRes.headers);
     // CORS 헤더 강제 추가
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -95,8 +101,13 @@ app.use('/open-api', createProxyMiddleware({
   },
   onError: (err, req, res) => {
     console.error('❌ [PROXY] Error:', err.message);
+    console.error('❌ [PROXY] Error details:', err);
     if (!res.headersSent) {
-      res.status(500).json({ error: 'Proxy error' });
+      res.status(504).json({ 
+        error: 'Proxy timeout or connection error',
+        message: err.message,
+        code: err.code 
+      });
     }
   }
 }));
@@ -104,7 +115,7 @@ app.use('/open-api', createProxyMiddleware({
 // 구버전 JS 파일을 새 JS 파일 내용으로 완전 교체
 app.get('/assets/index-BUhxMOPx.js', (req, res) => {
   console.log('🔄 Intercepting old JS file request - serving new JS content');
-  const newJsPath = path.join(__dirname, 'dist', 'assets', 'index-4wFnBNQF.js');
+  const newJsPath = path.join(__dirname, 'dist', 'assets', 'index-s0SLxQ-h.js');
   
   // 강력한 캐시 무효화 헤더
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
@@ -126,7 +137,7 @@ app.get('/assets/index-BUhxMOPx.js', (req, res) => {
 // 모든 구버전 에셋 파일들을 새 버전으로 리다이렉트
 app.get('/assets/index-BUhxMOPx.*', (req, res) => {
   console.log('🔄 Redirecting old asset request:', req.url);
-  const newUrl = req.url.replace('index-BUhxMOPx', 'index-4wFnBNQF');
+  const newUrl = req.url.replace('index-BUhxMOPx', 'index-s0SLxQ-h');
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.redirect(301, newUrl);
 });
@@ -196,7 +207,7 @@ app.get('*', (req, res) => {
         }, 100);
       }
     </script>
-    <script type="module" crossorigin src="/assets/index-4wFnBNQF.js?v=${timestamp}&bust=${randomId}&t=${Date.now()}"></script>
+    <script type="module" crossorigin src="/assets/index-s0SLxQ-h.js?v=${timestamp}&bust=${randomId}&t=${Date.now()}"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-D_RYoknR.css?v=${timestamp}&bust=${randomId}&t=${Date.now()}">
   </head>
   <body>
