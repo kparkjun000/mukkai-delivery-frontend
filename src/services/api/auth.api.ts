@@ -100,7 +100,7 @@ export const authApi = {
     try {
       console.log("사용자 정보 조회 API 호출");
       
-      const response = await axiosInstance.get<ApiResponse<UserResponse>>(
+      const response = await axiosWithFallback.get<ApiResponse<UserResponse>>(
         "/api/user/me",
         {
           headers: {
