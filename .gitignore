@@ -8,7 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
+# dist를 커밋에 포함시켜 Heroku가 빌드된 파일 사용하도록
+# dist
 dist-ssr
 *.local
 

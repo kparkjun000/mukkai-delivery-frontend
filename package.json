@@ -10,7 +10,6 @@
     "lint": "eslint .",
     "start": "node server.js",
     "serve": "node server.js",
-    "heroku-postbuild": "npm run build",
     "railway:start": "node server.js"
   },
   "dependencies": {
