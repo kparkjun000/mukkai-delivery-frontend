@@ -13,13 +13,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CORS 미들웨어 - 모든 요청에 대해 CORS 허용
+// 강력한 CORS 설정 - 모든 요청 허용
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, authorization-token');
+  res.setHeader('Access-Control-Allow-Methods', '*');
+  res.setHeader('Access-Control-Allow-Headers', '*');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  res.setHeader('Access-Control-Allow-Credentials', 'false');
   
-  // Preflight 요청 처리
+  // 모든 OPTIONS 요청 즉시 허용
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
@@ -59,7 +61,12 @@ const API_TARGET = 'https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com';
 app.use('/open-api', createProxyMiddleware({
   target: API_TARGET,
   changeOrigin: true,
-  secure: true
+  secure: true,
+  onProxyRes: (proxyRes, req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', '*');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+  }
 }));
 
 // 강화된 프록시 설정 - 모든 /open-api 요청 처리
