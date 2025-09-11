@@ -63,6 +63,16 @@ app.use('/open-api', createProxyMiddleware({
   target: API_TARGET,
   changeOrigin: true,
   secure: true,
+  logLevel: 'debug',
+  onProxyReq: (proxyReq, req, res) => {
+    // Body가 있는 경우 처리
+    if (req.body) {
+      const bodyData = JSON.stringify(req.body);
+      proxyReq.setHeader('Content-Type', 'application/json');
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      proxyReq.write(bodyData);
+    }
+  },
   onProxyRes: (proxyRes, req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', '*');
