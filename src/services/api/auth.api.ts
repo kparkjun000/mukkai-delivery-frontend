@@ -16,11 +16,30 @@ interface ApiResponse<T> {
 }
 
 export const authApi = {
-  // 회원가입 - 무조건 성공 처리
+  // 회원가입 - 백엔드 호출
   register: async (data: RegisterRequest): Promise<UserResponse> => {
-    console.log("Register request - returning mock success immediately");
+    const requestBody = {
+      name: data.name,
+      email: data.email,
+      address: data.address || "서울시 강남구",
+      password: data.password
+    };
     
-    // 백엔드 문제 상관없이 무조건 성공 반환
+    console.log("Calling backend with:", requestBody);
+    
+    const response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
+      "/open-api/user/register",
+      requestBody
+    );
+    
+    console.log("Backend response:", response.data);
+    
+    // 백엔드가 정상 응답하면 그 데이터 반환
+    if (response.data?.body) {
+      return response.data.body;
+    }
+    
+    // 백엔드가 body 없이 응답하면 기본값 반환
     return {
       id: Date.now(),
       email: data.email,
