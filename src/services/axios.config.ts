@@ -19,9 +19,11 @@ const isLocalhost = typeof window !== 'undefined' &&
                    (window.location.hostname === 'localhost' || 
                     window.location.hostname === '127.0.0.1');
 
-// 백엔드 직접 호출
-const API_BASE_URL = "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
-const FALLBACK_API_BASE_URL = "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
+// 프로덕션에서는 프록시 사용, 개발환경에서만 직접 호출
+const API_BASE_URL = isDevelopment && isLocalhost 
+  ? "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com" 
+  : ""; // 프로덕션에서는 프록시 사용 (상대 경로)
+const FALLBACK_API_BASE_URL = "";
 
 console.log('🔧 API Configuration:', {
   isDevelopment,

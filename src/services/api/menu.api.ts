@@ -1223,4 +1223,45 @@ export const menuApi = {
     // 해당 가게의 메뉴 반환, 없으면 빈 배열 (fallback)
     return mockMenus[storeId] || [];
   },
+
+  // 메뉴 등록 (점주용) - 백엔드 API 스펙에 맞춰 body 래퍼로 전송
+  register: async (data: any): Promise<StoreMenuResponse> => {
+    try {
+      const requestBody = {
+        body: {
+          storeId: data.storeId,
+          name: data.name,
+          amount: data.amount || data.price,
+          thumbnailUrl: data.thumbnailUrl || data.imageUrl || "",
+          description: data.description || "",
+          status: data.status || "REGISTERED"
+        }
+      };
+      
+      console.log("메뉴 등록 API 호출:", requestBody);
+      
+      const response = await axiosInstance.post<ApiResponse<StoreMenuResponse>>(
+        '/open-api/store-menu/register',
+        requestBody,
+        { 
+          timeout: 10000,
+          headers: {
+            "authorization-token": localStorage.getItem("accessToken") || localStorage.getItem("storeUserAccessToken")
+          }
+        }
+      );
+      
+      console.log("메뉴 등록 API 응답:", response.data);
+      return response.data.body;
+      
+    } catch (error: any) {
+      console.error("메뉴 등록 API 에러:", error.response?.data);
+      throw new Error(
+        error.response?.data?.result?.resultMessage ||
+        error.response?.data?.message ||
+        error.message ||
+        "메뉴 등록에 실패했습니다."
+      );
+    }
+  }
 };

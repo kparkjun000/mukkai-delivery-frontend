@@ -574,12 +574,40 @@ export const storeApi = {
     return store;
   },
 
-  // 가게 등록 (점주용 - 나중에 구현)
-  // register: async (data: StoreRegisterRequest): Promise<StoreResponse> => {
-  //   const response = await axiosInstance.post<ApiResponse<StoreResponse>>(
-  //     '/open-api/store/register',
-  //     { body: data }
-  //   );
-  //   return response.data.body;
-  // }
+  // 가게 등록 (점주용) - 백엔드 API 스펙에 맞춰 body 래퍼로 전송
+  register: async (data: any): Promise<StoreResponse> => {
+    try {
+      const requestBody = {
+        body: {
+          name: data.name || data.storeName,
+          address: data.address,
+          category: data.category,
+          phoneNumber: data.phoneNumber || data.phone,
+          minimumAmount: data.minimumAmount || 10000,
+          minimumDeliveryAmount: data.minimumDeliveryAmount || 3000,
+          description: data.description || ""
+        }
+      };
+      
+      console.log("가게 등록 API 호출:", requestBody);
+      
+      const response = await axiosInstance.post<ApiResponse<StoreResponse>>(
+        '/open-api/store/register',
+        requestBody,
+        { timeout: 10000 }
+      );
+      
+      console.log("가게 등록 API 응답:", response.data);
+      return response.data.body;
+      
+    } catch (error: any) {
+      console.error("가게 등록 API 에러:", error.response?.data);
+      throw new Error(
+        error.response?.data?.result?.resultMessage ||
+        error.response?.data?.message ||
+        error.message ||
+        "가게 등록에 실패했습니다."
+      );
+    }
+  }
 };
