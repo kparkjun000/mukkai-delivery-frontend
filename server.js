@@ -87,7 +87,7 @@ app.use('/open-api', createProxyMiddleware({
 // 구버전 JS 파일을 새 JS 파일 내용으로 완전 교체
 app.get('/assets/index-BUhxMOPx.js', (req, res) => {
   console.log('🔄 Intercepting old JS file request - serving new JS content');
-  const newJsPath = path.join(__dirname, 'dist', 'assets', 'index-I2-J_R_3.js');
+  const newJsPath = path.join(__dirname, 'dist', 'assets', 'index-Buplg1wQ.js');
   
   // 강력한 캐시 무효화 헤더
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
@@ -102,20 +102,32 @@ app.get('/assets/index-BUhxMOPx.js', (req, res) => {
     res.sendFile(newJsPath);
   } else {
     console.log('❌ New JS file not found, redirecting');
-    res.redirect(301, '/assets/index-I2-J_R_3.js');
+    res.redirect(301, '/assets/index-Buplg1wQ.js');
   }
 });
 
 // 모든 구버전 에셋 파일들을 새 버전으로 리다이렉트
 app.get('/assets/index-BUhxMOPx.*', (req, res) => {
   console.log('🔄 Redirecting old asset request:', req.url);
-  const newUrl = req.url.replace('index-BUhxMOPx', 'index-I2-J_R_3');
+  const newUrl = req.url.replace('index-BUhxMOPx', 'index-Buplg1wQ');
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.redirect(301, newUrl);
 });
 
 // Serve static files from the dist directory (프록시보다 먼저 배치)
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(path.join(__dirname, 'dist'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    } else if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css; charset=utf-8');
+    }
+    // 캐시 무효화
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+}));
 
 // Handle React routing, return all requests to React app
 app.get('*', (req, res) => {
@@ -155,7 +167,7 @@ app.get('*', (req, res) => {
         }, 100);
       }
     </script>
-    <script type="module" crossorigin src="/assets/index-I2-J_R_3.js?v=${timestamp}&bust=${randomId}&t=${Date.now()}"></script>
+    <script type="module" crossorigin src="/assets/index-Buplg1wQ.js?v=${timestamp}&bust=${randomId}&t=${Date.now()}"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-D_RYoknR.css?v=${timestamp}&bust=${randomId}&t=${Date.now()}">
   </head>
   <body>
