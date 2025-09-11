@@ -13,6 +13,21 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// CORS 미들웨어 - 모든 요청에 대해 CORS 허용
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, authorization-token');
+  
+  // Preflight 요청 처리
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
+
 // Debug middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
@@ -66,6 +81,10 @@ app.use('/open-api', createProxyMiddleware({
   },
   onProxyRes: (proxyRes, req, res) => {
     console.log(`✅ [PROXY] Response: ${proxyRes.statusCode}`);
+    // CORS 헤더 강제 추가
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, authorization-token');
   },
   onError: (err, req, res) => {
     console.error('❌ [PROXY] Error:', err.message);
@@ -79,6 +98,13 @@ app.use('/open-api', createProxyMiddleware({
 app.get('/assets/index-BUhxMOPx.js', (req, res) => {
   console.log('Redirecting old JS to new version');
   res.redirect(301, '/assets/index-4wFnBNQF.js');
+});
+
+// 백엔드 직접 호출을 프록시로 리다이렉트
+app.all('https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com/*', (req, res) => {
+  const proxyPath = req.url.replace('https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com', '');
+  console.log(`Redirecting direct backend call to proxy: ${proxyPath}`);
+  res.redirect(302, proxyPath);
 });
 
 // Serve static files from the dist directory
