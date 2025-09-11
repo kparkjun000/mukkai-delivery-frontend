@@ -19,15 +19,9 @@ const isLocalhost = typeof window !== 'undefined' &&
                    (window.location.hostname === 'localhost' || 
                     window.location.hostname === '127.0.0.1');
 
-// 로컬 개발 환경이 아니면 무조건 프록시 사용
-const API_BASE_URL = (isDevelopment && isLocalhost)
-  ? "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com"
-  : ''; // 프로덕션/Heroku에서는 무조건 프록시 사용
-
-// Fallback도 프로덕션에서는 프록시 사용해야 함 (CORS 때문에)
-const FALLBACK_API_BASE_URL = (isDevelopment && isLocalhost)
-  ? "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com"
-  : ''; // 프로덕션에서는 fallback도 프록시 사용
+// 단순하게 직접 백엔드 호출 - 백엔드에서 CORS 설정되어 있음
+const API_BASE_URL = "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
+const FALLBACK_API_BASE_URL = "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
 
 console.log('🔧 API Configuration:', {
   isDevelopment,
