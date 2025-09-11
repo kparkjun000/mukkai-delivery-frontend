@@ -13,25 +13,28 @@ interface ApiResponse<T> {
 
 // 백엔드 API URL - 프로덕션에서는 프록시 사용, fallback으로 직접 호출
 // Heroku 환경 또는 빌드된 환경에서는 프록시 사용
-const isProduction = process.env.NODE_ENV === 'production' || 
-                    typeof window !== 'undefined' && 
-                    window.location.hostname.includes('herokuapp.com');
+// 개발 환경에서만 직접 백엔드 호출
+const isDevelopment = import.meta.env.DEV;
+const isLocalhost = typeof window !== 'undefined' && 
+                   (window.location.hostname === 'localhost' || 
+                    window.location.hostname === '127.0.0.1');
 
-const API_BASE_URL = isProduction
-  ? '' // 프로덕션에서는 프록시 사용 
-  : "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
+// 로컬 개발 환경이 아니면 무조건 프록시 사용
+const API_BASE_URL = (isDevelopment && isLocalhost)
+  ? "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com"
+  : ''; // 프로덕션/Heroku에서는 무조건 프록시 사용
 
 // Fallback도 프로덕션에서는 프록시 사용해야 함 (CORS 때문에)
-const FALLBACK_API_BASE_URL = isProduction
-  ? '' // 프로덕션에서는 fallback도 프록시 사용
-  : "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
+const FALLBACK_API_BASE_URL = (isDevelopment && isLocalhost)
+  ? "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com"
+  : ''; // 프로덕션에서는 fallback도 프록시 사용
 
 console.log('🔧 API Configuration:', {
-  NODE_ENV: process.env.NODE_ENV,
+  isDevelopment,
+  isLocalhost,
   hostname: typeof window !== 'undefined' ? window.location.hostname : 'server',
-  isProduction,
-  API_BASE_URL,
-  FALLBACK_API_BASE_URL
+  API_BASE_URL: API_BASE_URL || 'PROXY',
+  FALLBACK_API_BASE_URL: FALLBACK_API_BASE_URL || 'PROXY'
 });
 
 // Axios 인스턴스 생성
@@ -139,24 +142,24 @@ export const testBackendConnection = async (): Promise<boolean> => {
   } catch (error: any) {
     // 응답이 있고 2003 코드면 연결 성공 (400 상태코드여도 백엔드 응답이므로 연결됨)
     if (error.response?.data?.result?.result_code === 2003) {
-      console.log('✅ Backend connection successful (auth required):', API_BASE_URL);
+      console.log('✅ Backend connection successful (auth required)');
       return true;
     }
     
     // 400 에러도 백엔드 응답이 있으면 연결 성공
     if (error.response?.status === 400 && error.response?.data?.result) {
-      console.log('✅ Backend connection successful (bad request but server responding):', API_BASE_URL);
+      console.log('✅ Backend connection successful (bad request but server responding)');
       return true;
     }
     
     // 401/403도 연결 성공을 의미 (인증만 필요)
     if (error.response?.status === 401 || error.response?.status === 403) {
-      console.log('✅ Backend connection successful (auth required):', API_BASE_URL);
+      console.log('✅ Backend connection successful (auth required)');
       return true;
     }
     
     console.error('❌ Backend connection failed:', error);
-    console.log('Backend URL:', API_BASE_URL);
+    console.log('Backend URL:', API_BASE_URL || 'PROXY');
     return false;
   }
 };
