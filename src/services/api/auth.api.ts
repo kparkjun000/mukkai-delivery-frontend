@@ -22,11 +22,25 @@ export const authApi = {
       console.log("Register request data:", data);
       let response;
 
-      // Swagger에서는 직접 데이터 전송이 성공했을 가능성이 높음
-      console.log("Sending registration request with data:", data);
+      // 백엔드가 요구하는 정확한 형식으로 전송
+      const requestBody = {
+        result: {
+          resultCode: 0,
+          resultMessage: "OK", 
+          resultDescription: "SUCCESS"
+        },
+        body: {
+          name: data.name,
+          email: data.email,
+          address: data.address || "서울시 강남구",
+          password: data.password
+        }
+      };
+      
+      console.log("Sending registration request with correct format:", requestBody);
       response = await axiosWithFallback.post<ApiResponse<UserResponse>>(
         "/open-api/user/register",
-        data  // 직접 데이터 전송 (Swagger 방식)
+        requestBody
       );
 
       console.log("Register API response:", response.data);
