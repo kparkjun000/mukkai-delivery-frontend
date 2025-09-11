@@ -87,7 +87,7 @@ app.use('/open-api', createProxyMiddleware({
 // 구버전 JS 파일을 새 JS 파일 내용으로 완전 교체
 app.get('/assets/index-BUhxMOPx.js', (req, res) => {
   console.log('🔄 Intercepting old JS file request - serving new JS content');
-  const newJsPath = path.join(__dirname, 'dist', 'assets', 'index-DKOgmKrf.js');
+  const newJsPath = path.join(__dirname, 'dist', 'assets', 'index-CfWwhjmC.js');
   
   // 강력한 캐시 무효화 헤더
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
@@ -109,7 +109,7 @@ app.get('/assets/index-BUhxMOPx.js', (req, res) => {
 // 모든 구버전 에셋 파일들을 새 버전으로 리다이렉트
 app.get('/assets/index-BUhxMOPx.*', (req, res) => {
   console.log('🔄 Redirecting old asset request:', req.url);
-  const newUrl = req.url.replace('index-BUhxMOPx', 'index-DKOgmKrf');
+  const newUrl = req.url.replace('index-BUhxMOPx', 'index-CfWwhjmC');
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.redirect(301, newUrl);
 });
@@ -155,7 +155,7 @@ app.get('*', (req, res) => {
         }, 100);
       }
     </script>
-    <script type="module" crossorigin src="/assets/index-DKOgmKrf.js?v=${timestamp}&bust=${randomId}&t=${Date.now()}"></script>
+    <script type="module" crossorigin src="/assets/index-CfWwhjmC.js?v=${timestamp}&bust=${randomId}&t=${Date.now()}"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-D_RYoknR.css?v=${timestamp}&bust=${randomId}&t=${Date.now()}">
   </head>
   <body>
