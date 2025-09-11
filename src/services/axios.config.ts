@@ -19,9 +19,9 @@ const isLocalhost = typeof window !== 'undefined' &&
                    (window.location.hostname === 'localhost' || 
                     window.location.hostname === '127.0.0.1');
 
-// 프록시 사용
-const API_BASE_URL = "";
-const FALLBACK_API_BASE_URL = "";
+// 직접 백엔드 호출 - 간단하게
+const API_BASE_URL = "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
+const FALLBACK_API_BASE_URL = "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com";
 
 console.log('🔧 API Configuration:', {
   isDevelopment,
