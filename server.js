@@ -34,15 +34,22 @@ app.use((req, res, next) => {
   next();
 });
 
-// Add health check endpoint
+// Add health check endpoint - 구버전 JS의 400 에러 해결
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString(),
-    port: PORT,
-    env: process.env.NODE_ENV,
-    distExists: fs.existsSync(path.join(__dirname, 'dist')),
-    version: '2.0.0' // 버전 업데이트로 Heroku 재빌드 강제
+  // 구버전 JS가 기대하는 응답 형식으로 200 OK 반환
+  res.status(200).json({ 
+    result: {
+      result_code: 0,
+      result_message: "OK",
+      result_description: "SUCCESS"
+    },
+    body: {
+      status: 'healthy', 
+      timestamp: new Date().toISOString(),
+      port: PORT,
+      env: process.env.NODE_ENV,
+      version: '2.0.0'
+    }
   });
 });
 
