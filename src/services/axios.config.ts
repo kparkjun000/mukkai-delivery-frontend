@@ -19,9 +19,11 @@ const isLocalhost = typeof window !== 'undefined' &&
                    (window.location.hostname === 'localhost' || 
                     window.location.hostname === '127.0.0.1');
 
-// 프록시 사용하여 CORS 문제 영구 해결
-const API_BASE_URL = "";
-const FALLBACK_API_BASE_URL = "";
+// 로컬에서는 직접 호출, 프로덕션에서는 프록시
+const API_BASE_URL = (typeof window !== 'undefined' && window.location.hostname === 'localhost')
+  ? "https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com"
+  : "/api";
+const FALLBACK_API_BASE_URL = API_BASE_URL;
 
 console.log('🔧 API Configuration:', {
   isDevelopment,

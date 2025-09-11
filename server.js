@@ -55,24 +55,32 @@ app.get('/health', (req, res) => {
   });
 });
 
-// CORS 해결을 위한 프록시
+// API 프록시 설정
 const API_TARGET = 'https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com';
 
-app.use('/open-api', createProxyMiddleware({
+// /api로 시작하는 모든 요청을 백엔드로 프록시
+app.use('/api', createProxyMiddleware({
   target: API_TARGET,
   changeOrigin: true,
   secure: true,
+  pathRewrite: {
+    '^/api': '' // /api 제거하고 백엔드로 전달
+  },
   onProxyRes: (proxyRes, req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');
+  },
+  onError: (err, req, res) => {
+    console.error('Proxy error:', err);
+    res.status(500).json({ error: 'Proxy error', message: err.message });
   }
 }));
 
 // 구버전 JS 파일을 새 JS 파일 내용으로 완전 교체
 app.get('/assets/index-BUhxMOPx.js', (req, res) => {
   console.log('🔄 Intercepting old JS file request - serving new JS content');
-  const newJsPath = path.join(__dirname, 'dist', 'assets', 'index-CMzf2kD7.js');
+  const newJsPath = path.join(__dirname, 'dist', 'assets', 'index-CP76lI4p.js');
   
   // 강력한 캐시 무효화 헤더
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
@@ -94,7 +102,7 @@ app.get('/assets/index-BUhxMOPx.js', (req, res) => {
 // 모든 구버전 에셋 파일들을 새 버전으로 리다이렉트
 app.get('/assets/index-BUhxMOPx.*', (req, res) => {
   console.log('🔄 Redirecting old asset request:', req.url);
-  const newUrl = req.url.replace('index-BUhxMOPx', 'index-CMzf2kD7');
+  const newUrl = req.url.replace('index-BUhxMOPx', 'index-CP76lI4p');
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.redirect(301, newUrl);
 });
@@ -140,7 +148,7 @@ app.get('*', (req, res) => {
         }, 100);
       }
     </script>
-    <script type="module" crossorigin src="/assets/index-CMzf2kD7.js?v=${timestamp}&bust=${randomId}&t=${Date.now()}"></script>
+    <script type="module" crossorigin src="/assets/index-CP76lI4p.js?v=${timestamp}&bust=${randomId}&t=${Date.now()}"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-D_RYoknR.css?v=${timestamp}&bust=${randomId}&t=${Date.now()}">
   </head>
   <body>
