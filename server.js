@@ -77,22 +77,28 @@ app.use('/api', createProxyMiddleware({
   }
 }));
 
-// 간단한 프록시 설정 (문제 해결용) - 타임아웃 연장
+// 간단한 프록시 설정 (문제 해결용) - 경로 재작성 포함
 app.use('/open-api', createProxyMiddleware({
   target: API_TARGET,
   changeOrigin: true,
   secure: true,
   timeout: 45000, // 45초 타임아웃
   proxyTimeout: 45000, // 프록시 타임아웃
-  logLevel: 'info',
+  pathRewrite: {
+    '^/open-api': '/open-api' // 경로 유지 (백엔드가 /open-api 경로 사용)
+  },
+  logLevel: 'debug',
   onProxyReq: (proxyReq, req, res) => {
-    console.log(`🔗 [PROXY] ${req.method} ${req.originalUrl} -> ${API_TARGET}${req.url}`);
+    const targetUrl = `${API_TARGET}${proxyReq.path}`;
+    console.log(`🔗 [PROXY] ${req.method} ${req.originalUrl} -> ${targetUrl}`);
     console.log(`📝 [PROXY] Headers:`, req.headers);
+    console.log(`🎯 [PROXY] Target Path:`, proxyReq.path);
     // 타임아웃 확장
     proxyReq.setTimeout(45000);
   },
   onProxyRes: (proxyRes, req, res) => {
-    console.log(`✅ [PROXY] Response: ${proxyRes.statusCode} (${proxyRes.statusMessage})`);
+    const targetUrl = `${API_TARGET}${req.url}`;
+    console.log(`✅ [PROXY] Response: ${proxyRes.statusCode} (${proxyRes.statusMessage}) from ${targetUrl}`);
     console.log(`📊 [PROXY] Response headers:`, proxyRes.headers);
     // CORS 헤더 강제 추가
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -100,13 +106,16 @@ app.use('/open-api', createProxyMiddleware({
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, authorization-token');
   },
   onError: (err, req, res) => {
+    const targetUrl = `${API_TARGET}${req.url}`;
     console.error('❌ [PROXY] Error:', err.message);
+    console.error('❌ [PROXY] Target URL:', targetUrl);
     console.error('❌ [PROXY] Error details:', err);
     if (!res.headersSent) {
       res.status(504).json({ 
         error: 'Proxy timeout or connection error',
         message: err.message,
-        code: err.code 
+        code: err.code,
+        targetUrl: targetUrl
       });
     }
   }
@@ -158,9 +167,9 @@ app.use((req, res, next) => {
     }
   }
   
-  // User-Agent 기반으로 구버전 JS 감지 및 리다이렉트
-  if (req.headers['user-agent'] && req.url.includes('/open-api/')) {
-    console.log('🔧 API call detected, ensuring proxy usage');
+  // 프록시 요청 로깅
+  if (req.url.startsWith('/open-api/')) {
+    console.log(`🎯 [ROUTE] Processing /open-api request: ${req.method} ${req.url}`);
   }
   
   next();
