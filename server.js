@@ -86,13 +86,19 @@ const API_TARGET = 'https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com';
 // /open-api와 /api로 시작하는 모든 요청을 백엔드로 프록시
 console.log(`🚀 Setting up proxy to: ${API_TARGET}`);
 
-app.use('/open-api', createProxyMiddleware({
+// 조건부 프록시 설정 - API 요청만 백엔드로 전달
+app.use('/', createProxyMiddleware({
   target: API_TARGET,
   changeOrigin: true,
   secure: true,
   logLevel: 'debug',
-  pathRewrite: {
-    '^/open-api': '/open-api' // 경로 보존
+  router: (req) => {
+    // API 요청만 백엔드로 프록시
+    if (req.originalUrl.startsWith('/open-api') || req.originalUrl.startsWith('/api')) {
+      console.log(`🎯 Routing to backend: ${req.method} ${req.originalUrl}`);
+      return API_TARGET;
+    }
+    return null; // 프록시하지 않음
   },
   onProxyReq: (proxyReq, req, res) => {
     console.log(`🔄 Proxying ${req.method} ${req.originalUrl} to ${API_TARGET}${req.originalUrl}`);
@@ -137,41 +143,7 @@ app.use('/open-api', createProxyMiddleware({
   }
 }));
 
-app.use('/api', createProxyMiddleware({
-  target: API_TARGET,
-  changeOrigin: true,
-  secure: true,
-  logLevel: 'debug',
-  onProxyReq: (proxyReq, req, res) => {
-    console.log(`🔄 Proxying ${req.method} ${req.originalUrl} to ${API_TARGET}${req.originalUrl}`);
-    
-    // Authorization 헤더 전달
-    if (req.headers['authorization-token']) {
-      proxyReq.setHeader('authorization-token', req.headers['authorization-token']);
-    }
-    
-    // Body가 있는 경우 처리
-    if (req.body && Object.keys(req.body).length > 0) {
-      const bodyData = JSON.stringify(req.body);
-      console.log(`📤 Request body:`, bodyData);
-      proxyReq.setHeader('Content-Type', 'application/json');
-      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-      proxyReq.write(bodyData);
-    }
-  },
-  onProxyRes: (proxyRes, req, res) => {
-    console.log(`✅ Proxy response: ${proxyRes.statusCode} for ${req.originalUrl}`);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', '*');
-    res.setHeader('Access-Control-Allow-Headers', '*');
-  },
-  onError: (err, req, res) => {
-    console.error('❌ Proxy error:', err.message, 'for', req.originalUrl);
-    if (!res.headersSent) {
-      res.status(500).json({ error: 'Proxy error', message: err.message, url: req.originalUrl });
-    }
-  }
-}));
+// 중복 프록시 설정 제거됨 - 위의 조건부 프록시에서 처리
 
 // 프록시 설정 확인용 테스트 엔드포인트
 app.get('/proxy-test', (req, res) => {
