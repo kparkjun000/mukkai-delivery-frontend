@@ -131,18 +131,28 @@ app.get('/assets/index-BUhxMOPx.*', (req, res) => {
   res.redirect(301, newUrl);
 });
 
-// 구버전 JS가 직접 백엔드를 호출할 때 프록시로 처리
-app.all('*mukkai-backend-api-f9dc2d5aad02.herokuapp.com*', (req, res, next) => {
-  console.log('Direct backend call intercepted:', req.url);
-  // health 요청을 로컬로 리다이렉트
-  if (req.url.includes('/health')) {
-    res.redirect('/health');
-  } else if (req.url.includes('/open-api/')) {
-    const apiPath = req.url.split('/open-api/')[1];
-    res.redirect(`/open-api/${apiPath}`);
-  } else {
-    next();
+// 구버전 JS가 직접 백엔드를 호출할 때 프록시로 처리 (더 강력한 인터셉트)
+app.use((req, res, next) => {
+  // 모든 백엔드 직접 호출을 인터셉트
+  if (req.url.includes('mukkai-backend-api-f9dc2d5aad02.herokuapp.com')) {
+    console.log('🚫 Intercepting direct backend call:', req.originalUrl);
+    
+    if (req.url.includes('/health')) {
+      console.log('🔄 Redirecting health check to local');
+      return res.redirect('/health');
+    } else if (req.url.includes('/open-api/')) {
+      const apiPath = req.url.split('/open-api/')[1] || req.url.split('open-api/')[1];
+      console.log('🔄 Redirecting API call to proxy:', `/open-api/${apiPath}`);
+      return res.redirect(307, `/open-api/${apiPath}`);
+    }
   }
+  
+  // User-Agent 기반으로 구버전 JS 감지 및 리다이렉트
+  if (req.headers['user-agent'] && req.url.includes('/open-api/')) {
+    console.log('🔧 API call detected, ensuring proxy usage');
+  }
+  
+  next();
 });
 
 // Serve static files from the dist directory
@@ -153,12 +163,16 @@ app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, 'dist', 'index.html');
   console.log(`Serving ${req.path} -> ${indexPath}`);
   
-  // 강제로 새 index.html 내용 전송 - 캐시 버스팅 강화
+  // 강제로 새 index.html 내용 전송 - 강력한 캐시 버스팅
   const timestamp = Date.now();
+  const randomId = Math.random().toString(36).substring(7);
   const newIndexHtml = `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Foodie - 맛있는 음식을 빠르게</title>
@@ -171,9 +185,19 @@ app.get('*', (req, res) => {
       function gtag() { dataLayer.push(arguments); }
       gtag("js", new Date());
       gtag("config", "G-VHEL5W2V27");
+      
+      // 강제 캐시 무효화 및 새로고침
+      if (window.performance && window.performance.navigation.type === 0) {
+        console.log('🔄 Force cache clear and reload');
+        setTimeout(() => {
+          if (window.location.search.indexOf('nocache') === -1) {
+            window.location.href = window.location.href + '?nocache=' + Date.now();
+          }
+        }, 100);
+      }
     </script>
-    <script type="module" crossorigin src="/assets/index-4wFnBNQF.js?v=${timestamp}&bust=${Math.random()}"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-D_RYoknR.css?v=${timestamp}&bust=${Math.random()}">
+    <script type="module" crossorigin src="/assets/index-4wFnBNQF.js?v=${timestamp}&bust=${randomId}&t=${Date.now()}"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D_RYoknR.css?v=${timestamp}&bust=${randomId}&t=${Date.now()}">
   </head>
   <body>
     <div id="root"></div>
