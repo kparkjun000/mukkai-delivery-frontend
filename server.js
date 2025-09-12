@@ -86,96 +86,58 @@ const API_TARGET = 'https://mukkai-backend-api-f9dc2d5aad02.herokuapp.com';
 // /open-api와 /api로 시작하는 모든 요청을 백엔드로 프록시
 console.log(`🚀 Setting up proxy to: ${API_TARGET}`);
 
-// API 요청만 백엔드로 프록시
-app.use('/open-api', createProxyMiddleware({
-  target: API_TARGET,
-  changeOrigin: true,
-  secure: true,
-  logLevel: 'debug',
-  pathRewrite: {
-    '^/open-api': '/open-api' // 경로 보존
-  },
-  onProxyReq: (proxyReq, req, res) => {
-    console.log(`🔄 Proxying ${req.method} ${req.originalUrl} to ${API_TARGET}${req.originalUrl}`);
-    console.log(`🔍 Original headers:`, JSON.stringify(req.headers, null, 2));
+// 조건부 프록시 - API 요청만 백엔드로 전달
+app.use((req, res, next) => {
+  // API 요청인지 확인
+  if (req.url.startsWith('/open-api') || req.url.startsWith('/api')) {
+    console.log(`🎯 API request detected: ${req.method} ${req.url}`);
     
-    // Authorization 헤더 전달
-    if (req.headers['authorization-token']) {
-      proxyReq.setHeader('authorization-token', req.headers['authorization-token']);
-      console.log(`🔑 Added authorization-token header`);
-    }
-    
-    // Content-Type 헤더가 있으면 전달
-    if (req.headers['content-type']) {
-      proxyReq.setHeader('Content-Type', req.headers['content-type']);
-      console.log(`📝 Set Content-Type: ${req.headers['content-type']}`);
-    }
-  },
-  onProxyRes: (proxyRes, req, res) => {
-    console.log(`✅ Proxy response: ${proxyRes.statusCode} for ${req.originalUrl}`);
-    
-    // CORS 헤더 설정
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', '*');
-    res.setHeader('Access-Control-Allow-Headers', '*');
-    
-    // 응답 본문 로깅 (디버깅용)
-    let body = '';
-    proxyRes.on('data', (chunk) => {
-      body += chunk;
-    });
-    proxyRes.on('end', () => {
-      if (proxyRes.statusCode >= 400) {
-        console.log(`❌ Error response body:`, body);
+    // 프록시 미들웨어 생성 및 실행
+    const proxy = createProxyMiddleware({
+      target: API_TARGET,
+      changeOrigin: true,
+      secure: true,
+      logLevel: 'debug',
+      // pathRewrite 없이 전체 경로 그대로 전달
+      onProxyReq: (proxyReq, req, res) => {
+        console.log(`🔄 Proxying ${req.method} ${req.originalUrl} to ${API_TARGET}${req.originalUrl}`);
+        console.log(`🔍 Target URL: ${API_TARGET}${req.originalUrl}`);
+        
+        // Authorization 헤더 전달
+        if (req.headers['authorization-token']) {
+          proxyReq.setHeader('authorization-token', req.headers['authorization-token']);
+          console.log(`🔑 Added authorization-token header`);
+        }
+        
+        // Content-Type 헤더가 있으면 전달
+        if (req.headers['content-type']) {
+          proxyReq.setHeader('Content-Type', req.headers['content-type']);
+          console.log(`📝 Set Content-Type: ${req.headers['content-type']}`);
+        }
+      },
+      onProxyRes: (proxyRes, req, res) => {
+        console.log(`✅ Proxy response: ${proxyRes.statusCode} for ${req.originalUrl}`);
+        
+        // CORS 헤더 설정
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', '*');
+        res.setHeader('Access-Control-Allow-Headers', '*');
+      },
+      onError: (err, req, res) => {
+        console.error('❌ Proxy error:', err.message, 'for', req.originalUrl);
+        if (!res.headersSent) {
+          res.status(500).json({ error: 'Proxy error', message: err.message, url: req.originalUrl });
+        }
       }
     });
-  },
-  onError: (err, req, res) => {
-    console.error('❌ Proxy error:', err.message, 'for', req.originalUrl);
-    if (!res.headersSent) {
-      res.status(500).json({ error: 'Proxy error', message: err.message, url: req.originalUrl });
-    }
+    
+    // 프록시 실행
+    proxy(req, res, next);
+  } else {
+    // API 요청이 아니면 다음 미들웨어로
+    next();
   }
-}));
-
-app.use('/api', createProxyMiddleware({
-  target: API_TARGET,
-  changeOrigin: true,
-  secure: true,
-  logLevel: 'debug',
-  pathRewrite: {
-    '^/api': '/api' // 경로 보존
-  },
-  onProxyReq: (proxyReq, req, res) => {
-    console.log(`🔄 Proxying ${req.method} ${req.originalUrl} to ${API_TARGET}${req.originalUrl}`);
-    
-    // Authorization 헤더 전달
-    if (req.headers['authorization-token']) {
-      proxyReq.setHeader('authorization-token', req.headers['authorization-token']);
-      console.log(`🔑 Added authorization-token header`);
-    }
-    
-    // Content-Type 헤더가 있으면 전달
-    if (req.headers['content-type']) {
-      proxyReq.setHeader('Content-Type', req.headers['content-type']);
-      console.log(`📝 Set Content-Type: ${req.headers['content-type']}`);
-    }
-  },
-  onProxyRes: (proxyRes, req, res) => {
-    console.log(`✅ Proxy response: ${proxyRes.statusCode} for ${req.originalUrl}`);
-    
-    // CORS 헤더 설정
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', '*');
-    res.setHeader('Access-Control-Allow-Headers', '*');
-  },
-  onError: (err, req, res) => {
-    console.error('❌ Proxy error:', err.message, 'for', req.originalUrl);
-    if (!res.headersSent) {
-      res.status(500).json({ error: 'Proxy error', message: err.message, url: req.originalUrl });
-    }
-  }
-}));
+});
 
 // 중복 프록시 설정 제거됨 - 위의 조건부 프록시에서 처리
 
