@@ -92,6 +92,9 @@ app.use('/open-api', createProxyMiddleware({
   changeOrigin: true,
   secure: true,
   logLevel: 'debug',
+  pathRewrite: {
+    '^/open-api': '/open-api' // 경로 보존
+  },
   onProxyReq: (proxyReq, req, res) => {
     console.log(`🔄 Proxying ${req.method} ${req.originalUrl} to ${API_TARGET}${req.originalUrl}`);
     console.log(`🔍 Original headers:`, JSON.stringify(req.headers, null, 2));
@@ -140,6 +143,9 @@ app.use('/api', createProxyMiddleware({
   changeOrigin: true,
   secure: true,
   logLevel: 'debug',
+  pathRewrite: {
+    '^/api': '/api' // 경로 보존
+  },
   onProxyReq: (proxyReq, req, res) => {
     console.log(`🔄 Proxying ${req.method} ${req.originalUrl} to ${API_TARGET}${req.originalUrl}`);
     
