@@ -75,21 +75,11 @@ export const useAuthStore = create<AuthState>()(
               userError.message
             );
             // 사용자 정보 로드 실패 시 기본값으로 설정
-            // 이메일에서 더 나은 사용자 이름 추출
-            const emailToName = (email: string) => {
-              const namePart = email.split("@")[0];
-              // 숫자나 특수문자 제거하고 첫 글자 대문자로
-              const cleanName = namePart.replace(/[0-9._-]/g, "");
-              return (
-                cleanName.charAt(0).toUpperCase() + cleanName.slice(1) ||
-                namePart
-              );
-            };
-
+            // 이메일 @ 앞부분을 그대로 사용 (Header에서 처리하므로)
             const mockUser = {
               id: 1,
               email: credentials.email,
-              name: emailToName(credentials.email), // 향상된 이름 추출
+              name: credentials.email.split("@")[0], // 이메일 @ 앞부분 그대로 사용
               phone: "010-0000-0000",
               address: "서울시 강남구",
               role: "USER" as const,
@@ -172,17 +162,38 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
         } catch (error: any) {
-          console.warn("사용자 정보 로드 실패:", error.message);
-          // 토큰이 유효하지 않은 경우
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          set({
-            user: null,
-            token: null,
-            isAuthenticated: false,
-            isLoading: false,
-            error: null,
-          });
+          console.warn("사용자 정보 로드 실패, Mock 사용:", error.message);
+          
+          // 토큰은 있지만 API 호출 실패시 Mock 사용자 생성
+          const lastLoginEmail = localStorage.getItem("lastLoginEmail");
+          if (lastLoginEmail) {
+            const mockUser = {
+              id: 1,
+              email: lastLoginEmail,
+              name: lastLoginEmail.split("@")[0], // 이메일 @ 앞부분 그대로 사용
+              phone: "010-0000-0000",
+              address: "서울시 강남구",
+              role: "USER" as const,
+            };
+            set({
+              user: mockUser,
+              token,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            });
+          } else {
+            // 이메일 정보도 없으면 로그아웃
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            set({
+              user: null,
+              token: null,
+              isAuthenticated: false,
+              isLoading: false,
+              error: null,
+            });
+          }
         }
       },
 
