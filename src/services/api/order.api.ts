@@ -20,33 +20,23 @@ let mockOrders: UserOrderDetailResponse[] = [];
 
 let nextOrderId = 1;
 
-// 현재 로그인한 사용자 ID 가져오기 (fallback 처리)
-const getCurrentUserId = () => {
+// 현재 로그인한 사용자 이메일 가져오기 (사용자 식별용)
+const getCurrentUserEmail = () => {
   try {
     // localStorage에서 사용자 정보 가져오기
     const lastLoginEmail = localStorage.getItem("lastLoginEmail");
     const lastStoreLoginEmail = localStorage.getItem("lastStoreLoginEmail");
-
-    // 이메일을 간단한 사용자 ID로 변환 (해시 또는 고유 번호)
-    const email = lastStoreLoginEmail || lastLoginEmail;
-    if (email) {
-      // 이메일을 간단한 숫자 ID로 변환 (해시 함수 대신 간단한 매핑)
-      const emailHash = email.split("").reduce((a, b) => {
-        a = (a << 5) - a + b.charCodeAt(0);
-        return a & a; // 32비트 정수로 변환
-      }, 0);
-      return Math.abs(emailHash % 1000) + 1; // 1-1000 범위의 ID
-    }
-    return 1; // 기본 사용자 ID
+    
+    return lastStoreLoginEmail || lastLoginEmail || null;
   } catch (error) {
-    console.warn("Failed to get current user ID:", error);
-    return 1; // 기본 사용자 ID
+    console.warn("Failed to get current user email:", error);
+    return null;
   }
 };
 
 // 진행중인 주문 중 문제가 있는 것들을 제거하는 함수 (최근 생성된 유효한 주문은 보호)
-export const clearInvalidCurrentOrders = (userId?: number) => {
-  const currentUserId = userId || getCurrentUserId();
+export const clearInvalidCurrentOrders = () => {
+  const currentUserEmail = getCurrentUserEmail();
   const beforeCount = mockOrders.length;
   const recentOrderTime = Date.now() - 30 * 60 * 1000; // 30분 이내 주문은 보호 (더 길게)
 
@@ -58,7 +48,7 @@ export const clearInvalidCurrentOrders = (userId?: number) => {
       ["PENDING", "CONFIRMED", "PREPARING", "DELIVERING"].includes(
         order.status
       ) &&
-      order.userId === currentUserId // 현재 사용자의 주문만 처리
+      order.userEmail === currentUserEmail // 현재 사용자의 주문만 처리
     ) {
       // 최근 30분 이내에 생성된 주문은 검사하지 않음 (새로 생성된 유효한 주문 보호)
       const orderTime = new Date(order.orderDate).getTime();
@@ -299,13 +289,14 @@ export const orderApi = {
       estimatedDeliveryTime: "30-40분",
     };
 
-    // Mock 주문 상세 데이터도 생성 - 완전한 정보만 포함 (현재 사용자 ID 사용)
-    const currentUserId = getCurrentUserId();
-    const orderDetail: UserOrderDetailResponse = {
+    // Mock 주문 상세 데이터도 생성 - 완전한 정보만 포함 (현재 사용자 이메일 사용)
+    const currentUserEmail = getCurrentUserEmail();
+    const orderDetail: any = {
       ...newOrder,
       storeId: data.storeId,
       storeName: getStoreName(data.storeId),
-      userId: currentUserId, // 현재 로그인한 사용자 ID
+      userId: 1, // 호환성을 위한 기본값
+      userEmail: currentUserEmail, // 사용자 식별용 이메일
       deliveryAddress: data.deliveryAddress || "서울시 강남구 테헤란로 123", // 기본 주소 제공
       orderItems: completeOrderItems,
     };
@@ -349,8 +340,8 @@ export const orderApi = {
     }
     
     // Mock 데이터 처리 (기존 로직 유지)
-    const currentUserId = getCurrentUserId();
-    console.log("getCurrentOrders called for user:", currentUserId);
+    const currentUserEmail = getCurrentUserEmail();
+    console.log("getCurrentOrders called for user:", currentUserEmail);
 
     // 조회 전에 자동으로 불완전한 주문들 정리
     try {
@@ -363,9 +354,9 @@ export const orderApi = {
     console.log("Total mockOrders:", mockOrders.length);
     console.log(
       "All orders statuses:",
-      mockOrders.map((o) => ({
+      mockOrders.map((o: any) => ({
         id: o.id,
-        userId: o.userId,
+        userEmail: o.userEmail,
         status: o.status,
         storeName: o.storeName,
       }))
@@ -374,9 +365,9 @@ export const orderApi = {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     // 완전한 데이터이면서 진행중인 주문만 필터링 (더 엄격한 검증, 사용자별)
-    const validOrders = mockOrders.filter((order) => {
-      // 사용자 ID 매칭 - 백엔드 연동 실패 시에만 Mock 사용하므로 현재 사용자 주문만 표시
-      const userMatches = !order.userId || order.userId === currentUserId; // userId가 없거나 현재 사용자와 일치
+    const validOrders = mockOrders.filter((order: any) => {
+      // 사용자 이메일 매칭 - 현재 사용자의 주문만 표시
+      const userMatches = !order.userEmail || order.userEmail === currentUserEmail;
       const isValid =
         userMatches && // 사용자 매칭
         order.id &&
@@ -452,8 +443,8 @@ export const orderApi = {
     }
     
     // Mock 데이터 처리 (기존 로직 유지)
-    const currentUserId = getCurrentUserId();
-    console.log("getOrderHistory called for user:", currentUserId);
+    const currentUserEmail = getCurrentUserEmail();
+    console.log("getOrderHistory called for user:", currentUserEmail);
 
     // 조회 전에 자동으로 불완전한 주문들 정리
     try {
@@ -467,9 +458,9 @@ export const orderApi = {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     // 완전한 데이터만 필터링 (사용자별)
-    const validOrders = mockOrders.filter((order) => {
-      // 사용자 ID 매칭 - 백엔드 연동 실패 시에만 Mock 사용하므로 현재 사용자 주문만 표시
-      const userMatches = !order.userId || order.userId === currentUserId; // userId가 없거나 현재 사용자와 일치
+    const validOrders = mockOrders.filter((order: any) => {
+      // 사용자 이메일 매칭 - 현재 사용자의 주문만 표시
+      const userMatches = !order.userEmail || order.userEmail === currentUserEmail;
       const isValid =
         userMatches && // 사용자 매칭
         order.id &&
