@@ -15,91 +15,10 @@ interface ApiResponse<T> {
   body: T;
 }
 
-// Mock 주문 데이터 저장소 - 안전하고 검증된 데이터만 포함
-let mockOrders: UserOrderDetailResponse[] = [
-  {
-    id: 1,
-    storeId: 1,
-    storeName: "맛있는 치킨집",
-    userId: 1,
-    status: "DELIVERED",
-    orderDate: "2024-01-15T18:30:00",
-    deliveryAddress: "서울시 강남구 테헤란로 123",
-    totalAmount: 21000,
-    deliveryFee: 3000,
-    orderItems: [
-      {
-        id: 1,
-        menuId: 1,
-        menuName: "후라이드 치킨",
-        quantity: 1,
-        price: 18000,
-        options: [
-          { name: "순살/뼈", value: "뼈", price: 0 },
-          { name: "양념", value: "후라이드", price: 0 },
-        ],
-      },
-    ],
-  },
-  {
-    id: 2,
-    storeId: 1, // storeId를 1로 통일하여 안정성 확보
-    storeName: "맛있는 치킨집",
-    userId: 1,
-    status: "DELIVERED", // PREPARING에서 DELIVERED로 변경하여 진행중 주문에서 제외
-    orderDate: "2024-01-16T19:15:00",
-    deliveryAddress: "서울시 강남구 테헤란로 123",
-    totalAmount: 22000,
-    deliveryFee: 3000,
-    orderItems: [
-      {
-        id: 2,
-        menuId: 2, // 양념 치킨으로 변경
-        menuName: "양념 치킨",
-        quantity: 1,
-        price: 19000,
-        options: [
-          { name: "순살/뼈", value: "순살", price: 0 },
-          { name: "양념", value: "양념", price: 0 },
-        ],
-      },
-    ],
-  },
-  {
-    id: 3,
-    storeId: 1,
-    storeName: "맛있는 치킨집",
-    userId: 1,
-    status: "DELIVERED",
-    orderDate: "2024-01-14T20:00:00",
-    deliveryAddress: "서울시 강남구 역삼동 456-78",
-    totalAmount: 24000,
-    deliveryFee: 3000,
-    orderItems: [
-      {
-        id: 3,
-        menuId: 1,
-        menuName: "후라이드 치킨",
-        quantity: 1,
-        price: 18000,
-        options: [
-          { name: "순살/뼈", value: "순살", price: 0 },
-          { name: "양념", value: "후라이드", price: 0 },
-        ],
-      },
-      {
-        id: 4,
-        menuId: 3,
-        menuName: "치킨 무 세트",
-        quantity: 1,
-        price: 3000,
-        options: [],
-      },
-    ],
-  },
-];
+// Mock 주문 데이터 저장소 - 사용자별로 분리되어 관리됨
+let mockOrders: UserOrderDetailResponse[] = [];
 
-let nextOrderId = 4;
+let nextOrderId = 1;
 
 // 현재 로그인한 사용자 ID 가져오기 (fallback 처리)
 const getCurrentUserId = () => {
@@ -209,18 +128,13 @@ export const clearInvalidCurrentOrders = (userId?: number) => {
   );
 };
 
-// 불완전한 주문들을 직접 제거하는 함수 (유효한 기본 주문들은 보호)
+// 불완전한 주문들을 직접 제거하는 함수
 export const removeInvalidOrders = () => {
   const beforeCount = mockOrders.length;
 
-  // 불완전한 주문들 제거 (기본 유효한 주문들은 보호)
+  // 불완전한 주문들 제거
   for (let i = mockOrders.length - 1; i >= 0; i--) {
     const order = mockOrders[i];
-
-    // 기본 유효한 주문들(ID 1,2,3)은 보호
-    if ([1, 2, 3].includes(order.id) && order.storeName === "맛있는 치킨집") {
-      continue;
-    }
 
     const isInvalid =
       !order.id ||
@@ -272,91 +186,9 @@ export const removeInvalidOrders = () => {
 
 // 기존 불완전한 주문들을 제거하고 초기 상태로 재설정
 export const resetMockOrders = () => {
-  mockOrders.length = 0; // 배열 비우기
-  mockOrders.push(
-    {
-      id: 1,
-      storeId: 1,
-      storeName: "맛있는 치킨집",
-      userId: 1,
-      status: "DELIVERED",
-      orderDate: "2024-01-15T18:30:00",
-      deliveryAddress: "서울시 강남구 테헤란로 123",
-      totalAmount: 21000,
-      deliveryFee: 3000,
-      orderItems: [
-        {
-          id: 1,
-          menuId: 1,
-          menuName: "후라이드 치킨",
-          quantity: 1,
-          price: 18000,
-          options: [
-            { name: "순살/뼈", value: "뼈", price: 0 },
-            { name: "양념", value: "후라이드", price: 0 },
-          ],
-        },
-      ],
-    },
-    {
-      id: 2,
-      storeId: 1,
-      storeName: "맛있는 치킨집",
-      userId: 1,
-      status: "DELIVERED", // PREPARING에서 DELIVERED로 변경
-      orderDate: "2024-01-16T19:15:00",
-      deliveryAddress: "서울시 강남구 테헤란로 123",
-      totalAmount: 22000,
-      deliveryFee: 3000,
-      orderItems: [
-        {
-          id: 2,
-          menuId: 2,
-          menuName: "양념 치킨",
-          quantity: 1,
-          price: 19000,
-          options: [
-            { name: "순살/뼈", value: "순살", price: 0 },
-            { name: "양념", value: "양념", price: 0 },
-          ],
-        },
-      ],
-    },
-    {
-      id: 3,
-      storeId: 1,
-      storeName: "맛있는 치킨집",
-      userId: 1,
-      status: "DELIVERED",
-      orderDate: "2024-01-14T20:00:00",
-      deliveryAddress: "서울시 강남구 역삼동 456-78",
-      totalAmount: 24000,
-      deliveryFee: 3000,
-      orderItems: [
-        {
-          id: 3,
-          menuId: 1,
-          menuName: "후라이드 치킨",
-          quantity: 1,
-          price: 18000,
-          options: [
-            { name: "순살/뼈", value: "순살", price: 0 },
-            { name: "양념", value: "후라이드", price: 0 },
-          ],
-        },
-        {
-          id: 4,
-          menuId: 3,
-          menuName: "치킨 무 세트",
-          quantity: 1,
-          price: 3000,
-          options: [],
-        },
-      ],
-    }
-  );
-  nextOrderId = 4;
-  console.log("Mock orders reset to clean state");
+  mockOrders.length = 0; // 배열 비우기 - 새 사용자는 주문 내역이 없어야 함
+  nextOrderId = 1; // 주문 ID도 1부터 시작
+  console.log("Mock orders reset to clean state - empty for new users");
 };
 
 export const orderApi = {
@@ -543,8 +375,10 @@ export const orderApi = {
 
     // 완전한 데이터이면서 진행중인 주문만 필터링 (더 엄격한 검증, 사용자별)
     const validOrders = mockOrders.filter((order) => {
+      // 사용자 ID 매칭 - 백엔드 연동 실패 시에만 Mock 사용하므로 현재 사용자 주문만 표시
+      const userMatches = !order.userId || order.userId === currentUserId; // userId가 없거나 현재 사용자와 일치
       const isValid =
-        order.userId === currentUserId && // 현재 사용자의 주문만
+        userMatches && // 사용자 매칭
         order.id &&
         order.storeId &&
         order.storeName &&
@@ -634,8 +468,10 @@ export const orderApi = {
 
     // 완전한 데이터만 필터링 (사용자별)
     const validOrders = mockOrders.filter((order) => {
+      // 사용자 ID 매칭 - 백엔드 연동 실패 시에만 Mock 사용하므로 현재 사용자 주문만 표시
+      const userMatches = !order.userId || order.userId === currentUserId; // userId가 없거나 현재 사용자와 일치
       const isValid =
-        order.userId === currentUserId && // 현재 사용자의 주문만
+        userMatches && // 사용자 매칭
         order.id &&
         order.storeId &&
         order.storeName &&

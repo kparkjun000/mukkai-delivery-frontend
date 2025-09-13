@@ -120,28 +120,23 @@ export function Header() {
   const isAnyAuthenticated = isAuthenticated || isStoreAuthenticated;
   const userTypePrefix = isStoreAuthenticated ? "(사장님)" : "(사용자)";
 
-  // 이름 → 아이디 → 기본값 순으로 표시
+  // 이메일 @ 앞부분만 표시
   const getDisplayName = () => {
-    if (currentUser?.name && currentUser.name !== "사용자") {
-      return currentUser.name;
-    }
+    // 우선순위 1: 현재 사용자의 이메일
     if (currentUser?.email) {
-      // 이메일에서 @ 앞부분을 아이디로 사용
       return currentUser.email.split("@")[0];
     }
-    // 마지막 fallback도 이메일 @ 앞부분을 우선 시도
-    // localStorage에서 마지막 로그인 이메일 확인 (사용자 타입별로)
+    
+    // 우선순위 2: localStorage에서 마지막 로그인 이메일
     const lastLoginEmail = isStoreAuthenticated
       ? localStorage.getItem("lastStoreLoginEmail")
       : localStorage.getItem("lastLoginEmail");
     if (lastLoginEmail) {
       return lastLoginEmail.split("@")[0];
     }
-    // 정말 마지막 fallback - 기본 이메일에서라도 추출
-    const defaultEmail = isStoreAuthenticated
-      ? "owner@store.com"
-      : "user@site.com";
-    return defaultEmail.split("@")[0];
+    
+    // 우선순위 3: 기본값
+    return isStoreAuthenticated ? "owner" : "user";
   };
 
   const displayName = getDisplayName();
