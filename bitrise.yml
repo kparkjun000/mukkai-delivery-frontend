@@ -1,0 +1,82 @@
+---
+format_version: '11'
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+
+project_type: ios
+
+workflows:
+  build:
+    description: iOS App Store 빌드 및 배포
+    steps:
+    - activate-ssh-key@4:
+        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+    - git-clone@8: {}
+    - node@2:
+        inputs:
+        - node_version: '20'
+    - npm@1:
+        inputs:
+        - command: install
+        - workdir: $BITRISE_SOURCE_DIR
+    - npm@1:
+        inputs:
+        - command: run build
+        - workdir: $BITRISE_SOURCE_DIR
+    - script@1:
+        title: Capacitor Sync
+        inputs:
+        - content: |
+            #!/bin/bash
+            set -ex
+            
+            echo "🔄 Capacitor iOS 동기화 시작..."
+            
+            # Capacitor CLI 설치 (필요시)
+            npm install -g @capacitor/cli
+            
+            # iOS 플랫폼 추가 (이미 있으면 스킵)
+            if [ ! -d "ios" ]; then
+              npx cap add ios
+            fi
+            
+            # 웹 앱을 iOS로 복사
+            npx cap copy ios
+            
+            # iOS 프로젝트 동기화
+            npx cap sync ios
+            
+            echo "✅ Capacitor 동기화 완료!"
+    - cocoapods-install@2:
+        inputs:
+        - source_root_path: ios/App
+        - podfile_path: ios/App/Podfile
+    - certificate-and-profile-installer@1: {}
+    - xcode-archive@4:
+        inputs:
+        - project_path: ios/App/App.xcworkspace
+        - scheme: App
+        - distribution_method: app-store
+        - automatic_code_signing: apple-id
+        - team_id: 5LCBBV4KNB
+        - configuration: Release
+    - deploy-to-itunesconnect-application-loader@1:
+        inputs:
+        - connection_method: api_key
+        - api_key_path: $BITRISEIO_APP_STORE_CONNECT_API_KEY_URL
+        - api_issuer: $APP_STORE_CONNECT_ISSUER_ID
+    - deploy-to-bitrise-io@2: {}
+
+app:
+  envs:
+  - opts:
+      is_expand: false
+    BITRISE_PROJECT_PATH: ios/App/App.xcworkspace
+  - opts:
+      is_expand: false
+    BITRISE_SCHEME: App
+  - opts:
+      is_expand: false
+    BITRISE_DISTRIBUTION_METHOD: app-store
+  - opts:
+      is_expand: false
+    BITRISE_EXPORT_METHOD: app-store
