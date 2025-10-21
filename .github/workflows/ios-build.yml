@@ -75,13 +75,13 @@ jobs:
         
         # 인증서와 프로필이 있으면 서명 시도
         if [ ! -z "$IOS_CERTIFICATE_BASE64" ] && [ ! -z "$IOS_PROVISIONING_PROFILE_BASE64" ]; then
-          echo "🔐 수동 서명 시도 중..."
+          echo "🔐 강제 서명 시도 중..."
           
           # 인증서 설정
           echo $IOS_CERTIFICATE_BASE64 | base64 --decode > certificate.cer
           echo $IOS_PROVISIONING_PROFILE_BASE64 | base64 --decode > profile.mobileprovision
           
-          # 키체인 설정
+          # 키체인 설정 (오류 무시)
           security create-keychain -p "" build.keychain || true
           security import certificate.cer -k build.keychain -A || true
           security list-keychains -s build.keychain || true
@@ -90,17 +90,25 @@ jobs:
           
           # 프로비저닝 프로필 설치
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/ || true
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
           
-          # 서명된 IPA 생성 시도
+          # 강제 서명 시도
+          echo "ExportOptions.plist로 서명 시도..."
           xcodebuild -exportArchive \
                      -archivePath App.xcarchive \
                      -exportPath . \
                      -exportOptionsPlist ../../ExportOptions.plist || echo "서명 실패 - 무서명 IPA 사용"
+          
+          if [ -f "App.ipa" ]; then
+            echo "✅ 서명된 IPA 생성 성공!"
+            ls -lh App.ipa
+          else
+            echo "❌ 서명 실패"
+          fi
         else
           echo "⚠️ 인증서 정보 없음 - 무서명 IPA만 생성"
         fi
-
+    
     - name: Upload to App Store Connect (If Signed)
       env:
         APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
