@@ -112,14 +112,30 @@ jobs:
         ls -la *.ipa
         echo "✅ 무서명 IPA 파일 생성 완료!"
 
-# Export 단계는 임시로 주석 처리
-# - name: Export IPA
-#   run: |
-#     cd ios/App
-#     xcodebuild -exportArchive \
-#                -archivePath App.xcarchive \
-#                -exportPath . \
-#                -exportOptionsPlist ../../ExportOptions.plist
+    - name: Export IPA (Development)
+      run: |
+        cd ios/App
+        echo "📋 ExportOptions.plist 확인:"
+        cat ../../ExportOptions.plist
+    
+        echo "🔨 개발용 IPA Export 시작..."
+        xcodebuild -exportArchive \
+                   -archivePath App.xcarchive \
+                   -exportPath . \
+                   -exportOptionsPlist ../../ExportOptions.plist \
+                   -allowProvisioningUpdates
+
+    - name: Check Export Result
+      run: |
+        cd ios/App
+        ls -la *.ipa || echo "IPA 파일 없음"
+        if [ -f "App.ipa" ]; then
+          echo "✅ 개발용 IPA 생성 성공!"
+          ls -lh App.ipa
+        else
+          echo "❌ IPA 생성 실패"
+          ls -la
+        fi
 
 # Upload 단계도 임시로 주석 처리  
 # - name: Upload to App Store Connect
