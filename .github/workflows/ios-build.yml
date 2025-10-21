@@ -38,7 +38,7 @@ jobs:
         cd ios/App
         pod install
 
-        - name: Setup iOS certificates
+    - name: Setup iOS certificates
       env:
         IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
       run: |
