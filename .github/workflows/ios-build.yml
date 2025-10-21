@@ -63,6 +63,13 @@ jobs:
     #     # 프로비저닝 프로필 설치
     #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
     #     cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+    - name: Configure code signing
+      run: |
+        cd ios/App
+        # Development Team 설정
+        sed -i '' 's/DEVELOPMENT_TEAM = .*/DEVELOPMENT_TEAM = "5LCBBV4KNB";/g' App.xcodeproj/project.pbxproj
+        echo "Development team configured"
         
     - name: Build iOS app
       run: |
