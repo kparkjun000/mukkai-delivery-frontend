@@ -1,183 +1,46 @@
-name: iOS Build and Deploy
+- name: Build iOS app (Archive Only)
+  run: |
+    cd ios/App
+    xcodebuild -workspace App.xcworkspace \
+               -scheme App \
+               -configuration Release \
+               -destination generic/platform=iOS \
+               -archivePath App.xcarchive \
+               CODE_SIGN_IDENTITY="" \
+               CODE_SIGNING_REQUIRED=NO \
+               CODE_SIGNING_ALLOWED=NO \
+               archive
 
-on:
-  push:
-    branches: [ master, main ]
-  workflow_dispatch:
-
-jobs:
-  build-ios:
-    runs-on: macos-latest
+- name: Create IPA Manually (No Export)
+  run: |
+    cd ios/App
     
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Install Capacitor iOS
-      run: |
-        npm install @capacitor/ios
-        # iOS 플랫폼이 없을 때만 추가
-        if [ ! -d "ios" ]; then
-        npx cap add ios
-        fi
-        
-    - name: Build web app
-      run: npm run build
-      
-    - name: Copy web assets to iOS
-      run: |
-        npx cap copy ios
-        npx cap sync ios
-        
-    - name: Install CocoaPods dependencies
-      run: |
-        cd ios/App
-        pod install
-        
-      # - name: Setup iOS certificates
-    #   env:
-    #     IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
-    #     IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
-    #     IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
-    #   run: |
-    #     # 인증서 설정 스크립트
-    #     echo $IOS_CERTIFICATE_BASE64 | base64 --decode > certificate.p12
-    #     echo $IOS_PROVISIONING_PROFILE_BASE64 | base64 --decode > profile.mobileprovision
-    #     
-    #     # 키체인에 인증서 추가
-    #     security create-keychain -p "" build.keychain
-    #     security import certificate.p12 -t agg -k build.keychain -P $IOS_CERTIFICATE_PASSWORD -A
-    #     security list-keychains -s build.keychain
-    #     security default-keychain -s build.keychain
-    #     security unlock-keychain -p "" build.keychain
-    #     
-    #     # 프로비저닝 프로필 설치
-    #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-    #     cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-
-    - name: Configure code signing
-      run: |
-        cd ios/App
-        # Development Team 설정
-        sed -i '' 's/DEVELOPMENT_TEAM = .*/DEVELOPMENT_TEAM = "5LCBBV4KNB";/g' App.xcodeproj/project.pbxproj
-        echo "Development team configured"
-        
-    - name: Build iOS app
-      run: |
-        cd ios/App
-        xcodebuild -workspace App.xcworkspace \
-                   -scheme App \
-                   -configuration Release \
-                   -destination generic/platform=iOS \
-                   -archivePath App.xcarchive \
-                   CODE_SIGN_IDENTITY="" \
-                   CODE_SIGNING_REQUIRED=NO \
-                   CODE_SIGNING_ALLOWED=NO \
-                   archive
-
-    - name: Check Archive Success
-      run: |
-        cd ios/App
-        if [ -d "App.xcarchive" ]; then
-          echo "✅ Archive 생성 성공!"
-          ls -la App.xcarchive/
-          ls -la App.xcarchive/Products/Applications/
-        else
-          echo "❌ Archive 생성 실패"
-          exit 1
-        fi
-
-    - name: Create IPA without Code Signing
-      run: |
-        cd ios/App
-        # Payload 디렉토리 생성
-        mkdir -p Payload
+    echo "📦 Archive 내용 확인:"
+    ls -la App.xcarchive/Products/Applications/
     
-        # App 파일을 Payload로 복사
-        cp -r App.xcarchive/Products/Applications/App.app Payload/
+    echo "🔨 수동 IPA 생성 시작..."
     
-        # IPA 파일 생성 (ZIP 압축)
-        zip -r App-unsigned.ipa Payload/
+    # Payload 폴더 생성
+    mkdir -p Payload
     
-        # 결과 확인
-        ls -la *.ipa
-        echo "✅ 무서명 IPA 파일 생성 완료!"
-
-    - name: Export IPA (Development)
-      run: |
-        cd ios/App
-        echo "📋 ExportOptions.plist 확인:"
-        cat ../../ExportOptions.plist
+    # App 파일을 Payload로 복사
+    cp -r App.xcarchive/Products/Applications/App.app Payload/
     
-        echo "🔨 개발용 IPA Export 시작..."
-        xcodebuild -exportArchive \
-                   -archivePath App.xcarchive \
-                   -exportPath . \
-                   -exportOptionsPlist ../../ExportOptions.plist \
-                   -allowProvisioningUpdates
+    # IPA 파일 생성 (ZIP 압축)
+    zip -r App-unsigned.ipa Payload/
+    
+    echo "✅ 무서명 IPA 생성 완료!"
+    ls -lh *.ipa
 
-    - name: Check Export Result
-      run: |
-        cd ios/App
-        ls -la *.ipa || echo "IPA 파일 없음"
-        if [ -f "App.ipa" ]; then
-          echo "✅ 개발용 IPA 생성 성공!"
-          ls -lh App.ipa
-        else
-          echo "❌ IPA 생성 실패"
-          ls -la
-        fi
+- name: Verify IPA Contents
+  run: |
+    cd ios/App
+    echo "📋 생성된 IPA 파일 정보:"
+    file App-unsigned.ipa
+    unzip -l App-unsigned.ipa | head -20
 
-# Upload 단계도 임시로 주석 처리  
+# Export 단계 완전히 제거
+# - name: Export IPA (Development)
+
+# Upload 단계도 임시 제거  
 # - name: Upload to App Store Connect
-
-    - name: Debug Build Environment
-      run: |
-        echo "=== Xcode 버전 ==="
-        xcodebuild -version
-    
-        echo "=== 사용 가능한 SDK ==="
-        xcodebuild -showsdks
-    
-        echo "=== 프로젝트 정보 ==="
-        cd ios/App
-        xcodebuild -list -workspace App.xcworkspace
-    
-        echo "=== 빌드 설정 확인 ==="
-        xcodebuild -workspace App.xcworkspace \
-                   -scheme App \
-                   -configuration Release \
-                   -showBuildSettings | grep -i sign               
-    - name: Export IPA
-      run: |
-        cd ios/App
-        xcodebuild -exportArchive \
-                   -archivePath App.xcarchive \
-                   -exportPath . \
-                   -exportOptionsPlist ../../ExportOptions.plist
-                   
-    # - name: Upload to App Store Connect
-    #   env:
-    #     APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-    #     APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-    #     APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-    #   run: |
-    #     # API 키 파일 생성
-    #     echo "$APP_STORE_CONNECT_API_KEY" > AuthKey_$APP_STORE_CONNECT_KEY_ID.p8
-    
-    #     # App Store Connect에 업로드 (새로운 방식)
-    #     xcrun altool --upload-app \
-    #                  --type ios \
-    #                  --file ios/App/App.ipa \
-    #                  --apiKey $APP_STORE_CONNECT_KEY_ID \
-    #                  --apiIssuer $APP_STORE_CONNECT_ISSUER_ID \
-    #                  --apiKeyPath ./AuthKey_$APP_STORE_CONNECT_KEY_ID.p8
