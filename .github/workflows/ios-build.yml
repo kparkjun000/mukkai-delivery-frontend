@@ -51,7 +51,6 @@ jobs:
         
         # UUID 확인
         /usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< $(security cms -D -i profile.mobileprovision)
-
     - name: Build iOS Archive
       run: |
         cd ios/App
