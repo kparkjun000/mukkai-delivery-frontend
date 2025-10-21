@@ -165,19 +165,19 @@ jobs:
                    -exportPath . \
                    -exportOptionsPlist ../../ExportOptions.plist
                    
-    - name: Upload to App Store Connect
-      env:
-        APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-        APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-        APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-      run: |
-        # API 키 파일 생성
-        echo "$APP_STORE_CONNECT_API_KEY" > AuthKey_$APP_STORE_CONNECT_KEY_ID.p8
+    # - name: Upload to App Store Connect
+    #   env:
+    #     APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+    #     APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+    #     APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+    #   run: |
+    #     # API 키 파일 생성
+    #     echo "$APP_STORE_CONNECT_API_KEY" > AuthKey_$APP_STORE_CONNECT_KEY_ID.p8
     
-        # App Store Connect에 업로드 (새로운 방식)
-        xcrun altool --upload-app \
-                     --type ios \
-                     --file ios/App/App.ipa \
-                     --apiKey $APP_STORE_CONNECT_KEY_ID \
-                     --apiIssuer $APP_STORE_CONNECT_ISSUER_ID \
-                     --apiKeyPath ./AuthKey_$APP_STORE_CONNECT_KEY_ID.p8
+    #     # App Store Connect에 업로드 (새로운 방식)
+    #     xcrun altool --upload-app \
+    #                  --type ios \
+    #                  --file ios/App/App.ipa \
+    #                  --apiKey $APP_STORE_CONNECT_KEY_ID \
+    #                  --apiIssuer $APP_STORE_CONNECT_ISSUER_ID \
+    #                  --apiKeyPath ./AuthKey_$APP_STORE_CONNECT_KEY_ID.p8
