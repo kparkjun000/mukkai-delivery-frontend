@@ -1,0 +1,54 @@
+# Bitrise 워크플로우 설정 파일
+# bitrise.yml
+
+format_version: '11'
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+
+project_type: react-native
+
+workflows:
+  ios-build:
+    description: iOS App Store 빌드 및 배포
+    steps:
+    - activate-ssh-key@4:
+        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+    - git-clone@8: {}
+    - cache-pull@2: {}
+    - npm@1:
+        inputs:
+        - command: install
+    - npm@1:
+        inputs:
+        - command: run build
+    - capacitor-sync@1:
+        inputs:
+        - platform: ios
+    - cocoapods-install@2:
+        inputs:
+        - source_root_path: ios/App
+    - xcode-archive@4:
+        inputs:
+        - project_path: ios/App/App.xcworkspace
+        - scheme: App
+        - distribution_method: app-store
+        - automatic_code_signing: apple-id
+        - team_id: 5LCBBV4KNB
+    - deploy-to-itunesconnect-application-loader@1:
+        inputs:
+        - connection_method: api_key
+        - api_key_path: $BITRISEIO_APP_STORE_CONNECT_API_KEY_URL
+        - api_issuer: $APP_STORE_CONNECT_ISSUER_ID
+    - cache-push@2: {}
+    - deploy-to-bitrise-io@2: {}
+
+app:
+  envs:
+  - opts:
+      is_expand: false
+    BITRISE_PROJECT_PATH: ios/App/App.xcworkspace
+  - opts:
+      is_expand: false
+    BITRISE_SCHEME: App
+  - opts:
+      is_expand: false
+    BITRISE_DISTRIBUTION_METHOD: app-store
