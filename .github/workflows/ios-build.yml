@@ -1,4 +1,4 @@
-name: iOS Build (No Code Signing)
+name: iOS Build and Deploy
 
 on:
   push:
@@ -38,79 +38,58 @@ jobs:
         cd ios/App
         pod install
 
-    - name: Debug Build Environment
+    - name: Setup iOS certificates
+      env:
+        IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+        IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+        IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
       run: |
-        echo "=== Xcode 버전 ==="
-        xcodebuild -version
+        # 인증서 설정
+        echo $IOS_CERTIFICATE_BASE64 | base64 --decode > certificate.p12
+        echo $IOS_PROVISIONING_PROFILE_BASE64 | base64 --decode > profile.mobileprovision
         
-        echo "=== 프로젝트 정보 ==="
-        cd ios/App
-        xcodebuild -list -workspace App.xcworkspace
+        # 키체인에 인증서 추가
+        security create-keychain -p "" build.keychain
+        security import certificate.p12 -t agg -k build.keychain -P "$IOS_CERTIFICATE_PASSWORD" -A
+        security list-keychains -s build.keychain
+        security default-keychain -s build.keychain
+        security unlock-keychain -p "" build.keychain
+        
+        # 프로비저닝 프로필 설치
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-    - name: Build iOS Archive (No Signing)
+    - name: Build iOS Archive
       run: |
         cd ios/App
-        echo "🔨 무서명 Archive 빌드 시작..."
-        
         xcodebuild -workspace App.xcworkspace \
                    -scheme App \
                    -configuration Release \
                    -destination generic/platform=iOS \
                    -archivePath App.xcarchive \
-                   CODE_SIGN_IDENTITY="" \
-                   CODE_SIGNING_REQUIRED=NO \
-                   CODE_SIGNING_ALLOWED=NO \
-                   PROVISIONING_PROFILE="" \
                    archive
-        
-        echo "✅ Archive 빌드 완료!"
 
-    - name: Create Unsigned IPA
+    - name: Export IPA
       run: |
         cd ios/App
-        
-        echo "📦 Archive 내용 확인:"
-        ls -la App.xcarchive/Products/Applications/
-        
-        echo "🔨 무서명 IPA 생성 중..."
-        
-        # Payload 폴더 생성
-        mkdir -p Payload
-        
-        # App 파일을 Payload로 복사
-        cp -r App.xcarchive/Products/Applications/App.app Payload/
-        
-        # IPA 파일 생성
-        zip -r App-unsigned.ipa Payload/
-        
-        echo "✅ 무서명 IPA 생성 완료!"
-        ls -lh *.ipa
+        xcodebuild -exportArchive \
+                   -archivePath App.xcarchive \
+                   -exportPath . \
+                   -exportOptionsPlist ../../ExportOptions.plist
 
-    - name: Verify IPA
+    - name: Upload to App Store Connect
+      env:
+        APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+        APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
       run: |
-        cd ios/App
-        echo "📋 IPA 파일 정보:"
-        file App-unsigned.ipa
+        # API 키 파일 생성
+        echo "$APP_STORE_CONNECT_API_KEY" > AuthKey_$APP_STORE_CONNECT_KEY_ID.p8
         
-        echo "📋 IPA 내용 미리보기:"
-        unzip -l App-unsigned.ipa | head -20
-        
-        echo "📏 파일 크기:"
-        du -h App-unsigned.ipa
-
-    - name: Upload IPA Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ios-app-unsigned
-        path: ios/App/App-unsigned.ipa
-        retention-days: 30
-
-    # 나중에 사용할 App Store Connect 업로드 (현재 비활성화)
-    # - name: Upload to App Store Connect
-    #   if: false  # 임시로 비활성화
-    #   env:
-    #     APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-    #     APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-    #     APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-    #   run: |
-    #     echo "App Store Connect 업로드는 나중에 활성화 예정"
+        # App Store Connect에 업로드
+        xcrun altool --upload-app \
+                     --type ios \
+                     --file ios/App/App.ipa \
+                     --apiKey $APP_STORE_CONNECT_KEY_ID \
+                     --apiIssuer $APP_STORE_CONNECT_ISSUER_ID \
+                     --apiKeyPath ./AuthKey_$APP_STORE_CONNECT_KEY_ID.p8
