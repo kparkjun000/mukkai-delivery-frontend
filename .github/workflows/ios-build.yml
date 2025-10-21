@@ -38,19 +38,27 @@ jobs:
         cd ios/App
         pod install
 
-    - name: Setup iOS certificates
+    - name: Setup Provisioning Profile Only
       env:
         IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
       run: |
-        # 프로비저닝 프로필만 설치
-        echo $IOS_PROVISIONING_PROFILE_BASE64 | base64 --decode > profile.mobileprovision
-        
         # 프로비저닝 프로필 설치
+        echo $IOS_PROVISIONING_PROFILE_BASE64 | base64 --decode > profile.mobileprovision
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-        
-        # UUID 확인
-        /usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< $(security cms -D -i profile.mobileprovision)
+
+    - name: Build iOS Archive (Automatic Signing)
+      run: |
+        cd ios/App
+        xcodebuild -workspace App.xcworkspace \
+                   -scheme App \
+                   -configuration Release \
+                   -destination generic/platform=iOS \
+                   -archivePath App.xcarchive \
+                   DEVELOPMENT_TEAM=5LCBBV4KNB \
+                   CODE_SIGN_STYLE=Automatic \
+                   archive
+    
     - name: Build iOS Archive
       run: |
         cd ios/App
