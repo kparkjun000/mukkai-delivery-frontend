@@ -25,7 +25,10 @@ jobs:
     - name: Install Capacitor iOS
       run: |
         npm install @capacitor/ios
+        # iOS 플랫폼이 없을 때만 추가
+        if [ ! -d "ios" ]; then
         npx cap add ios
+        fi
         
     - name: Build web app
       run: npm run build
