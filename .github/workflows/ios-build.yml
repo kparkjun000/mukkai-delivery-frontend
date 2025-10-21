@@ -47,20 +47,22 @@ jobs:
         echo $IOS_CERTIFICATE_BASE64 | base64 --decode > certificate.cer
         echo $IOS_PROVISIONING_PROFILE_BASE64 | base64 --decode > profile.mobileprovision
         
-        # 키체인 생성 및 인증서 추가
+        # 키체인 생성 및 인증서 추가 (간소화)
         security create-keychain -p "" build.keychain
         security import certificate.cer -k build.keychain -T /usr/bin/codesign -A
         security list-keychains -s build.keychain
         security default-keychain -s build.keychain
         security unlock-keychain -p "" build.keychain
-        security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
         
         # 프로비저닝 프로필 설치
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
         
-        # 프로필 UUID 확인
-        PROFILE_UUID=$(security cms -D -i profile.mobileprovision | plutil -extract UUID xml1 -o - - | sed -n 's/.*<string>\(.*\)<\/string>.*/\1/p')
+        # 프로필 UUID 확인 (간단한 방법)
+        PROFILE_UUID=$(grep -A1 '<key>UUID</key>' profile.mobileprovision | grep '<string>' | sed 's/.*<string>\(.*\)<\/string>.*/\1/')
+        if [ -z "$PROFILE_UUID" ]; then
+          PROFILE_UUID="Mukkai Delivery App Store"
+        fi
         echo "Profile UUID: $PROFILE_UUID"
         echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
 
