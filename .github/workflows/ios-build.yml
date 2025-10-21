@@ -101,7 +101,7 @@ jobs:
         # API 키 파일 생성
         echo "$APP_STORE_CONNECT_API_KEY" > AuthKey_$APP_STORE_CONNECT_KEY_ID.p8
     
-        # App Store Connect에 업로드
+        # App Store Connect에 업로드 (새로운 방식)
         xcrun altool --upload-app \
                      --type ios \
                      --file ios/App/App.ipa \
