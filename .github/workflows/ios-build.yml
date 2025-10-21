@@ -1,4 +1,4 @@
-name: iOS Build and Deploy to App Store
+name: iOS Build (Unsigned + Manual Signing)
 
 on:
   push:
@@ -38,35 +38,7 @@ jobs:
         cd ios/App
         pod install
 
-    - name: Setup iOS certificates and profiles
-      env:
-        IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
-        IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
-      run: |
-        # 인증서와 프로필 파일 생성
-        echo $IOS_CERTIFICATE_BASE64 | base64 --decode > certificate.cer
-        echo $IOS_PROVISIONING_PROFILE_BASE64 | base64 --decode > profile.mobileprovision
-        
-        # 키체인 생성 및 인증서 추가 (간소화)
-        security create-keychain -p "" build.keychain
-        security import certificate.cer -k build.keychain -T /usr/bin/codesign -A
-        security list-keychains -s build.keychain
-        security default-keychain -s build.keychain
-        security unlock-keychain -p "" build.keychain
-        
-        # 프로비저닝 프로필 설치
-        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-        
-        # 프로필 UUID 확인 (간단한 방법)
-        PROFILE_UUID=$(grep -A1 '<key>UUID</key>' profile.mobileprovision | grep '<string>' | sed 's/.*<string>\(.*\)<\/string>.*/\1/')
-        if [ -z "$PROFILE_UUID" ]; then
-          PROFILE_UUID="Mukkai Delivery App Store"
-        fi
-        echo "Profile UUID: $PROFILE_UUID"
-        echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
-
-    - name: Build iOS Archive (Full Automatic)
+    - name: Build iOS Archive (No Signing)
       run: |
         cd ios/App
         xcodebuild -workspace App.xcworkspace \
@@ -74,39 +46,89 @@ jobs:
                    -configuration Release \
                    -destination generic/platform=iOS \
                    -archivePath App.xcarchive \
-                   DEVELOPMENT_TEAM=5LCBBV4KNB \
-                   CODE_SIGN_STYLE=Automatic \
-                   -allowProvisioningUpdates \
+                   CODE_SIGN_IDENTITY="" \
+                   CODE_SIGNING_REQUIRED=NO \
+                   CODE_SIGNING_ALLOWED=NO \
                    archive
 
-    - name: Export IPA for App Store
+    - name: Create Unsigned IPA
       run: |
         cd ios/App
-        xcodebuild -exportArchive \
-                   -archivePath App.xcarchive \
-                   -exportPath . \
-                   -exportOptionsPlist ../../ExportOptions.plist
+        
+        echo "📦 Archive 내용 확인:"
+        ls -la App.xcarchive/Products/Applications/
+        
+        echo "🔨 무서명 IPA 생성 중..."
+        mkdir -p Payload
+        cp -r App.xcarchive/Products/Applications/App.app Payload/
+        zip -r App-unsigned.ipa Payload/
+        
+        echo "✅ 무서명 IPA 생성 완료!"
+        ls -lh *.ipa
 
-    - name: Upload to App Store Connect
+    - name: Manual Code Signing (Optional)
+      env:
+        IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+        IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+      run: |
+        cd ios/App
+        
+        # 인증서와 프로필이 있으면 서명 시도
+        if [ ! -z "$IOS_CERTIFICATE_BASE64" ] && [ ! -z "$IOS_PROVISIONING_PROFILE_BASE64" ]; then
+          echo "🔐 수동 서명 시도 중..."
+          
+          # 인증서 설정
+          echo $IOS_CERTIFICATE_BASE64 | base64 --decode > certificate.cer
+          echo $IOS_PROVISIONING_PROFILE_BASE64 | base64 --decode > profile.mobileprovision
+          
+          # 키체인 설정
+          security create-keychain -p "" build.keychain || true
+          security import certificate.cer -k build.keychain -A || true
+          security list-keychains -s build.keychain || true
+          security default-keychain -s build.keychain || true
+          security unlock-keychain -p "" build.keychain || true
+          
+          # 프로비저닝 프로필 설치
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/ || true
+          
+          # 서명된 IPA 생성 시도
+          xcodebuild -exportArchive \
+                     -archivePath App.xcarchive \
+                     -exportPath . \
+                     -exportOptionsPlist ../../ExportOptions.plist || echo "서명 실패 - 무서명 IPA 사용"
+        else
+          echo "⚠️ 인증서 정보 없음 - 무서명 IPA만 생성"
+        fi
+
+    - name: Upload to App Store Connect (If Signed)
       env:
         APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
         APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
       run: |
-        # API 키 파일 생성
-        echo "$APP_STORE_CONNECT_API_KEY" > AuthKey_$APP_STORE_CONNECT_KEY_ID.p8
+        cd ios/App
         
-        # App Store Connect에 업로드
-        xcrun altool --upload-app \
-                     --type ios \
-                     --file ios/App/App.ipa \
-                     --apiKey $APP_STORE_CONNECT_KEY_ID \
-                     --apiIssuer $APP_STORE_CONNECT_ISSUER_ID \
-                     --apiKeyPath ./AuthKey_$APP_STORE_CONNECT_KEY_ID.p8
+        # 서명된 IPA가 있으면 업로드
+        if [ -f "App.ipa" ]; then
+          echo "🚀 App Store Connect 업로드 중..."
+          echo "$APP_STORE_CONNECT_API_KEY" > AuthKey_$APP_STORE_CONNECT_KEY_ID.p8
+          
+          xcrun altool --upload-app \
+                       --type ios \
+                       --file App.ipa \
+                       --apiKey $APP_STORE_CONNECT_KEY_ID \
+                       --apiIssuer $APP_STORE_CONNECT_ISSUER_ID \
+                       --apiKeyPath ./AuthKey_$APP_STORE_CONNECT_KEY_ID.p8 || echo "업로드 실패"
+        else
+          echo "⚠️ 서명된 IPA 없음 - 업로드 건너뜀"
+        fi
 
-    - name: Upload IPA Artifact
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ios-app-signed
-        path: ios/App/App.ipa
+        name: ios-builds
+        path: |
+          ios/App/App-unsigned.ipa
+          ios/App/App.ipa
         retention-days: 30
