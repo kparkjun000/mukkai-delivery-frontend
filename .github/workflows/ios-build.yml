@@ -57,6 +57,7 @@ jobs:
                    -archivePath App.xcarchive \
                    DEVELOPMENT_TEAM=5LCBBV4KNB \
                    CODE_SIGN_STYLE=Automatic \
+                   -allowProvisioningUpdates \
                    archive
     
     - name: Build iOS Archive
