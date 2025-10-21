@@ -1,46 +1,116 @@
-- name: Build iOS app (Archive Only)
-  run: |
-    cd ios/App
-    xcodebuild -workspace App.xcworkspace \
-               -scheme App \
-               -configuration Release \
-               -destination generic/platform=iOS \
-               -archivePath App.xcarchive \
-               CODE_SIGN_IDENTITY="" \
-               CODE_SIGNING_REQUIRED=NO \
-               CODE_SIGNING_ALLOWED=NO \
-               archive
+name: iOS Build (No Code Signing)
 
-- name: Create IPA Manually (No Export)
-  run: |
-    cd ios/App
-    
-    echo "📦 Archive 내용 확인:"
-    ls -la App.xcarchive/Products/Applications/
-    
-    echo "🔨 수동 IPA 생성 시작..."
-    
-    # Payload 폴더 생성
-    mkdir -p Payload
-    
-    # App 파일을 Payload로 복사
-    cp -r App.xcarchive/Products/Applications/App.app Payload/
-    
-    # IPA 파일 생성 (ZIP 압축)
-    zip -r App-unsigned.ipa Payload/
-    
-    echo "✅ 무서명 IPA 생성 완료!"
-    ls -lh *.ipa
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
 
-- name: Verify IPA Contents
-  run: |
-    cd ios/App
-    echo "📋 생성된 IPA 파일 정보:"
-    file App-unsigned.ipa
-    unzip -l App-unsigned.ipa | head -20
+jobs:
+  build-ios:
+    runs-on: macos-latest
 
-# Export 단계 완전히 제거
-# - name: Export IPA (Development)
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-# Upload 단계도 임시 제거  
-# - name: Upload to App Store Connect
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install Capacitor iOS
+      run: npm install @capacitor/ios
+
+    - name: Build web app
+      run: npm run build
+
+    - name: Copy web assets to iOS
+      run: |
+        npx cap copy ios
+        npx cap sync ios
+
+    - name: Install CocoaPods dependencies
+      run: |
+        cd ios/App
+        pod install
+
+    - name: Debug Build Environment
+      run: |
+        echo "=== Xcode 버전 ==="
+        xcodebuild -version
+        
+        echo "=== 프로젝트 정보 ==="
+        cd ios/App
+        xcodebuild -list -workspace App.xcworkspace
+
+    - name: Build iOS Archive (No Signing)
+      run: |
+        cd ios/App
+        echo "🔨 무서명 Archive 빌드 시작..."
+        
+        xcodebuild -workspace App.xcworkspace \
+                   -scheme App \
+                   -configuration Release \
+                   -destination generic/platform=iOS \
+                   -archivePath App.xcarchive \
+                   CODE_SIGN_IDENTITY="" \
+                   CODE_SIGNING_REQUIRED=NO \
+                   CODE_SIGNING_ALLOWED=NO \
+                   PROVISIONING_PROFILE="" \
+                   archive
+        
+        echo "✅ Archive 빌드 완료!"
+
+    - name: Create Unsigned IPA
+      run: |
+        cd ios/App
+        
+        echo "📦 Archive 내용 확인:"
+        ls -la App.xcarchive/Products/Applications/
+        
+        echo "🔨 무서명 IPA 생성 중..."
+        
+        # Payload 폴더 생성
+        mkdir -p Payload
+        
+        # App 파일을 Payload로 복사
+        cp -r App.xcarchive/Products/Applications/App.app Payload/
+        
+        # IPA 파일 생성
+        zip -r App-unsigned.ipa Payload/
+        
+        echo "✅ 무서명 IPA 생성 완료!"
+        ls -lh *.ipa
+
+    - name: Verify IPA
+      run: |
+        cd ios/App
+        echo "📋 IPA 파일 정보:"
+        file App-unsigned.ipa
+        
+        echo "📋 IPA 내용 미리보기:"
+        unzip -l App-unsigned.ipa | head -20
+        
+        echo "📏 파일 크기:"
+        du -h App-unsigned.ipa
+
+    - name: Upload IPA Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-app-unsigned
+        path: ios/App/App-unsigned.ipa
+        retention-days: 30
+
+    # 나중에 사용할 App Store Connect 업로드 (현재 비활성화)
+    # - name: Upload to App Store Connect
+    #   if: false  # 임시로 비활성화
+    #   env:
+    #     APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+    #     APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+    #     APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+    #   run: |
+    #     echo "App Store Connect 업로드는 나중에 활성화 예정"
