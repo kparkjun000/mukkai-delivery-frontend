@@ -77,7 +77,10 @@ jobs:
                    CODE_SIGN_STYLE=Manual \
                    DEVELOPMENT_TEAM=5LCBBV4KNB \
                    CODE_SIGN_IDENTITY="Apple Distribution" \
-                   PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" \
+                   PROVISIONING_PROFILE_SPECIFIER="Mukkai Delivery App Store" \
+                   CODE_SIGN_IDENTITY[sdk=iphoneos*]="Apple Distribution" \
+                   PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]="Mukkai Delivery App Store" \
+                   -target App \
                    archive
 
     - name: Export IPA for App Store
