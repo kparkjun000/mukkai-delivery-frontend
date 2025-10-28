@@ -30,3 +30,4 @@ npm run dev
 Configured for Railway deployment with automatic builds.# Deploy 2025년 09월 11일 목 오후 12:29:43
 # Force rebuild Tue Oct 28 20:14:12 KST 2025
 # Rebuild with env vars Tue Oct 28 20:22:18 KST 2025
+# Force rebuild - confirmed working locally Tue Oct 28 20:38:42 KST 2025
