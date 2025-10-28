@@ -31,3 +31,4 @@ Configured for Railway deployment with automatic builds.# Deploy 2025년 09월 1
 # Force rebuild Tue Oct 28 20:14:12 KST 2025
 # Rebuild with env vars Tue Oct 28 20:22:18 KST 2025
 # Force rebuild - confirmed working locally Tue Oct 28 20:38:42 KST 2025
+# Force redeploy 1761652084
