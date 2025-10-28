@@ -9,15 +9,22 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 )
 
-// Register service worker
+// Service Worker를 완전히 제거 (캐시 문제 해결)
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(registration => {
-        console.log('SW registered: ', registration);
-      })
-      .catch(registrationError => {
-        console.log('SW registration failed: ', registrationError);
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    for(let registration of registrations) {
+      registration.unregister().then(function(boolean) {
+        console.log('Service Worker unregistered:', boolean);
       });
+    }
+  });
+  
+  // 모든 캐시 삭제
+  caches.keys().then(function(names) {
+    for (let name of names) {
+      caches.delete(name).then(function(deleted) {
+        console.log('Cache deleted:', name, deleted);
+      });
+    }
   });
 }
