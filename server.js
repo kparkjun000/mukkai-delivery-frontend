@@ -217,51 +217,31 @@ app.get("*", (req, res) => {
   const indexPath = path.join(__dirname, "dist", "index.html");
   console.log(`Serving ${req.path} -> ${indexPath}`);
 
-  // 강제로 새 index.html 내용 전송 - 강력한 캐시 버스팅
-  const timestamp = Date.now();
-  const randomId = Math.random().toString(36).substring(7);
-  const newIndexHtml = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Foodie - 맛있는 음식을 빠르게</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=D2+Coding:wght@400;700&display=swap" rel="stylesheet" />
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VHEL5W2V27"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
-      gtag("js", new Date());
-      gtag("config", "G-VHEL5W2V27");
-      
-      // 강제 캐시 무효화 및 새로고침
-      if (window.performance && window.performance.navigation.type === 0) {
-        console.log('🔄 Force cache clear and reload');
-        setTimeout(() => {
-          if (window.location.search.indexOf('nocache') === -1) {
-            window.location.href = window.location.href + '?nocache=' + Date.now();
-          }
-        }, 100);
-      }
-    </script>
-    <script type="module" crossorigin src="/assets/index-Djzh3ivv.js?v=${timestamp}&bust=${randomId}&t=${Date.now()}"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-D_RYoknR.css?v=${timestamp}&bust=${randomId}&t=${Date.now()}">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
-</html>`;
-
-  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "0");
-  res.send(newIndexHtml);
+  // 실제 빌드된 index.html을 읽어서 서빙 (캐시 무효화 헤더와 함께)
+  if (fs.existsSync(indexPath)) {
+    let htmlContent = fs.readFileSync(indexPath, 'utf8');
+    
+    // 타임스탬프 추가로 캐시 버스팅
+    const timestamp = Date.now();
+    htmlContent = htmlContent.replace(
+      /src="\/assets\/(index-[^"]+\.js)"/g,
+      `src="/assets/$1?v=${timestamp}"`
+    );
+    htmlContent = htmlContent.replace(
+      /href="\/assets\/(index-[^"]+\.css)"/g,
+      `href="/assets/$1?v=${timestamp}"`
+    );
+    
+    // 강력한 캐시 무효화 헤더
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    res.setHeader("ETag", `"${timestamp}"`);
+    res.send(htmlContent);
+  } else {
+    console.error("index.html not found!");
+    res.status(404).send("index.html not found");
+  }
 });
 
 const PORT = process.env.PORT || 3000;
