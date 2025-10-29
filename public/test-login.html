@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🔐 로그인 테스트</h1>
+    
+    <div>
+        <h2>1. 백엔드 직접 테스트</h2>
+        <button onclick="testBackendDirect()">백엔드 직접 로그인</button>
+        <div id="backend-result" class="result"></div>
+    </div>
+
+    <div>
+        <h2>2. 프론트엔드 프록시 테스트</h2>
+        <button onclick="testFrontendProxy()">프론트엔드 프록시 로그인</button>
+        <div id="proxy-result" class="result"></div>
+    </div>
+
+    <div>
+        <h2>3. 전체 플로우 테스트</h2>
+        <button onclick="testFullFlow()">회원가입 → 로그인 → 계정삭제</button>
+        <div id="flow-result" class="result"></div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://mukkai-backend-1761632770-2bb427c494cb.herokuapp.com';
+        const PROXY_URL = window.location.origin; // 현재 페이지의 origin 사용
+
+        async function testBackendDirect() {
+            const resultDiv = document.getElementById('backend-result');
+            resultDiv.textContent = '테스트 중...';
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/open-api/user/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        body: {
+                            email: 'kparkjun@gmail.com',
+                            password: '123456'
+                        }
+                    })
+                });
+                
+                const data = await response.json();
+                resultDiv.className = 'result ' + (response.ok ? 'success' : 'error');
+                resultDiv.textContent = `Status: ${response.status}\n\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function testFrontendProxy() {
+            const resultDiv = document.getElementById('proxy-result');
+            resultDiv.textContent = '테스트 중...';
+            
+            try {
+                const response = await fetch(`${PROXY_URL}/open-api/user/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        body: {
+                            email: 'kparkjun@gmail.com',
+                            password: '123456'
+                        }
+                    })
+                });
+                
+                const data = await response.json();
+                resultDiv.className = 'result ' + (response.ok ? 'success' : 'error');
+                resultDiv.textContent = `Status: ${response.status}\n\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function testFullFlow() {
+            const resultDiv = document.getElementById('flow-result');
+            resultDiv.textContent = '테스트 중...\n';
+            let log = '';
+
+            try {
+                // 1. 회원가입
+                log += '=== 1. 회원가입 ===\n';
+                const registerRes = await fetch(`${PROXY_URL}/open-api/user/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        body: {
+                            name: '박준호',
+                            email: 'kparkjun@gmail.com',
+                            password: '123456',
+                            address: '서울시 강남구'
+                        }
+                    })
+                });
+                const registerData = await registerRes.json();
+                log += `Status: ${registerRes.status}\n${JSON.stringify(registerData, null, 2)}\n\n`;
+
+                // 2. 로그인
+                log += '=== 2. 로그인 ===\n';
+                const loginRes = await fetch(`${PROXY_URL}/open-api/user/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        body: {
+                            email: 'kparkjun@gmail.com',
+                            password: '123456'
+                        }
+                    })
+                });
+                const loginData = await loginRes.json();
+                log += `Status: ${loginRes.status}\n${JSON.stringify(loginData, null, 2)}\n\n`;
+
+                if (!loginRes.ok) {
+                    throw new Error('로그인 실패');
+                }
+
+                const token = loginData.body.access_token;
+
+                // 3. 계정 삭제
+                log += '=== 3. 계정 삭제 ===\n';
+                const deleteRes = await fetch(`${PROXY_URL}/api/user/delete-account`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'authorization-token': token
+                    }
+                });
+                const deleteData = await deleteRes.json();
+                log += `Status: ${deleteRes.status}\n${JSON.stringify(deleteData, null, 2)}\n\n`;
+
+                resultDiv.className = 'result success';
+                resultDiv.textContent = log + '\n✅ 전체 플로우 테스트 완료!';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = log + `\n❌ Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
+
