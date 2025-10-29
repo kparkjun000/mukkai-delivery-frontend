@@ -1,46 +1,34 @@
 /* eslint-disable no-restricted-globals */
-const CACHE_NAME = 'mukkai-delivery-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
-];
 
-// Install event
+// Service Worker를 비활성화하고 기존 캐시를 삭제
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
-  );
+  // 즉시 활성화
+  self.skipWaiting();
 });
 
-// Fetch event
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
-});
-
-// Activate event
 self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
+    // 모든 캐시 삭제
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
+          console.log('Deleting cache:', cacheName);
+          return caches.delete(cacheName);
         })
       );
+    }).then(() => {
+      // 모든 클라이언트를 즉시 제어
+      return self.clients.claim();
+    })
+  );
+});
+
+// 모든 fetch 요청은 네트워크로 (캐시 사용 안 함)
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    fetch(event.request).catch(() => {
+      // 네트워크 실패 시에만 에러
+      return new Response('Network error', { status: 503 });
     })
   );
 });
