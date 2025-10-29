@@ -159,4 +159,42 @@ export const authApi = {
     console.log("Health check skipped - endpoint not available");
     return Promise.resolve();
   },
+
+  // 계정 삭제 - Apple App Store 가이드라인 5.1.1(v) 준수
+  deleteAccount: async (): Promise<void> => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      throw new Error("인증 토큰이 없습니다.");
+    }
+
+    try {
+      console.log("계정 삭제 API 호출");
+
+      const response = await axiosWithFallback.delete<ApiResponse<string>>(
+        "/api/user/delete-account",
+        {
+          headers: {
+            "authorization-token": token,
+          },
+          timeout: 10000,
+        }
+      );
+
+      console.log("계정 삭제 성공:", response.data);
+      
+      // 로그아웃 처리
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+    } catch (error: any) {
+      console.error("계정 삭제 API 에러:", error);
+      console.error("에러 응답 데이터:", error.response?.data);
+
+      throw new Error(
+        error.response?.data?.result?.resultMessage ||
+          error.response?.data?.message ||
+          error.message ||
+          "계정 삭제에 실패했습니다."
+      );
+    }
+  },
 };

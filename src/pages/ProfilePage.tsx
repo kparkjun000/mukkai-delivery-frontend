@@ -34,10 +34,36 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/store";
+import { authApi } from "@/services/api";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
+  const handleDeleteAccount = async () => {
+    if (!confirm("정말로 계정을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없으며, 모든 데이터가 삭제됩니다.")) {
+      return;
+    }
+
+    // 한 번 더 확인
+    if (!confirm("정말로 계정 삭제를 진행하시겠습니까?")) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await authApi.deleteAccount();
+      alert("계정이 성공적으로 삭제되었습니다.");
+      logout();
+      navigate("/");
+    } catch (error: any) {
+      console.error("계정 삭제 실패:", error);
+      alert(error.message || "계정 삭제에 실패했습니다.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   if (!user) {
     return (
@@ -331,9 +357,11 @@ export default function ProfilePage() {
                     <Button
                       variant="destructive"
                       className="w-full justify-start"
+                      onClick={handleDeleteAccount}
+                      disabled={isDeleting}
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
-                      계정 삭제
+                      {isDeleting ? "삭제 중..." : "계정 삭제"}
                     </Button>
                   </div>
                 </div>
