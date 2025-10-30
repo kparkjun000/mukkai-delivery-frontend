@@ -34,6 +34,14 @@ export const useAuthStore = create<AuthState>()(
 
           const tokenResponse = await authApi.login(credentials);
           console.log("Auth store - Token response received:", tokenResponse);
+          console.log("Auth store - Token response type:", typeof tokenResponse);
+          console.log("Auth store - Token response keys:", tokenResponse ? Object.keys(tokenResponse) : "null");
+
+          // 토큰 응답 검증
+          if (!tokenResponse || !tokenResponse.accessToken) {
+            console.error("Auth store - Invalid token response:", tokenResponse);
+            throw new Error("로그인 응답에 토큰이 없습니다.");
+          }
 
           // 토큰 저장
           localStorage.setItem("accessToken", tokenResponse.accessToken);

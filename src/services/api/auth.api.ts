@@ -75,7 +75,16 @@ export const authApi = {
         requestBody
       );
 
-      console.log("로그인 API 응답:", response.data);
+      console.log("로그인 API 응답 전체:", response.data);
+      console.log("로그인 API 응답 body:", response.data.body);
+      console.log("로그인 API 응답 body type:", typeof response.data.body);
+      
+      if (response.data.body) {
+        console.log("로그인 API 응답 body keys:", Object.keys(response.data.body));
+        console.log("accessToken:", response.data.body.accessToken);
+        console.log("refreshToken:", response.data.body.refreshToken);
+      }
+      
       return response.data.body;
     } catch (error: any) {
       console.error("로그인 API 에러:", error.response?.data);
