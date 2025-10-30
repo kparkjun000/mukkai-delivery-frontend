@@ -91,13 +91,9 @@ export const authApi = {
 
   // 내 정보 조회 - 백엔드 API 호출
   getMe: async (): Promise<UserResponse> => {
-    const token = localStorage.getItem("accessToken");
-    if (!token || token === "undefined" || token === "null") {
-      throw new Error("인증 토큰이 없습니다.");
-    }
-
     try {
       console.log("사용자 정보 조회 API 호출");
+      console.log("현재 localStorage 토큰:", localStorage.getItem("accessToken")?.substring(0, 30) + "...");
 
       // axios interceptor가 자동으로 authorization-token 헤더를 추가
       const response = await axiosWithFallback.get<ApiResponse<UserResponse>>(

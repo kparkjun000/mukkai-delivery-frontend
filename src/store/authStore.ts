@@ -44,8 +44,10 @@ export const useAuthStore = create<AuthState>()(
           // 로그인한 사용자 정보 저장 (fallback용)
           localStorage.setItem("lastLoginEmail", credentials.email);
 
-          // 토큰 저장 후 사용자 정보 로드
-          await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms 대기
+          // 토큰이 localStorage에 저장된 후 사용자 정보 로드
+          console.log("Auth store - 토큰 저장 완료, 사용자 정보 로드 시작");
+          console.log("Auth store - 저장된 토큰:", tokenResponse.accessToken.substring(0, 30) + "...");
+          
           const user = await authApi.getMe();
           console.log("Auth store - User info loaded:", user);
 
