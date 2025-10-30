@@ -163,19 +163,21 @@ export const authApi = {
   // 계정 삭제 - Apple App Store 가이드라인 5.1.1(v) 준수
   deleteAccount: async (): Promise<void> => {
     const token = localStorage.getItem("accessToken");
-    if (!token) {
-      throw new Error("인증 토큰이 없습니다.");
+    
+    // 토큰이 없거나 유효하지 않으면 에러
+    if (!token || token === "undefined" || token === "null") {
+      throw new Error("로그인이 필요합니다. 다시 로그인해주세요.");
     }
 
     try {
       console.log("계정 삭제 API 호출");
+      console.log("사용 중인 토큰:", token.substring(0, 30) + "...");
 
+      // axios interceptor가 자동으로 authorization-token 헤더를 추가하므로
+      // 여기서는 별도로 헤더를 설정하지 않음
       const response = await axiosWithFallback.delete<ApiResponse<string>>(
         "/api/user/delete-account",
         {
-          headers: {
-            "authorization-token": token,
-          },
           timeout: 10000,
         }
       );
@@ -188,9 +190,11 @@ export const authApi = {
     } catch (error: any) {
       console.error("계정 삭제 API 에러:", error);
       console.error("에러 응답 데이터:", error.response?.data);
+      console.error("에러 상태 코드:", error.response?.status);
 
       throw new Error(
-        error.response?.data?.result?.resultMessage ||
+        error.response?.data?.result?.result_message ||
+          error.response?.data?.result?.resultMessage ||
           error.response?.data?.message ||
           error.message ||
           "계정 삭제에 실패했습니다."
