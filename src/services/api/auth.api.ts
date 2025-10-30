@@ -41,12 +41,19 @@ export const authApi = {
       return response.data.body;
     } catch (error: any) {
       console.error("회원가입 API 에러:", error.response?.data);
-      throw new Error(
+      
+      const errorMessage = 
+        error.response?.data?.result?.result_description ||
+        error.response?.data?.result?.resultDescription ||
+        error.response?.data?.result?.result_message ||
         error.response?.data?.result?.resultMessage ||
-          error.response?.data?.message ||
-          error.message ||
-          "회원가입에 실패했습니다."
-      );
+        error.response?.data?.message ||
+        error.message ||
+        "회원가입에 실패했습니다.";
+      
+      console.error("최종 에러 메시지:", errorMessage);
+      
+      throw new Error(errorMessage);
     }
   },
 
@@ -96,12 +103,23 @@ export const authApi = {
     } catch (error: any) {
       console.error("로그인 API 에러:", error.response?.data);
 
-      throw new Error(
+      // 백엔드 에러 메시지 우선순위:
+      // 1. result.result_description (가장 상세하고 사용자 친화적)
+      // 2. result.resultMessage 또는 result.result_message
+      // 3. message
+      // 4. 기본 메시지
+      const errorMessage = 
+        error.response?.data?.result?.result_description ||
+        error.response?.data?.result?.resultDescription ||
+        error.response?.data?.result?.result_message ||
         error.response?.data?.result?.resultMessage ||
-          error.response?.data?.message ||
-          error.message ||
-          "로그인에 실패했습니다."
-      );
+        error.response?.data?.message ||
+        error.message ||
+        "로그인에 실패했습니다.";
+      
+      console.error("최종 에러 메시지:", errorMessage);
+
+      throw new Error(errorMessage);
     }
   },
 
