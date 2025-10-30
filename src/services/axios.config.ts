@@ -70,9 +70,13 @@ const addRequestInterceptor = (instance: AxiosInstance, name: string) => {
         token = localStorage.getItem("storeUserAccessToken");
       }
       
-      if (token) {
+      // 토큰이 있고 유효한 경우에만 헤더에 추가
+      if (token && token !== "undefined" && token !== "null") {
         // 백엔드가 authorization-token 헤더를 기대함 (Bearer 접두사 없이)
         config.headers["authorization-token"] = token;
+        console.log(`🔑 [${name}] Token added: ${token.substring(0, 20)}...`);
+      } else {
+        console.log(`⚠️ [${name}] No valid token found`);
       }
       return config;
     },
