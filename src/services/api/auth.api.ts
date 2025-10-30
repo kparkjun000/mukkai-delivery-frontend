@@ -81,11 +81,18 @@ export const authApi = {
       
       if (response.data.body) {
         console.log("로그인 API 응답 body keys:", Object.keys(response.data.body));
-        console.log("accessToken:", response.data.body.accessToken);
-        console.log("refreshToken:", response.data.body.refreshToken);
       }
       
-      return response.data.body;
+      // 백엔드가 snake_case로 반환하므로 camelCase로 변환
+      const body = response.data.body as any;
+      const tokenResponse: TokenResponse = {
+        accessToken: body.access_token || body.accessToken,
+        refreshToken: body.refresh_token || body.refreshToken,
+      };
+      
+      console.log("변환된 토큰 응답:", tokenResponse);
+      
+      return tokenResponse;
     } catch (error: any) {
       console.error("로그인 API 에러:", error.response?.data);
 
