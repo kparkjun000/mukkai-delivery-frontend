@@ -44,53 +44,34 @@ export const useAuthStore = create<AuthState>()(
           // 로그인한 사용자 정보 저장 (fallback용)
           localStorage.setItem("lastLoginEmail", credentials.email);
 
-          // 토큰 먼저 저장하고 인증 상태 설정
+          // 토큰 저장 후 사용자 정보 로드
+          await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms 대기
+          const user = await authApi.getMe();
+          console.log("Auth store - User info loaded:", user);
+
+          // 사용자 이름도 저장
+          if (user?.name) {
+            localStorage.setItem("lastLoginName", user.name);
+          }
+
+          // 사용자 정보까지 모두 로드된 후 인증 상태 설정
           set({
             token: tokenResponse.accessToken,
-            user: null, // 사용자 정보는 나중에 로드
+            user,
             isAuthenticated: true,
             isLoading: false,
             error: null,
           });
 
-          // 토큰 저장 후 약간의 지연을 두고 사용자 정보 로드
-          try {
-            await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms 대기
-            const user = await authApi.getMe();
-            console.log("Auth store - User info loaded:", user);
-
-            // 사용자 이름도 저장
-            if (user?.name) {
-              localStorage.setItem("lastLoginName", user.name);
-            }
-
-            // 사용자 정보 업데이트
-            set((state) => ({
-              ...state,
-              user,
-            }));
-          } catch (userError: any) {
-            console.error(
-              "사용자 정보 로드 실패:",
-              userError.message
-            );
-            // 사용자 정보 로드 실패 시 로그아웃 처리
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            set({
-              user: null,
-              token: null,
-              isAuthenticated: false,
-              isLoading: false,
-              error: "사용자 정보를 불러올 수 없습니다. 다시 로그인해주세요.",
-            });
-            throw userError;
-          }
-          console.log("Auth store - Login completed successfully");
+          console.log("Auth store - Login completed successfully with user:", user);
         } catch (error: any) {
           console.error("Auth store - Login error:", error);
           console.error("Auth store - Error message:", error.message);
           console.error("Auth store - Error response:", error.response?.data);
+
+          // 로그인 실패 시 모든 토큰 제거
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
 
           const errorMessage =
             error.message ||
@@ -99,6 +80,9 @@ export const useAuthStore = create<AuthState>()(
           console.error("Auth store - Final error message:", errorMessage);
 
           set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
             isLoading: false,
             error: errorMessage,
           });
