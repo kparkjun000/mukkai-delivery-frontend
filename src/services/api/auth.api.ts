@@ -92,19 +92,17 @@ export const authApi = {
   // 내 정보 조회 - 백엔드 API 호출
   getMe: async (): Promise<UserResponse> => {
     const token = localStorage.getItem("accessToken");
-    if (!token) {
+    if (!token || token === "undefined" || token === "null") {
       throw new Error("인증 토큰이 없습니다.");
     }
 
     try {
       console.log("사용자 정보 조회 API 호출");
 
+      // axios interceptor가 자동으로 authorization-token 헤더를 추가
       const response = await axiosWithFallback.get<ApiResponse<UserResponse>>(
         "/api/user/me",
         {
-          headers: {
-            "authorization-token": token,
-          },
           timeout: 10000,
         }
       );
@@ -115,37 +113,20 @@ export const authApi = {
       console.error("사용자 정보 조회 API 에러:", error);
       console.error("에러 응답 데이터:", error.response?.data);
       console.error("에러 상태 코드:", error.response?.status);
-      console.error("에러 헤더:", error.response?.headers);
 
-      // 400 Bad Request의 경우 상세 정보 로깅
-      if (error.response?.status === 400) {
-        console.error("400 Bad Request 상세 정보:");
-        console.error("- 요청 URL:", "/api/user/me");
-        console.error("- 토큰:", token ? "존재함" : "없음");
-        console.error("- 토큰 길이:", token?.length);
-        console.error("- 응답 메시지:", error.response?.data);
-
-        // Mock 데이터로 fallback
-        console.log("사용자 정보 로드 실패, Mock 데이터 사용");
-        return {
-          id: 999,
-          name: "Mock User",
-          email: "mock@user.com",
-          status: "REGISTERED",
-          address: "Mock Address",
-          registered_at: new Date().toISOString(),
-        };
-      }
-
-      // 401/403 오류인 경우 토큰 무효화
-      if (error.response?.status === 401 || error.response?.status === 403) {
+      // 401/403/400 오류인 경우 토큰 무효화 및 로그아웃
+      if (error.response?.status === 400 || error.response?.status === 401 || error.response?.status === 403) {
+        console.error("인증 에러 발생 - 토큰 무효화");
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        throw new Error("인증 토큰이 만료되었습니다.");
+        localStorage.removeItem("lastLoginEmail");
+        localStorage.removeItem("lastLoginName");
+        throw new Error("인증이 만료되었습니다. 다시 로그인해주세요.");
       }
 
       throw new Error(
-        error.response?.data?.result?.resultMessage ||
+        error.response?.data?.result?.result_message ||
+          error.response?.data?.result?.resultMessage ||
           error.response?.data?.message ||
           error.message ||
           "사용자 정보를 가져올 수 없습니다."

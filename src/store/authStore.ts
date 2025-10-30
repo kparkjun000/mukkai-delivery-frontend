@@ -70,25 +70,21 @@ export const useAuthStore = create<AuthState>()(
               user,
             }));
           } catch (userError: any) {
-            console.warn(
-              "사용자 정보 로드 실패, Mock 데이터 사용:",
+            console.error(
+              "사용자 정보 로드 실패:",
               userError.message
             );
-            // 사용자 정보 로드 실패 시 기본값으로 설정
-            // 이메일 @ 앞부분을 그대로 사용 (Header에서 처리하므로)
-            const mockUser = {
-              id: 1,
-              email: credentials.email,
-              name: credentials.email.split("@")[0], // 이메일 @ 앞부분 그대로 사용
-              phone: "010-0000-0000",
-              address: "서울시 강남구",
-              role: "USER" as const,
-            };
-            localStorage.setItem("lastLoginName", mockUser.name);
-            set((state) => ({
-              ...state,
-              user: mockUser,
-            }));
+            // 사용자 정보 로드 실패 시 로그아웃 처리
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            set({
+              user: null,
+              token: null,
+              isAuthenticated: false,
+              isLoading: false,
+              error: "사용자 정보를 불러올 수 없습니다. 다시 로그인해주세요.",
+            });
+            throw userError;
           }
           console.log("Auth store - Login completed successfully");
         } catch (error: any) {
@@ -139,7 +135,7 @@ export const useAuthStore = create<AuthState>()(
 
       loadUser: async () => {
         const token = localStorage.getItem("accessToken");
-        if (!token) {
+        if (!token || token === "undefined" || token === "null") {
           // 토큰이 없으면 로그아웃 상태로 설정
           set({
             user: null,
@@ -162,38 +158,20 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
         } catch (error: any) {
-          console.warn("사용자 정보 로드 실패, Mock 사용:", error.message);
+          console.error("사용자 정보 로드 실패:", error.message);
           
-          // 토큰은 있지만 API 호출 실패시 Mock 사용자 생성
-          const lastLoginEmail = localStorage.getItem("lastLoginEmail");
-          if (lastLoginEmail) {
-            const mockUser = {
-              id: 1,
-              email: lastLoginEmail,
-              name: lastLoginEmail.split("@")[0], // 이메일 @ 앞부분 그대로 사용
-              phone: "010-0000-0000",
-              address: "서울시 강남구",
-              role: "USER" as const,
-            };
-            set({
-              user: mockUser,
-              token,
-              isAuthenticated: true,
-              isLoading: false,
-              error: null,
-            });
-          } else {
-            // 이메일 정보도 없으면 로그아웃
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            set({
-              user: null,
-              token: null,
-              isAuthenticated: false,
-              isLoading: false,
-              error: null,
-            });
-          }
+          // API 호출 실패 시 로그아웃 처리 (Mock 사용자 생성 안 함)
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("lastLoginEmail");
+          localStorage.removeItem("lastLoginName");
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
+          });
         }
       },
 
