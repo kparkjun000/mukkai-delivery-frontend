@@ -54,9 +54,24 @@ export default function ProfilePage() {
     setIsDeleting(true);
     try {
       await authApi.deleteAccount();
-      alert("계정이 성공적으로 삭제되었습니다.");
+      
+      // 모든 localStorage 데이터 완전히 정리
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("lastLoginEmail");
+      localStorage.removeItem("lastLoginName");
+      localStorage.removeItem("auth-storage"); // zustand persist 스토리지
+      
+      // authStore 로그아웃
       logout();
-      navigate("/");
+      
+      alert("계정이 성공적으로 삭제되었습니다.\n메인 페이지로 이동합니다.");
+      
+      // 메인 페이지로 리다이렉트
+      navigate("/", { replace: true });
+      
+      // 페이지 새로고침하여 모든 캐시 정리
+      window.location.reload();
     } catch (error: any) {
       console.error("계정 삭제 실패:", error);
       alert(error.message || "계정 삭제에 실패했습니다.");
