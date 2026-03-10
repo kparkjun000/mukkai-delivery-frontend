@@ -83,7 +83,7 @@ app.get("/health", (req, res) => {
 });
 
 // API 프록시 설정 - /open-api 경로 그대로 백엔드로 전달
-const API_TARGET = "https://mukkai-backend-1761632770-2bb427c494cb.herokuapp.com";
+const API_TARGET = "https://mukkai-backend-v2-7340b28f306e.herokuapp.com";
 
 // /open-api와 /api로 시작하는 모든 요청을 백엔드로 프록시
 console.log(`🚀 Setting up proxy to: ${API_TARGET}`);

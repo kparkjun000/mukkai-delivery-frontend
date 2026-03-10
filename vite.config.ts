@@ -15,7 +15,7 @@ export default defineConfig({
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
     'import.meta.env.VITE_API_BASE_URL': JSON.stringify(
       process.env.NODE_ENV === 'production' 
-        ? 'https://mukkai-delivery-backend-d7d55710f624.herokuapp.com'
+        ? 'https://mukkai-backend-v2-7340b28f306e.herokuapp.com'
         : ''
     ),
   },
