@@ -11,17 +11,16 @@ interface ApiResponse<T> {
   body: T;
 }
 
-// 백엔드 API URL - 프로덕션에서는 프록시 사용, 개발 환경에서만 직접 호출
+// 백엔드 API URL
 const isDevelopment = import.meta.env.DEV;
 const isLocalhost = typeof window !== 'undefined' && 
                    (window.location.hostname === 'localhost' || 
                     window.location.hostname === '127.0.0.1');
 
-// 프로덕션: 프록시 사용 (CORS 문제 해결)
-// 개발: 백엔드 직접 호출
-const API_BASE_URL = (isDevelopment || isLocalhost) 
-  ? (import.meta.env.VITE_API_BASE_URL || "https://mukkai-backend-1761632770-2bb427c494cb.herokuapp.com")
-  : ""; // 프로덕션에서는 상대 경로 (프록시 사용)
+// 개발: VITE_API_BASE_URL 또는 기본값
+// 프로덕션: Heroku 프론트엔드와 백엔드가 분리되어 있으므로 반드시 백엔드 URL 직접 호출
+const DEFAULT_BACKEND_URL = "https://mukkai-delivery-backend-d7d55710f624.herokuapp.com";
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string)?.trim() || DEFAULT_BACKEND_URL;
 const FALLBACK_API_BASE_URL = "";
 
 console.log('🔧 API Configuration:', {
