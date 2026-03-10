@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { HeroSection } from "@/components/common/HeroSection";
 import { StoreList } from "@/components/store/StoreList";
@@ -10,6 +10,23 @@ export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState<
     StoreCategory | undefined
   >();
+  const browseSectionRef = useRef<HTMLDivElement>(null);
+
+  // 모바일: 로그인 직후 홈 진입 시 음식 둘러보기(인기 맛집) 섹션이 화면 중앙에 오도록 스크롤
+  useEffect(() => {
+    const shouldScroll = sessionStorage.getItem('scrollToBrowse') === 'true';
+    sessionStorage.removeItem('scrollToBrowse');
+    const isMobile = window.innerWidth < 768;
+    if (shouldScroll && isMobile && browseSectionRef.current) {
+      const timer = setTimeout(() => {
+        browseSectionRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const {
     data: stores = [],
@@ -25,8 +42,11 @@ export default function HomePage() {
       {/* 히어로 섹션 */}
       <HeroSection />
 
-      {/* 가게 섹션 */}
-      <div className="px-4 sm:px-6 lg:px-8 space-y-8 pt-12">
+      {/* 가게 섹션 - 모바일에서 로그인 직후 포커스 */}
+      <div
+        ref={browseSectionRef}
+        className="px-4 sm:px-6 lg:px-8 space-y-8 pt-12"
+      >
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-bold text-gray-900">
             인기 맛집을 둘러보세요

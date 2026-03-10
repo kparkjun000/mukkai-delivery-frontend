@@ -12,12 +12,18 @@ export default function LoginPage() {
   useEffect(() => {
     if (isAuthenticated) {
       const from = location.state?.from?.pathname || '/';
+      if (from === '/') {
+        sessionStorage.setItem('scrollToBrowse', 'true');
+      }
       navigate(from, { replace: true });
     }
   }, [isAuthenticated, navigate, location]);
 
   const handleLoginSuccess = () => {
     const from = location.state?.from?.pathname || '/';
+    if (from === '/') {
+      sessionStorage.setItem('scrollToBrowse', 'true');
+    }
     navigate(from, { replace: true });
   };
 
