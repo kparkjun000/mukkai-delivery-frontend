@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,6 +69,7 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
   const [storeInfo, setStoreInfo] = useState<any>(null);
+  const addressButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const fetchStoreInfo = async () => {
@@ -91,6 +92,19 @@ export default function CheckoutPage() {
     };
     fetchStoreInfo();
   }, [storeId]);
+
+  // 모바일: 장바구니 단계 진입 시 배송지 입력하기 버튼이 화면 중앙에 오도록 스크롤
+  useEffect(() => {
+    if (currentStep === "cart" && items.length > 0 && addressButtonRef.current) {
+      const timer = setTimeout(() => {
+        addressButtonRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, items.length]);
 
   const paymentMethods: PaymentMethod[] = [
     {
@@ -224,7 +238,8 @@ export default function CheckoutPage() {
 
   const renderCartStep = () => (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
+      {/* 모바일: 주문 요약(배송지 입력하기) 먼저, PC: 기존 순서 */}
+      <div className="order-2 lg:order-1 lg:col-span-2">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -292,7 +307,7 @@ export default function CheckoutPage() {
         </Card>
       </div>
 
-      <div>
+      <div className="order-1 lg:order-2">
         <Card>
           <CardHeader>
             <CardTitle>주문 요약</CardTitle>
@@ -316,6 +331,7 @@ export default function CheckoutPage() {
               <span>예상 배달시간: 20-30분</span>
             </div>
             <Button
+              ref={addressButtonRef}
               className="w-full"
               onClick={() => setCurrentStep("address")}
               disabled={items.length === 0}

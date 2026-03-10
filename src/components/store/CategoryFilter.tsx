@@ -23,14 +23,15 @@ export function CategoryFilter({
 }: CategoryFilterProps) {
   return (
     <div className="w-full">
-      <div className="flex gap-2 justify-center overflow-x-auto pb-2 scrollbar-hide">
+      {/* 모바일: 2열 그리드 (4줄), 데스크톱: flex wrap */}
+      <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:justify-center md:gap-3">
         {categories.map((category) => (
           <Button
             key={category.label}
             variant={selectedCategory === category.key ? "default" : "outline"}
             size="sm"
             onClick={() => onCategoryChange(category.key)}
-            className="flex-shrink-0 min-w-fit"
+            className="flex-shrink-0 min-w-fit w-full md:w-auto"
           >
             <span className="mr-2">{category.icon}</span>
             {category.label}
