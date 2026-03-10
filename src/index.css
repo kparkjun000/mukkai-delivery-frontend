@@ -2,7 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 터치 기기 최적화: 한 번의 터치로 즉시 반응 */
 @layer base {
+  /* 300ms 딜레이 제거, 더블탭 줌 방지 → 한 번 터치로 즉시 클릭 */
+  button,
+  a,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  select,
+  [tabindex]:not([tabindex="-1"]),
+  .cursor-pointer,
+  [data-clickable] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.08);
+  }
+
+  /* 터치 시 텍스트 선택 방지 → 반응 속도 향상 */
+  button,
+  [role="button"],
+  .cursor-pointer {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
   * {
     font-family: "D2 Coding", "D2Coding", monospace, ui-monospace, "Courier New",
       sans-serif;
@@ -60,29 +84,32 @@
     transform: scale(0.98);
   }
 
-  /* 포커스 시 부드러운 효과 */
-  button:focus,
-  a:focus,
-  input:focus,
-  textarea:focus,
-  select:focus {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* 포커스: 마우스/키보드만 (터치에서는 transform 제거 - 즉시 반응) */
+  @media (hover: hover) {
+    button:focus,
+    a:focus,
+    input:focus,
+    textarea:focus,
+    select:focus {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
   }
 
-  /* 호버 시 부드러운 상승 효과 */
-  button:hover:not(:disabled),
-  a:hover,
-  [role="button"]:hover:not(:disabled),
-  .cursor-pointer:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  }
+  /* 호버: 마우스 있을 때만 적용 (터치 기기에서 이중 탭 방지) */
+  @media (hover: hover) {
+    button:hover:not(:disabled),
+    a:hover,
+    [role="button"]:hover:not(:disabled),
+    .cursor-pointer:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
 
-  /* 카드 요소들의 호버 효과 */
-  .card-hover:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+    }
   }
 
   /* 링크 색상 전환 */
